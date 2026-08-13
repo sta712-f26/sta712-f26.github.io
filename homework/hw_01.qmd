@@ -1,0 +1,37 @@
+---
+title: "Homework 1"
+format: html
+---
+
+**Due:** Friday, September 4, 11:59pm on Canvas
+
+**Instructions:** For mathematical work, you may choose to either hand-write your work and submit a PDF scan, or type your work using LaTeX and submit the resulting PDF. For computational work, include all code and R output necessary to answer the questions, and submit as an html or pdf on Canvas.
+
+See the course website for a [homework template](https://sta712-f26.github.io/homework/hw_template.tex) file and [instructions](https://sta712-f26.github.io/homework/latex_instructions/) on getting started with LaTeX and Overleaf.
+
+**Homework grading and resubmissions:** Homework will be graded on completeness, correctness, and effort. If you make an honest, good-faith effort attempt at a question, but your submitted work has some important errors or is missing a component I think is necessary, I may ask you to *resubmit* your work after receiving feedback. Your grade for that question would then be based on your resubmission.
+
+**R package:** Some of the data for this assignment (e.g., the `dengue` and `earthquake` datasets) are available in the `glmhelpR` [package](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/#r-package). The link contains download instructions. 
+
+## Questions
+
+1. [Hessians and optimization](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/logistic_regression_exercises.html#exr-logistic_5) (**Motivation:** verifying that using Newton's method, or related optimization procedures like IRLS, will actually maximize the logistic regression likelihood)
+
+2. [Latent variable perspective](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/logistic_regression_exercises.html#exr-logistic_latent_variable_logreg) (**Motivation:** Another helpful perspective on the form of the logistic regression model, and some motivation for the logit link function)
+
+3. [Probit regression](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/logistic_regression_exercises.html#exr-logistic_latent_variable_probit) (**Motivation:** the logit link is the most common choice, but isn't the only option. How could we end up with a different link?)
+
+4. [An error in R](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/logistic_regression_exercises.html#exr-logistic_error_prob_0_1) (**Motivation:** Exploring an issue that sometimes arises when fitting logistic regression models, and understanding implications of the logistic regression model)
+
+5. [Relative risk](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/logistic_regression_exercises.html#exr-logistic_relative_risk) (**Motivation:** Sometimes we need to modify our model to adapt to a research question of interest. Inspired by a biostatistician friend and their collaborations with epidemiologists.)
+
+6. [Confidence intervals for relative risk](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/logistic_regression_exercises.html#exr-logistic_relative_risk_bootstrap) (**Motivation:** Same as the previous question, plus bootstrapping as a valuable tool for inference)
+
+## Data analysis
+
+Complete the [Data analysis: earthquake damage](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/logistic_regression_exercises.html#sec-earthquake_analysis) assignment. This involves answering *all* questions in that section.
+
+
+
+
+

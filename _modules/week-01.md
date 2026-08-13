@@ -10,6 +10,7 @@ August 24
   : Supplementary notes [Chapter 2](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/logistic_regression_model.html) and [Chapter 3](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/logistic_regression_estimation.html)
 
 : **HW 1 released**{: .label .label-yellow }
+  : [HW 1](https://sta712-f26.github.io/homework/hw_01.html)
 
 August 26
 : Model estimation
