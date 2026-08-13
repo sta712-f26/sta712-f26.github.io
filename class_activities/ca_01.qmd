@@ -1,0 +1,67 @@
+---
+title: "Activity: Logistic regression"
+format: pdf
+editor: source
+---
+
+\vspace{-1.5cm}
+
+## Data
+
+Researchers collected data on 147 individuals in the Netherlands, 67 of whom kept a bird. The data include the following variables:
+
+* `Cancer`: whether the individual developed lung cancer (0 = no, 1 = yes)
+* `Bird`: whether the individual kept a bird at home for at least 6 consecutive months from 5 to 14 years before diagnosis (cases) or examination (controls)
+* `Sex`: male or female
+* `SocEc`: a rough measure of socioeconomic status. `Low` or `High`, depending on the principal wage earner in the household
+* `Age`: age in years
+* `SmokeYrs`: years of smoking prior to diagnosis or examination
+* `SmokeRate`: average number of cigarettes smoked per day
+
+## Logistic regression model
+
+Using the data, the researchers fit a logistic regression model:
+
+```{r, include=F, message=F, warning=F}
+library(tidyverse)
+
+birdkp = read.table(
+  "http://www.stat.uchicago.edu/~yibi/s226/birdkeeping.txt",
+  header=TRUE)
+birdkp <- birdkp |>
+  mutate(LC = ifelse(LC == "NoCancer", 0, 1),
+         BK = ifelse(BK == "NoBird", 0, 1)) |>
+  rename(Cancer = LC,
+         Sex = FM,
+         SocEc = SS,
+         Age = AG,
+         SmokeYrs = YR,
+         SmokeRate = CD,
+         Bird = BK)
+```
+
+```{r}
+m_bird <- glm(Cancer ~ Bird + Sex + SocEc + Age + 
+                SmokeYrs + SmokeRate, 
+              data = birdkp, family = binomial)
+
+coef(m_bird)
+```
+
+## Questions
+
+1. Interpret the estimated coefficient 1.363 in context.
+
+\vspace{5cm}
+
+2. The estimated coefficient on Age is negative. Why might that be the case? Is there anything you would change in the model?
+
+\vspace{5cm}
+
+3. What is the predicted probability of lung cancer for a male individual who keeps a bird, of "high" socioeconomic status, aged 35, who has never smoked?
+
+
+
+
+
+
