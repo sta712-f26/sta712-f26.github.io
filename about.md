@@ -171,6 +171,9 @@ Reflections on department seminars will be due a week after the seminar (except 
 
 **Seminar dates:** TBA
 
+### Assigned readings
+
+There will be assigned readings posted on the course website, and you are expected to complete these readings to prepare for class. The readings will sometimes have additional details (e.g., examples, additional derivations, formal proofs) that we will not go over in class. You are responsible for all material covered in the assigned readings.
 
 ### Homework assignments
 
