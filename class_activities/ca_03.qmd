@@ -22,10 +22,12 @@ The code below imports the data and fits a logistic regression model:
 library(tidyverse)
 
 # import the data
-birdkp <- read_csv()
+birdkp <- read_csv("https://sta712-f26.github.io/class_activities/birdkp.csv")
 
 # fit logistic regression model
-
+m_bird <- glm(Cancer ~ Bird + Sex + SocEc + Age + 
+                SmokeYrs + SmokeRate, 
+              data = birdkp, family = binomial)
 ```
 
 ## Questions

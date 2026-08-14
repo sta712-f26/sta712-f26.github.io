@@ -1,0 +1,114 @@
+---
+title: "Inference"
+author: "Ciaran Evans"
+output: beamer_presentation
+---
+
+## Class activity
+
+Work on the class activity, then we will discuss.
+
+\vspace{4cm}
+
+## Class activity
+
+**Question 1:** Is there evidence that keeping a pet bird is associated with a greater risk of lung cancer, after accounting for other lifestyle and environmental factors?
+
+\vspace{4cm}
+
+## Class activity
+
+**Question 1:** Is there evidence that keeping a pet bird is associated with a greater risk of lung cancer, after accounting for other lifestyle and environmental factors?
+
+```{r, include=F, message=F, warning=F}
+library(tidyverse)
+
+# import the data
+birdkp <- read_csv("https://sta712-f26.github.io/class_activities/birdkp.csv")
+
+# fit logistic regression model
+m_bird <- glm(Cancer ~ Bird + Sex + SocEc + Age + 
+                SmokeYrs + SmokeRate, 
+              data = birdkp, family = binomial)
+```
+
+```{r, echo=F}
+summary(m_bird)$coefficients
+```
+
+\vspace{4cm}
+
+## Class activity
+
+**Question 2:** If an individual does keep a pet bird, is there evidence that smoking further increases their risk of lung cancer, after accounting for other factors?
+
+\vspace{6cm}
+
+## Class activity
+
+**Question 2:** If an individual does keep a pet bird, is there evidence that smoking further increases their risk of lung cancer, after accounting for other factors?
+
+```{r, echo=F}
+summary(m_bird)$coefficients
+```
+
+\vspace{6cm}
+
+## Class activity
+
+**Question 2:** If an individual does keep a pet bird, is there evidence that smoking further increases their risk of lung cancer, after accounting for other factors?
+
+```{r}
+m_full <- glm(Cancer ~ Bird + Sex + SocEc + Age + 
+                SmokeYrs + SmokeRate, 
+              data = birdkp, family = binomial)
+
+m_reduced <- glm(Cancer ~ Bird + Sex + SocEc + Age,
+                 data = birdkp, family = binomial)
+
+m_reduced$deviance - m_full$deviance
+```
+
+```{r}
+pchisq(m_reduced$deviance - m_full$deviance, df = 2, 
+       lower.tail = F)
+```
+
+\vspace{2cm}
+
+## Class activity
+
+**Question 3:** Consider two individuals. Individual A is male, a non-smoker, of low socioeconomic status, aged 50, who keeps a bird. Individual B is male, of low socioeconomic status, aged 50, who does not keep a bird, and who has smoked for 20 years with an average of 5 cigarettes per day. Estimate the odds ratio of lung cancer for individual A vs. individual B.
+
+```{r, echo=F}
+summary(m_bird)$coefficients
+```
+
+\vspace{4cm}
+
+## Class activity
+
+**Question 4:** Get a 95% confidence interval for the odds ratio.
+
+\vspace{6cm}
+
+## Class activity
+
+**Question 4:** Get a 95% confidence interval for the odds ratio.
+
+```{r}
+beta_hat <- coef(m_bird)
+V <- vcov(m_bird)
+C <- matrix(c(0, 1, 0, 0, 0, -20, -5), nrow = 1)
+log_or_est <- C %*% beta_hat
+log_or_sd <- sqrt(C %*% V %*% t(C))
+exp(c(log_or_est - 1.96*log_or_sd, 
+      log_or_est + 1.96*log_or_sd))
+```
+
+\vspace{3cm}
+
+
+
+
+
