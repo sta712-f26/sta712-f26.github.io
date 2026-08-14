@@ -1,0 +1,42 @@
+---
+title: "Inference"
+format: html
+editor: source
+---
+
+## Data
+
+Researchers collected data on 147 individuals in the Netherlands, 67 of whom kept a bird. The data include the following variables:
+
+* `Cancer`: whether the individual developed lung cancer (0 = no, 1 = yes)
+* `Bird`: whether the individual kept a bird at home for at least 6 consecutive months from 5 to 14 years before diagnosis (cases) or examination (controls)
+* `Sex`: male or female
+* `SocEc`: a rough measure of socioeconomic status. `Low` or `High`, depending on the principal wage earner in the household
+* `Age`: age in years
+* `SmokeYrs`: years of smoking prior to diagnosis or examination
+* `SmokeRate`: average number of cigarettes smoked per day
+
+The code below imports the data and fits a logistic regression model:
+
+```{r, eval=F, message=F, warning=F}
+library(tidyverse)
+
+# import the data
+birdkp <- read_csv()
+
+# fit logistic regression model
+
+```
+
+## Questions
+
+Use the fitted logistic regression model to answer the following questions:
+
+1. Is there evidence that keeping a pet bird is associated with a greater risk of lung cancer, after accounting for other lifestyle and environmental factors?
+
+2. If an individual does keep a pet bird, is there evidence that smoking further increases their risk of lung cancer, after accounting for other factors?
+
+3. Consider two individuals. Individual A is male, a non-smoker, of low socioeconomic status, aged 50, who keeps a bird. Individual B is male, of low socioeconomic status, aged 50, who does not keep a bird, and who has smoked for 20 years with an average of 5 cigarettes per day. Estimate the odds ratio of lung cancer for individual A vs. individual B.
+
+4. Calculate a 95% confidence interval for the odds ratio you estimated in question 3.
+

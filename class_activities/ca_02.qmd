@@ -1,0 +1,69 @@
+---
+title: "Iteratively reweighted least squares"
+format: html
+editor: source
+---
+
+## IRLS for logistic regression
+
+The logistic regression model is
+
+$$
+\begin{aligned}
+Y_i | \mathbf{x}_i &\sim Bernoulli(p_i) & \text{(random component)} \\
+\log \left( \dfrac{p_i}{1 - p_i} \right) &= \mathbf{x}_i^T \boldsymbol{\beta} & \text{(systematic component)}
+\end{aligned}
+$${#eq-logistic_model}
+
+To estimate $\boldsymbol{\beta}$, the IRLS update rule is
+
+$$
+\boldsymbol{\beta}^{(r+1)} = (\mathbf{X}^T \mathbf{W}^{(r)} \mathbf{X})^{-1} \mathbf{X}^T \mathbf{W}^{(r)} \mathbf{z}^{(r)}.
+$${#eq-irls_update}
+
+where
+
+$$\mathbf{z}^{(r)} = \mathbf{X} \boldsymbol{\beta}^{(r)} + (\mathbf{W}^{(r)})^{-1}(\mathbf{y} - \mathbf{p}^{(r)})$$
+
+## Questions
+
+
+The following code generates $n=100$ observations from a simple logistic regression model, then estimates the coefficients of the model with the `glm` function:
+
+```{r}
+set.seed(49823021)
+
+n <- 100 # number of observations
+beta <- c(-1, 2) # coefficients
+
+X <- cbind(1, runif(n)) # design matrix
+p <- as.numeric(exp(X %*% beta)/(1 + exp(X %*% beta)))
+y <- rbinom(n, 1, p) # observed responses
+
+glm(y ~ X[,2], family = binomial) |> coef()
+```
+
+Let our initial guess for $\boldsymbol{\beta}$ be 
+
+$$
+\boldsymbol{\beta}^{(0)} = \left( \log \left( \frac{\overline{Y}}{1 - \overline{Y}} \right), 0, 0, ..., 0 \right)^T
+$$
+
+1. Using the simulated data above, calculate $\boldsymbol{\beta}^{(0)}$ in R.
+
+
+2. Using $\boldsymbol{\beta}^{(0)}$ from question 1, calculate $\mathbf{p}^{(0)}$ and $\mathbf{W}^{(0)}$.
+
+
+3. Calculate $\mathbf{z}^{(0)}$.
+
+
+4. Perform one iteration of IRLS in R to calculate the updated estimate $\boldsymbol{\beta}^{(1)}$.
+
+
+5. Iterate several times. After a few iterations, $\boldsymbol{\beta}^{(r)}$ should be close to the values returned by the `glm` function!
+
+## If you finish early
+
+If you finish early: try writing an `R` function to fit logistic regression models with IRLS, for arbitrary datasets. 
+

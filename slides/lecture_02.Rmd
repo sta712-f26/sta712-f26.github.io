@@ -1,0 +1,83 @@
+---
+title: "Fitting logistic regression models"
+author: "Ciaran Evans"
+output: beamer_presentation
+---
+
+## Logistic regression model
+
+Let $(\mathbf{x}_1, Y_1),...,(\mathbf{x}_n, Y_n)$ be iid samples from the model
+
+$$
+\begin{aligned}
+Y_i | \mathbf{x}_i &\sim Bernoulli(p_i) \\
+\log \left( \dfrac{p_i}{1 - p_i} \right) &= \mathbf{x}_i^T \boldsymbol{\beta}
+\end{aligned}
+$$
+(where the distribution of $\mathbf{x}_i$ does not depend on $\boldsymbol{\beta}$).
+
+\bigskip
+
+How do we estimate the coefficients $\boldsymbol{\beta}$?
+
+\vspace{2cm}
+
+## Maximum likelihood for logistic regression
+
+Let $(\mathbf{x}_1, Y_1),...,(\mathbf{x}_n, Y_n)$ be iid samples from the model
+
+$$
+\begin{aligned}
+Y_i | \mathbf{x}_i &\sim Bernoulli(p_i) \\
+\log \left( \dfrac{p_i}{1 - p_i} \right) &= \mathbf{x}_i^T \boldsymbol{\beta}
+\end{aligned}
+$$
+where the distribution of $\mathbf{x}_i$ does not depend on $\boldsymbol{\beta}$.
+
+$$L(\boldsymbol{\beta}| \mathbf{y}, \mathbf{X}) \propto \prod \limits_{i=1}^n f(Y_i | \mathbf{x}_i, \boldsymbol{\beta}) = \hspace{5cm}$$
+
+\vspace{4cm}
+
+## Maximizing
+
+$$
+\ell(\boldsymbol{\beta} | \mathbf{y}, \mathbf{X}) \overset{\text{(up to a constant)}}{=}  \sum \limits_{i=1}^n \left\lbrace Y_i \mathbf{x}_i^T \boldsymbol{\beta} - \log(1 + e^{\mathbf{x}_i^T \boldsymbol{\beta}}) \right\rbrace
+$$
+
+Differentiating:
+
+$$U(\boldsymbol{\beta}) = \frac{\partial}{\partial \boldsymbol{\beta}} \ell(\boldsymbol{\beta} | \mathbf{y}, \mathbf{X}) = \hspace{1cm}$$
+\vspace{4cm}
+
+## Newton's method
+
+* Want $\boldsymbol{\beta}^*$ such that $U(\boldsymbol{\beta}^*) = \mathbf{0}$
+* Begin with initial estimate $\boldsymbol{\beta}^{(r)}$
+* Iterative updates:
+
+$$\boldsymbol{\beta}^{(r+1)} = \boldsymbol{\beta}^{(r)} - \left(\mathbf{H}(\boldsymbol{\beta}^{(r)}) \right)^{-1} U(\boldsymbol{\beta}^{(r)})$$
+
+$$U(\boldsymbol{\beta}) = \frac{\partial}{\partial \boldsymbol{\beta}} \ell(\boldsymbol{\beta} | \mathbf{y}, \mathbf{X}) = \mathbf{X}^T(\mathbf{y} - \mathbf{p})$$
+
+$$\mathbf{H}(\boldsymbol{\beta}) = \frac{\partial}{\partial \boldsymbol{\beta}} U(\boldsymbol{\beta}) = \frac{\partial}{\partial \boldsymbol{\beta}} \mathbf{X}^T(\mathbf{y} - \mathbf{p})$$
+
+\vspace{4cm}
+
+## Re-writing the update rule
+
+Newton's method update rule:
+
+$$
+\boldsymbol{\beta}^{(r+1)} = \boldsymbol{\beta}^{(r)} + (\mathbf{X}^T \mathbf{W}^{(r)} \mathbf{X})^{-1} \mathbf{X}^T(\mathbf{y} - \mathbf{p}^{(r)})
+$$
+
+\vspace{5cm}
+
+## Weighted least squares
+
+Suppose that we had
+$$\mathbf{y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\varepsilon}, \hspace{0.5cm} \boldsymbol{\varepsilon} \sim N(\mathbf{0}, \boldsymbol{\Sigma})$$
+\vspace{6cm}
+
+
+

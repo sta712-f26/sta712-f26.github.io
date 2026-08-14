@@ -13,7 +13,11 @@ August 24
   : [HW 1](https://sta712-f26.github.io/homework/hw_01.html)
 
 August 26
-: Model estimation
+: Model estimation, IRLS
+  : [Slides](https://sta712-f26.github.io/slides/lecture_02.pdf), [Activity](https://sta712-f26.github.io/class_activities/ca_02.html)
+  
+: Reading for next class
+  : Supplementary notes [Chapter 4](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/logistic_regression_inference.html)
 
 August 28
 : Inference
