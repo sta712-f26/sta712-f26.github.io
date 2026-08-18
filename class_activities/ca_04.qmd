@@ -1,0 +1,100 @@
+---
+title: "Parametric bootstrap and visual inference"
+format: html
+editor: source
+---
+
+## Fitted model
+
+Using the dengue data, we fit a model with WBC and create a randomized quantile residual plot:
+
+```{r, message=F, warning=F}
+# install.packages("statmod")
+
+library(tidyverse)
+library(glmhelpR)
+
+m_dengue <- glm(Dengue ~ WBC, data = dengue, family = binomial)
+
+data.frame(x = model.frame(m_dengue)$WBC, 
+           residuals = statmod::qresid(m_dengue)) |>
+  ggplot(aes(x = x, y = residuals)) +
+  geom_point(size=0.5, alpha=0.5) +
+  geom_smooth() +
+  theme_bw() +
+  labs(y = "Randomized quantile residuals", 
+       x = "WBC")
+```
+
+**Question:** Is the plot consistent with a correctly-specified model?
+
+## Parametric bootstrap
+
+**Step 1:** Generate new responses $Y_i^* \sim Bernoulli(\widehat{p}_i)$
+
+1. **Question:** Fill in the `R` code (the `...`) to create the new simulated responses:
+
+```{r, eval=F}
+y_star <- rbinom(n = length(m_dengue$y), 
+                 size = 1, 
+                 p = ...)
+```
+
+
+**Step 2:** *Re-fit* the logistic regression model with the data $(\mathbf{x}_1, Y_1^*),...,(\mathbf{x}_n, Y_n^*)$
+
+2. **Question:** Fill in the `R` code to re-fit the model with the simulated responses:
+
+```{r, eval=F}
+sim_data <- data.frame(WBC = model.frame(m_dengue)$WBC,
+                       Dengue = ...)
+
+m_sim <- glm(..., data = sim_data, family = binomial)
+```
+
+**Step 3:** Make a new quantile residual plot from the fitted model on the *simulated* data.
+
+3. **Question:** Fill in the `R` code to create a quantile residual plot from the simulated model:
+
+
+```{r, eval=F}
+data.frame(x = model.frame(m_dengue)$WBC, 
+           residuals = ...) |>
+  ggplot(aes(x = x, y = residuals)) +
+  geom_point(size=0.5, alpha=0.5) +
+  geom_smooth() +
+  theme_bw() +
+  labs(y = "Randomized quantile residuals", 
+       x = "WBC")
+```
+
+4. **Question:** How does new quantile residual plot compare to the original?
+
+## Visual inference
+
+We want to repeat the parametric bootstrap process multiple times, and compare the quantile residual plots for the original data and all the simulated datasets.
+
+This can be done efficiently with the `regressinator` package. The following code will produce a *line-up* of 20 different quantile residual plots, in a *random order*. One of the plots is for the original data, while the other 19 are from parametric bootstrap samples.
+
+```{r, eval=F}
+# install.packages("regressinator")
+library(regressinator)
+
+qresid_wbc <- function(f){
+  data.frame(resid = statmod::qresid(f),
+             x = model.frame(f)$WBC)
+}
+
+model_lineup(m_dengue, fn = qresid_wbc, nsim = 20) |> 
+  ggplot(aes(x = x, y = resid)) +
+  geom_point(size = 0.5) +
+  geom_smooth() +
+  facet_wrap(vars(.sample)) +
+  labs(x = "WBC", y = "Residual") +
+  theme_bw()
+```
+
+5. **Question:** Can you identify which plot corresponds to the *original* data? If so, this suggests that our model might not be correctly specified!
+
+
+
