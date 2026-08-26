@@ -21,4 +21,5 @@ August 26
 
 August 28
 : Inference
+  : [Slides](https://sta712-f26.github.io/slides/lecture_03.pdf), [Activity](https://sta712-f26.github.io/class_activities/ca_03.html)
 
