@@ -296,10 +296,6 @@ The *parametric bootstrap* generates data from the *fitted* model:
 \vspace{6cm}
 
 
-## Class activity
-
-Work on the class activity (available on the course website).
-
 ## Visual inference
 
 ```{r, fig.width=8, fig.height=6, echo=F}
