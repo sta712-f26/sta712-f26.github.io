@@ -58,7 +58,7 @@ m_sim <- glm(..., data = sim_data, family = binomial)
 
 
 ```{r, eval=F}
-data.frame(x = model.frame(m_dengue)$WBC, 
+data.frame(x = model.frame(m_sim)$WBC, 
            residuals = ...) |>
   ggplot(aes(x = x, y = residuals)) +
   geom_point(size=0.5, alpha=0.5) +
