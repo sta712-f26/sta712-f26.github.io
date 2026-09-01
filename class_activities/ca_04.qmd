@@ -4,6 +4,10 @@ format: html
 editor: source
 ---
 
+## `dengue` data
+
+The `dengue` data is available in the `glmhelpR` [package](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/#r-package). The link contains download instructions.
+
 ## Fitted model
 
 Using the dengue data, we fit a model with WBC and create a randomized quantile residual plot:

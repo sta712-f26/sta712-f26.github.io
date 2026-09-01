@@ -1,0 +1,77 @@
+---
+title: "Diagnostics for the shape assumption"
+format: html
+editor: source
+---
+
+## Empirical logit plots and quantile residual plots
+
+Empirical logit plots can be created with the `emp_logit_plot` function in the the `glmhelpR` [package](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/#r-package). The link contains download instructions.
+
+Here is an example with the `dengue` data:
+
+```{r, message=F, warning=F}
+library(tidyverse)
+library(glmhelpR)
+
+emp_logit_plot(dengue, Dengue ~ WBC, 
+               num_bins = 15, 
+               pt_size = 0.75)
+```
+
+Randomized quantile residuals can be created with the `qresid` function in the `statmod` package. Here is an example with the `dengue` data:
+
+```{r message=F, warning=F}
+m_dengue <- glm(Dengue ~ WBC, 
+                family = binomial, data = dengue)
+
+dengue |>
+  mutate(residuals = statmod::qresid(m_dengue)) |>
+  ggplot(aes(x = WBC, y = residuals)) +
+  geom_point(size=0.5) +
+  geom_smooth() +
+  theme_bw() +
+  labs(y = "Randomized quantile residuals",
+       title = "Logistic regression of Dengue on WBC")
+```
+
+## *Titanic* data
+
+On April 14, 1912, the RMS *Titanic* collided with an iceberg. Less than three hours later, early in the morning of April 15, the supposedly "unsinkable" ship sank in the Atlantic Ocean. Less than half the passengers and crew survived, due in part to a limited number of lifeboats and an approach to their use that was different to modern standards.
+
+The survivors, however, were not a random sample of the passengers and crew, as certain groups were more likely than others to be allocated a place in one of the lifeboats. In this activity, we will explore passenger characteristics that are associated with a higher probability of survival.
+
+**Data:** The data are available in the `titanic_train` dataset in the `titanic` package in `R`. (There is also a `titanic_test` dataset, which we will put aside for now). The `titanic_train` data contains information on 891 passengers, with variables including:
+
+* `PassengerId`: A unique ID number for each passenger.
+* `Survived`: An indicator for whether the passenger survived (1) or perished (0) during the disaster.
+* `Pclass`: Indicator for the class of the ticket held by this passengers; 1 = 1st class, 2 = 2nd class, 3 = 3rd class.
+* `Name`: The name of the passenger.
+* `Sex`: Binary indicator for the sex of the passenger (male or female).
+* `Age`: Age of the passenger in years; Age is fractional if the passenger was less than 1 year old.
+* `SibSp`: number of siblings/spouses the passenger had aboard the Titanic. Here, siblings are defined as brother, sister, stepbrother, and stepsister. Spouses are defined as husband and wife.
+* `Parch`: number of parents/children the passenger had aboard the Titanic. Here, parent is defined as mother/father and child is defined as daughter,son, stepdaughter or stepson. NOTE: Some children traveled only with a nanny, therefore `parch`=0 for them. There were no parents aboard for these children.
+* `Ticket`: The unique ticket number for each passenger.
+* `Fare`: How much the ticket cost in US dollars.
+* `Cabin`: The cabin number assigned to each passenger. Some cabins hold more than one passenger.
+* `Embarked`: Port where the passenger boarded the ship; C = Cherbourg, Q = Queenstown, S = Southampton.
+
+
+## Questions
+
+Answer the following questions with the `titanic_train` data.
+
+1. We could imagine that survival rates may differ by age -- on the one hand, children may be more likely to receive a lifeboat spot (and they take up less space, too), but on the other hand, children who do enter the water may be less able to withstand the cold. Create an empirical logit plot to examine the relationship between age and survival, and comment on what you see. Remember to experiment with different numbers of bins.
+
+2. In addition to age, several other passenger characteristics could relate to survival. Adding additional variables can also help when the shape assumption does not appear to be reasonable. Choose a couple categorical passenger characteristics, and remake your empirical logit plots from question 1, this time coloring and/or faceting the plots by your chosen categorical variables.
+
+3. We would like to fit a logistic regression model to predict the survival probability using passenger age and other characteristics. Based on your exploration in questions 1 and 2, propose a logistic regression model, and fit the model in `R`.
+
+4. Use quantile residual plots to check the shape assumption for your fitted logistic regression model. Plot the quantile residuals against age, and facet the plots by your categorical explanatory variables. Does the shape assumption appear satisfied? If the assumption is *not* satisfied, are there particular areas of the feature space for which the model assumptions are poor?
+
+5. If our logistic regression model looks something like
+$$\log \left( \dfrac{p_i}{1 - p_i} \right) = \beta_0 + \beta_1 \text{Age}_i + \cdots,$$
+then our model assumes that the effect of age is the *same* for every age; that is, a one-year increase in age is always associated with the same change in the odds of survival. Based on your exploration of the data, does this assumption seem reasonable? If not, how might you modify the model?
+
+
+

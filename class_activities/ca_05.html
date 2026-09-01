@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Parametric bootstrap and visual inference</title>
+<title>Diagnostics for the shape assumption</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -61,17 +61,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="ca_04_files/libs/clipboard/clipboard.min.js"></script>
-<script src="ca_04_files/libs/quarto-html/quarto.js" type="module"></script>
-<script src="ca_04_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="ca_04_files/libs/quarto-html/popper.min.js"></script>
-<script src="ca_04_files/libs/quarto-html/tippy.umd.min.js"></script>
-<script src="ca_04_files/libs/quarto-html/anchor.min.js"></script>
-<link href="ca_04_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="ca_04_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="ca_04_files/libs/bootstrap/bootstrap.min.js"></script>
-<link href="ca_04_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="ca_04_files/libs/bootstrap/bootstrap-138a6193a3bd40baf1e627da441a4734.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="ca_05_files/libs/clipboard/clipboard.min.js"></script>
+<script src="ca_05_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="ca_05_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="ca_05_files/libs/quarto-html/popper.min.js"></script>
+<script src="ca_05_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="ca_05_files/libs/quarto-html/anchor.min.js"></script>
+<link href="ca_05_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="ca_05_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="ca_05_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="ca_05_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="ca_05_files/libs/bootstrap/bootstrap-138a6193a3bd40baf1e627da441a4734.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -113,7 +113,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Parametric bootstrap and visual inference</h1>
+<h1 class="title">Diagnostics for the shape assumption</h1>
 </div>
 
 
@@ -130,101 +130,76 @@ window.Quarto = {
 </header>
 
 
-<section id="dengue-data" class="level2">
-<h2 class="anchored" data-anchor-id="dengue-data"><code>dengue</code> data</h2>
-<p>The <code>dengue</code> data is available in the <code>glmhelpR</code> <a href="https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/#r-package">package</a>. The link contains download instructions.</p>
-</section>
-<section id="fitted-model" class="level2">
-<h2 class="anchored" data-anchor-id="fitted-model">Fitted model</h2>
-<p>Using the dengue data, we fit a model with WBC and create a randomized quantile residual plot:</p>
+<section id="empirical-logit-plots-and-quantile-residual-plots" class="level2">
+<h2 class="anchored" data-anchor-id="empirical-logit-plots-and-quantile-residual-plots">Empirical logit plots and quantile residual plots</h2>
+<p>Empirical logit plots can be created with the <code>emp_logit_plot</code> function in the the <code>glmhelpR</code> <a href="https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/#r-package">package</a>. The link contains download instructions.</p>
+<p>Here is an example with the <code>dengue</code> data:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("statmod")</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmhelpR)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>m_dengue <span class="ot">&lt;-</span> <span class="fu">glm</span>(Dengue <span class="sc">~</span> WBC, <span class="at">data =</span> dengue, <span class="at">family =</span> binomial)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">x =</span> <span class="fu">model.frame</span>(m_dengue)<span class="sc">$</span>WBC, </span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>           <span class="at">residuals =</span> statmod<span class="sc">::</span><span class="fu">qresid</span>(m_dengue)) <span class="sc">|&gt;</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> residuals)) <span class="sc">+</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="fl">0.5</span>, <span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>() <span class="sc">+</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Randomized quantile residuals"</span>, </span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"WBC"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmhelpR)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">emp_logit_plot</span>(dengue, Dengue <span class="sc">~</span> WBC, </span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">num_bins =</span> <span class="dv">15</span>, </span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">pt_size =</span> <span class="fl">0.75</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="ca_04_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="ca_05_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-<p><strong>Question:</strong> Is the plot consistent with a correctly-specified model?</p>
+<p>Randomized quantile residuals can be created with the <code>qresid</code> function in the <code>statmod</code> package. Here is an example with the <code>dengue</code> data:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>m_dengue <span class="ot">&lt;-</span> <span class="fu">glm</span>(Dengue <span class="sc">~</span> WBC, </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">family =</span> binomial, <span class="at">data =</span> dengue)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>dengue <span class="sc">|&gt;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">residuals =</span> statmod<span class="sc">::</span><span class="fu">qresid</span>(m_dengue)) <span class="sc">|&gt;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> WBC, <span class="at">y =</span> residuals)) <span class="sc">+</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>() <span class="sc">+</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Randomized quantile residuals"</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Logistic regression of Dengue on WBC"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="ca_05_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
-<section id="parametric-bootstrap" class="level2">
-<h2 class="anchored" data-anchor-id="parametric-bootstrap">Parametric bootstrap</h2>
-<p><strong>Step 1:</strong> Generate new responses <span class="math inline">\(Y_i^* \sim Bernoulli(\widehat{p}_i)\)</span></p>
+<section id="titanic-data" class="level2">
+<h2 class="anchored" data-anchor-id="titanic-data"><em>Titanic</em> data</h2>
+<p>On April 14, 1912, the RMS <em>Titanic</em> collided with an iceberg. Less than three hours later, early in the morning of April 15, the supposedly “unsinkable” ship sank in the Atlantic Ocean. Less than half the passengers and crew survived, due in part to a limited number of lifeboats and an approach to their use that was different to modern standards.</p>
+<p>The survivors, however, were not a random sample of the passengers and crew, as certain groups were more likely than others to be allocated a place in one of the lifeboats. In this activity, we will explore passenger characteristics that are associated with a higher probability of survival.</p>
+<p><strong>Data:</strong> The data are available in the <code>titanic_train</code> dataset in the <code>titanic</code> package in <code>R</code>. (There is also a <code>titanic_test</code> dataset, which we will put aside for now). The <code>titanic_train</code> data contains information on 891 passengers, with variables including:</p>
+<ul>
+<li><code>PassengerId</code>: A unique ID number for each passenger.</li>
+<li><code>Survived</code>: An indicator for whether the passenger survived (1) or perished (0) during the disaster.</li>
+<li><code>Pclass</code>: Indicator for the class of the ticket held by this passengers; 1 = 1st class, 2 = 2nd class, 3 = 3rd class.</li>
+<li><code>Name</code>: The name of the passenger.</li>
+<li><code>Sex</code>: Binary indicator for the sex of the passenger (male or female).</li>
+<li><code>Age</code>: Age of the passenger in years; Age is fractional if the passenger was less than 1 year old.</li>
+<li><code>SibSp</code>: number of siblings/spouses the passenger had aboard the Titanic. Here, siblings are defined as brother, sister, stepbrother, and stepsister. Spouses are defined as husband and wife.</li>
+<li><code>Parch</code>: number of parents/children the passenger had aboard the Titanic. Here, parent is defined as mother/father and child is defined as daughter,son, stepdaughter or stepson. NOTE: Some children traveled only with a nanny, therefore <code>parch</code>=0 for them. There were no parents aboard for these children.</li>
+<li><code>Ticket</code>: The unique ticket number for each passenger.</li>
+<li><code>Fare</code>: How much the ticket cost in US dollars.</li>
+<li><code>Cabin</code>: The cabin number assigned to each passenger. Some cabins hold more than one passenger.</li>
+<li><code>Embarked</code>: Port where the passenger boarded the ship; C = Cherbourg, Q = Queenstown, S = Southampton.</li>
+</ul>
+</section>
+<section id="questions" class="level2">
+<h2 class="anchored" data-anchor-id="questions">Questions</h2>
+<p>Answer the following questions with the <code>titanic_train</code> data.</p>
 <ol type="1">
-<li><strong>Question:</strong> Fill in the <code>R</code> code (the <code>...</code>) to create the new simulated responses:</li>
-</ol>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>y_star <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="at">n =</span> <span class="fu">length</span>(m_dengue<span class="sc">$</span>y), </span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">size =</span> <span class="dv">1</span>, </span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">p =</span> ...)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p><strong>Step 2:</strong> <em>Re-fit</em> the logistic regression model with the data <span class="math inline">\((\mathbf{x}_1, Y_1^*),...,(\mathbf{x}_n, Y_n^*)\)</span></p>
-<ol start="2" type="1">
-<li><strong>Question:</strong> Fill in the <code>R</code> code to re-fit the model with the simulated responses:</li>
-</ol>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>sim_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">WBC =</span> <span class="fu">model.frame</span>(m_dengue)<span class="sc">$</span>WBC,</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">Dengue =</span> ...)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>m_sim <span class="ot">&lt;-</span> <span class="fu">glm</span>(..., <span class="at">data =</span> sim_data, <span class="at">family =</span> binomial)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p><strong>Step 3:</strong> Make a new quantile residual plot from the fitted model on the <em>simulated</em> data.</p>
-<ol start="3" type="1">
-<li><strong>Question:</strong> Fill in the <code>R</code> code to create a quantile residual plot from the simulated model:</li>
-</ol>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">x =</span> <span class="fu">model.frame</span>(m_sim)<span class="sc">$</span>WBC, </span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">residuals =</span> ...) <span class="sc">|&gt;</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> residuals)) <span class="sc">+</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="fl">0.5</span>, <span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>() <span class="sc">+</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Randomized quantile residuals"</span>, </span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"WBC"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<ol start="4" type="1">
-<li><strong>Question:</strong> How does new quantile residual plot compare to the original?</li>
-</ol>
-</section>
-<section id="visual-inference" class="level2">
-<h2 class="anchored" data-anchor-id="visual-inference">Visual inference</h2>
-<p>We want to repeat the parametric bootstrap process multiple times, and compare the quantile residual plots for the original data and all the simulated datasets.</p>
-<p>This can be done efficiently with the <code>regressinator</code> package. The following code will produce a <em>line-up</em> of 20 different quantile residual plots, in a <em>random order</em>. One of the plots is for the original data, while the other 19 are from parametric bootstrap samples.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("regressinator")</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(regressinator)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>qresid_wbc <span class="ot">&lt;-</span> <span class="cf">function</span>(f){</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">resid =</span> statmod<span class="sc">::</span><span class="fu">qresid</span>(f),</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">x =</span> <span class="fu">model.frame</span>(f)<span class="sc">$</span>WBC)</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">model_lineup</span>(m_dengue, <span class="at">fn =</span> qresid_wbc, <span class="at">nsim =</span> <span class="dv">20</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> resid)) <span class="sc">+</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>() <span class="sc">+</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(.sample)) <span class="sc">+</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"WBC"</span>, <span class="at">y =</span> <span class="st">"Residual"</span>) <span class="sc">+</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<ol start="5" type="1">
-<li><strong>Question:</strong> Can you identify which plot corresponds to the <em>original</em> data? If so, this suggests that our model might not be correctly specified!</li>
+<li><p>We could imagine that survival rates may differ by age – on the one hand, children may be more likely to receive a lifeboat spot (and they take up less space, too), but on the other hand, children who do enter the water may be less able to withstand the cold. Create an empirical logit plot to examine the relationship between age and survival, and comment on what you see. Remember to experiment with different numbers of bins.</p></li>
+<li><p>In addition to age, several other passenger characteristics could relate to survival. Adding additional variables can also help when the shape assumption does not appear to be reasonable. Choose a couple categorical passenger characteristics, and remake your empirical logit plots from question 1, this time coloring and/or faceting the plots by your chosen categorical variables.</p></li>
+<li><p>We would like to fit a logistic regression model to predict the survival probability using passenger age and other characteristics. Based on your exploration in questions 1 and 2, propose a logistic regression model, and fit the model in <code>R</code>.</p></li>
+<li><p>Use quantile residual plots to check the shape assumption for your fitted logistic regression model. Plot the quantile residuals against age, and facet the plots by your categorical explanatory variables. Does the shape assumption appear satisfied? If the assumption is <em>not</em> satisfied, are there particular areas of the feature space for which the model assumptions are poor?</p></li>
+<li><p>If our logistic regression model looks something like <span class="math display">\[\log \left( \dfrac{p_i}{1 - p_i} \right) = \beta_0 + \beta_1 \text{Age}_i + \cdots,\]</span> then our model assumes that the effect of age is the <em>same</em> for every age; that is, a one-year increase in age is always associated with the same change in the odds of survival. Based on your exploration of the data, does this assumption seem reasonable? If not, how might you modify the model?</p></li>
 </ol>
 </section>
 
