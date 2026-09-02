@@ -1,0 +1,31 @@
+---
+title: "Homework 2"
+format: html
+---
+
+**Due:** Friday, September 11, 11:59pm on Canvas
+
+**Instructions:** For mathematical work, you may choose to either hand-write your work and submit a PDF scan, or type your work using LaTeX and submit the resulting PDF. For computational work, include all code and R output necessary to answer the questions, and submit as an html or pdf on Canvas.
+
+See the course website for a [homework template](https://sta712-f26.github.io/homework/hw_template.tex) file and [instructions](https://sta712-f26.github.io/homework/latex_instructions/) on getting started with LaTeX and Overleaf.
+
+**Homework grading and resubmissions:** Homework will be graded on completeness, correctness, and effort. If you make an honest, good-faith effort attempt at a question, but your submitted work has some important errors or is missing a component I think is necessary, I may ask you to *resubmit* your work after receiving feedback. Your grade for that question would then be based on your resubmission.
+
+**R package:** Some useful functions for this assignment (e.g. the `emp_logit_plot` function) are available in the `glmhelpR` [package](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/#r-package). The link contains download instructions. 
+
+**Collaborators and AI statement:** At the top of your assignment, list any collaborators (Dr. Evans does not count -- he is a resource, not a collaborator), and provide an AI statement describing your use of AI to complete the questions. If you did not use AI in any way, let me know that too. If you did use AI, provide: the model used, the HW questions on which you used AI, and a summary of the ways in which AI provided assistance. As described in the syllabus, AI use is permitted on homework assignments, but submissions without a complete AI statement may not receive full credit.
+
+## Questions
+
+1. [Model diagnostics?](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/logistic_regression_exercises.html#exr-logistic_8) (this is the question on giving your friend feedback on their diagnostic plot). **Motivation:** Understanding what plots do and don't tell us.
+
+2. [Properties of quantile residuals](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/logistic_regression_exercises.html#exr-logistic_10) (this is the question on proving randomized quantile residual properties). **Motivation:** Verifying mathematically that randomized quantile residuals have the properties we want!
+
+## Data analysis
+
+Complete the [Data analysis: infections and core temperature during surgery](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/logistic_regression_exercises.html#sec-analysis_core_temp) assignment. This involves answering *all* questions in that section.
+
+See [Section 5.1](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/logistic_regression_assessment.html#sec-assumptions_diagnostics) in the supplementary notes for details on empirical logit plots, quantile residual plots, Cook's distance, and VIFs.
+
+
+
