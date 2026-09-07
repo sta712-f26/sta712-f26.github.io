@@ -15,7 +15,7 @@ September 2
 
 September 4
 : Assessing the shape assumption
-  : [Activity](https://sta712-f26.github.io/class_activities/ca_05.html)
+  : [Activity](https://sta712-f26.github.io/class_activities/ca_05.html), [Activity solutions](https://sta712-f26.github.io/class_activities/ca_05_solutions.html)
 
 : Reading for next class
   : Supplementary notes [Sections 5.1.4 -- 5.1.5](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/logistic_regression_assessment.html#outliers-and-influential-points)
