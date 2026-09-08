@@ -1,0 +1,82 @@
+---
+title: "Warmup: College scorecard data"
+format: pdf
+editor: source
+---
+
+\vspace{-1.5cm}
+
+
+
+## Data
+
+The College Scorecard, compiled by the US Department of Education, is meant to be a tool for college applicants to compare different institutions. 
+
+The dataset provided for this project contains columns including:
+
+* `INSTNM`: school name
+* `CONTROL`: whether the school is public or private
+* `SATVRMID`: midpoint of SAT critical reading scores of students attending the school
+* `SATMTMID`: midpoint of SAT math scores
+* `SATWRMID`: midpoint of SAT writing scores
+* `ACTCMMID`: midpoint of the ACT cumulative scores
+* `ACTENMID`: midpoint of ACT English scores
+* `ACTMTMID`: midpoint of ACT math scores
+* `ACTWRMID`: midpoint of ACT writing scores
+* `UGDS`: number of undergraduate students at the school
+* `NPT4`: average cost to attend the school
+* `RPY_3YR_70`: whether the proportion of students actively repaying their loans 3 years after graduation is > 70% (1 = yes, 0 = no)
+
+
+## Questions
+
+1. We are interested in predicting whether at least 70% of graduates are actively repaying loans 3 years after graduation. Before fitting any models, we perform some exploratory data analysis, producing the plots below. Do you see anything concerning in the EDA that should be further explored or addressed before fitting a model?
+
+
+
+```{r, include=F}
+library(tidyverse)
+library(GGally)
+scorecard <- read_csv("https://sta112-s26.github.io/projects/scorecard.csv")
+```
+
+```{r, echo=F, fig.width=5, fig.height=3}
+scorecard |>
+  mutate(repayment = ifelse(RPY_3YR_70 == 0, "no", "yes")) |>
+  ggplot(aes(x = repayment,
+             y = UGDS)) +
+  geom_boxplot() +
+  labs(x = "At least 70% of students repaying loans?",
+       y = "Number of undergraduate students") +
+  facet_wrap(~CONTROL) +
+  theme_bw()
+```
+
+```{r, echo = F, fig.width=5, fig.height=3}
+scorecard |>
+  mutate(repayment = ifelse(RPY_3YR_70 == 0, "no", "yes")) |>
+  ggplot(aes(x = repayment,
+             y = NPT4)) +
+  geom_boxplot() +
+  labs(x = "At least 70% of students repaying loans?",
+       y = "Annual cost to attend school (USD)") +
+  facet_wrap(~CONTROL) +
+  theme_bw()
+```
+
+```{r, echo=F, fig.width=5, fig.height=5}
+scorecard %>%
+  ggpairs(columns = 4:10,
+          upper = list(continuous = "points"),
+          lower = list(continuous = GGally::wrap(ggally_cor, stars = F))) +
+  theme_classic() +
+  theme(text = element_text(size = 10))
+```
+
+
+
+
+
+
+
+

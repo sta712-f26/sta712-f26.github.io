@@ -1,0 +1,34 @@
+---
+title: "Predicting ulcerative colitis disease status"
+format: pdf
+editor: source
+---
+
+\vspace{-1.5cm}
+
+# Background
+
+Ulcerative colitis (UC) is an inflammatory bowel disorder that causes inflammation and sores in the colon. While UC cannot be cured, the goal of UC treatment is to promote mucosal healing in the lining of the colon, leading to remission of active symptoms.
+
+Monitoring of UC disease progression and severity of symptoms is often done with endoscopic procedures (colonoscopies). However, such procedures are invasive and time-consuming, and require advanced prep on the part of patients. 
+
+To help with routine monitoring, doctors may instead measure a patient's levels of *calprotectin*, a protein produced by immune cells during inflammation. Higher levels of calprotectin indicate greater degrees of inflammation.
+
+Below is the results of a study in 62 ulcerative colitis patients ("Prediction of endoscopic disease activity in ulcerative colitis by two different assays for fecal calprotectin", Kristensen et al., 2015). They propose a cutoff level of 61 mcg/g to flag patients with active disease. The table shows the number of patients in each group.
+
+| | No active disease | Active disease |
+| --- | :---: | :---: |
+| FC < 61 mcg/g | 15 | 7 |
+| FC $\geq$ 61 mcg/g | 3 | 37 |
+
+## Questions
+
+Use the table to estimate the following quantities:
+
+* $P(FC \geq 61 | \text{active disease})$ (*sensitivity*)
+* $P(FC < 61 | \text{no active disease})$ (*specificity*)
+* $P(\text{active disease} | FC \geq 61)$ (*positive predictive value*)
+* $P(\text{no active disease} | FC < 61)$ (*negative predictive value*)
+* $P(\text{correct prediction})$ (*accuracy*)
+
+

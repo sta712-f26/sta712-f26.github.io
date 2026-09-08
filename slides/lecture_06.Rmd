@@ -1,0 +1,206 @@
+---
+title: "Model diagnostics"
+author: "Ciaran Evans"
+output: beamer_presentation
+---
+
+## Warmup 
+
+Work on the warmup activity (handout), then we will discuss as a class.
+
+\vspace{4cm}
+
+## Warmup
+
+```{r, include=F}
+library(tidyverse)
+library(GGally)
+library(patchwork)
+scorecard <- read_csv("https://sta112-s26.github.io/projects/scorecard.csv")
+```
+
+```{r, echo=F, fig.width=4, fig.height=3.5}
+p1 <- scorecard |>
+  mutate(repayment = ifelse(RPY_3YR_70 == 0, "no", "yes")) |>
+  ggplot(aes(x = repayment,
+             y = UGDS)) +
+  geom_boxplot(size = 0.4, outlier.size = 0.5) +
+  labs(x = "At least 70% of students repaying loans?",
+       y = "Number of undergrads") +
+  facet_wrap(~CONTROL) +
+  theme_bw() +
+  theme(text = element_text(size = 5))
+
+p2 <- scorecard |>
+  mutate(repayment = ifelse(RPY_3YR_70 == 0, "no", "yes")) |>
+  ggplot(aes(x = repayment,
+             y = NPT4)) +
+  geom_boxplot(size = 0.4, outlier.size = 0.5) +
+  labs(x = "At least 70% of students repaying loans?",
+       y = "Annual cost (USD)") +
+  facet_wrap(~CONTROL) +
+  theme_bw() +
+  theme(text = element_text(size = 5))
+
+p1/p2
+```
+
+
+## Warmup
+
+```{r, echo=F, fig.width=3.5, fig.height=3.5}
+scorecard %>%
+  ggpairs(columns = 4:10,
+          upper = list(continuous = wrap("points", size = 0.5)),
+          lower = list(continuous = GGally::wrap(ggally_cor, stars = F))) +
+  theme_classic() +
+  theme(text = element_text(size = 5))
+```
+
+## Outliers and multicollinearity
+
+**Outliers:** Observations which don't follow the same trend as the rest of the data.
+
+\vspace{2cm}
+
+**Multicollinearity:** (linear) relationship between 2 or more explanatory variables.
+
+\vspace{2cm}
+
+Both can cause problems for estimating parameters in a regression model.
+
+## Example: outliers
+
+```{r, echo=F, warning=F, fig.width=5, fig.height=3.5}
+library(robustbase)
+foodstamp |>
+  ggplot(aes(x = ifelse(participation == 0, "no", "yes"), 
+             y = log(income + 1))) +
+  geom_boxplot() +
+  theme_bw() +
+  labs(x = "Participation in food stamp program", 
+       y = "log(Income + 1)")
+```
+
+## Example: outliers
+
+With potential outlier:
+
+```{r}
+#| echo: FALSE
+m1 <- glm(participation ~ log(income + 1), family = binomial,
+          data = foodstamp)
+
+summary(m1)$coefficients |>
+  round(digits = 3) |>
+  knitr::kable()
+```
+
+Without potential outlier:
+
+```{r}
+#| echo: FALSE
+m2 <- glm(participation ~ log(income + 1), family = binomial,
+          data = foodstamp[-5,])
+
+summary(m2)$coefficients |>
+  round(digits = 3) |>
+  knitr::kable()
+```
+
+## Cook's distance
+
+## Handling outliers
+
+Should I just remove any unusual observations in the data?
+
+\vspace{4cm}
+
+## Example: multicollinearity
+
+```{r, echo=F, fig.width=3.5, fig.height=3.5}
+scorecard %>%
+  ggpairs(columns = 4:10,
+          upper = list(continuous = wrap("points", size = 0.5)),
+          lower = list(continuous = GGally::wrap(ggally_cor, stars = F))) +
+  theme_classic() +
+  theme(text = element_text(size = 5))
+```
+
+## Example: multicollinearity
+
+With all the test score variables:
+
+```{r}
+#| echo: FALSE
+
+m1 <- glm(RPY_3YR_70 ~ SATVRMID + SATMTMID + SATWRMID +
+            ACTCMMID + ACTENMID + ACTMTMID + ACTWRMID,
+          family = binomial, data = scorecard)
+
+summary(m1)$coefficients |>
+  round(digits = 3) |>
+  knitr::kable()
+```
+
+With just one test score variable:
+
+```{r}
+#| echo: FALSE
+
+m1 <- glm(RPY_3YR_70 ~ SATVRMID,
+          family = binomial, data = scorecard)
+
+summary(m1)$coefficients |>
+  round(digits = 3) |>
+  knitr::kable()
+```
+
+## Variance inflation factors
+
+## Handling multicollinearity
+
+```{r, include=F}
+scorecard <- scorecard |>
+  select(-c(INSTNM, STABBR, RPY_3YR_RT_SUPP, MD_EARN_WNE_P10,
+            GRAD_DEBT_MDN_SUPP))
+```
+
+
+```{r}
+m1 <- glm(RPY_3YR_70 ~ .,
+          family = binomial, data = scorecard)
+
+car::vif(m1)
+```
+
+What should we do when there is high multicollinearity?
+
+\vspace{2cm}
+
+
+
+## Summary
+
+* Outliers:
+    * Change our coefficient estimates
+    * Identify with EDA before model fitting
+    * Also check with Cook's distance after model fitting
+    * Clear errors, or points from a different population of interest, can be removed. Otherwise, report results with and without outliers
+    
+\vspace{0.5cm}
+
+* Multicollinearity:
+    * Makes it hard to interpret meaning of a coefficient (how do we hold other variables constant??)
+    * Increases variability of estimated coefficients
+    * Identify with pairs plots, correlation matrices before model fitting
+    * Also check with VIFs after model fitting
+    * Options: use a subset of the explanatory variables; combine several explanatory variables (average, PCA, etc.); ignore (if only predicting)
+
+
+
+
+
+
+
+
