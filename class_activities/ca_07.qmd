@@ -1,0 +1,59 @@
+---
+title: "Confusion matrices"
+format: pdf
+editor: source
+---
+
+\vspace{-1.5cm}
+
+Below are three confusion matrices for predictions with the dengue data. 
+
+Using a threshold of $c = 0.33$:
+
+```{r, echo=F, message=F, warning=F}
+library(glmhelpR)
+m_dengue <- glm(Dengue ~ Age + WBC + PLT, 
+                family = binomial, data = dengue)
+table(predicted = ifelse(m_dengue$fitted.values > 0.33,
+                         "positive", "negative"),
+      actual = ifelse(dengue$Dengue == 1, "positive", "negative")) |>
+  knitr::kable() |>
+  kableExtra::add_header_above(c("Predicted Status" = 1, "Actual Status" = 2)) |>
+  kableExtra::kable_styling(bootstrap_options = c("bordered", "hover"))
+```
+
+Using a threshold of $c = 0.2$:
+
+```{r, echo=F}
+m_dengue <- glm(Dengue ~ Age + WBC + PLT, 
+                family = binomial, data = dengue)
+
+table(predicted = ifelse(m_dengue$fitted.values > 0.2,
+                         "positive", "negative"),
+      actual = ifelse(dengue$Dengue == 1, "positive", "negative")) |>
+  knitr::kable() |>
+  kableExtra::add_header_above(c("Predicted Status" = 1, 
+                                 "Actual Status" = 2)) |>
+  kableExtra::kable_styling(bootstrap_options = c("bordered", "hover"))
+```
+
+Using a threshold of $c = 0.5$:
+
+```{r, echo=F}
+m_dengue <- glm(Dengue ~ Age + WBC + PLT, 
+                family = binomial, data = dengue)
+
+table(predicted = ifelse(m_dengue$fitted.values > 0.5,
+                         "positive", "negative"),
+      actual = ifelse(dengue$Dengue == 1, "positive", "negative")) |>
+  knitr::kable() |>
+  kableExtra::add_header_above(c("Predicted Status" = 1, 
+                                 "Actual Status" = 2)) |>
+  kableExtra::kable_styling(bootstrap_options = c("bordered", "hover"))
+```
+
+**Questions:**
+
+1. Which threshold would you choose?
+2. How do accuracy, sensitivity, and specificity change when you change the threshold?
+

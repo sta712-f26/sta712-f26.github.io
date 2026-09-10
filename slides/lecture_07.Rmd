@@ -1,0 +1,130 @@
+---
+title: "Assessing predictions"
+author: "Ciaran Evans"
+output: beamer_presentation
+---
+
+## Model assessment
+
+*Essentially, all models are wrong, but some are useful.* (Box and Draper, 1987)
+
+![](three_realms_vds.png)
+
+**Today:** Is our good at *predicting* the response?
+
+\vspace{0.1cm}
+
+\begin{tiny}
+(Image from \textit{Veridical Data Science}, Yu and Barter)
+\end{tiny}
+
+## Warmup
+
+Work on the warmup activity (handout).
+
+\vspace{3cm}
+
+## Types of prediction
+
+**Regression:**
+
+\vspace{2cm}
+
+**Classification:**
+
+\vspace{2cm}
+
+General principle: predictions from regression can be converted into classification, but not the other way around!
+
+## Assessing predicted probabilities
+
+$$
+\begin{aligned}
+Y_i | \mathbf{x}_i &\sim Bernoulli(p_i) \\
+\log \left( \dfrac{\widehat{p}_i}{1 - \widehat{p}_i} \right) &= \mathbf{x}_i^T \widehat{\boldsymbol{\beta}}
+\end{aligned}
+$$
+
+**Question:** How do we tell if $\widehat{p}_i$ is a "good" estimator of $p_i$?
+
+\vspace{5cm}
+
+## Assessing predicted probabilities
+
+```{r echo=F, message=F, warning=F, fig.width=6, fig.height=3}
+library(tidyverse)
+library(glmhelpR)
+library(patchwork)
+
+m_dengue <- glm(Dengue ~ WBC, data = dengue, family = binomial)
+m_dengue2 <- glm(Dengue ~ log(WBC), data = dengue, family = binomial)
+
+p1 <- dengue |>
+  mutate(residuals = statmod::qresid(m_dengue)) |>
+  ggplot(aes(x = WBC, y = residuals)) +
+  geom_point(size=0.5) +
+  geom_smooth() +
+  theme_bw() +
+  labs(y = "Randomized quantile residuals",
+       title = "Logistic regression of \n Dengue on WBC")
+
+p2 <- dengue |>
+  mutate(residuals = statmod::qresid(m_dengue2)) |>
+  ggplot(aes(x = log(WBC), y = residuals)) +
+  geom_point(size=0.5) +
+  geom_smooth() +
+  theme_bw() +
+  labs(y = "Randomized quantile residuals",
+       title = "Logistic regression of \n Dengue on log(WBC)")
+p1 + p2
+```
+
+\vspace{1.5cm}
+
+**Question:** Does using WBC vs. log(WBC) make a difference for the quality of our predictions?
+
+
+
+## Calibration plot
+
+```{r echo=F, message=F, warning=F, fig.width=6, fig.height=4.5}
+p3 <- calibration_plot(m_dengue$fitted.values, m_dengue$y) +
+  labs(title = "Logistic regression with WBC") +
+  theme(text = element_text(size = 10))
+p4 <- calibration_plot(m_dengue2$fitted.values,
+                       m_dengue2$y) +
+  labs(title = "Logistic regression with log(WBC)") +
+  theme(text = element_text(size = 10))
+
+(p1 + p2)/(p3 + p4)
+```
+
+## Assessing binary predictions
+
+**Question:** Logistic regression gives me $\widehat{p}_i$. How do I turn $\widehat{p}_i \in (0, 1)$ into $\widehat{Y}_i \in \{0, 1\}$?
+
+\vspace{4cm}
+
+## Confusion matrix
+
+|  | $Y = 0$ | $Y = 1$ |
+| --- | --- | --- |
+| $\widehat{Y} = 0$ | True Negatives (TN)  | False Negatives (FN) |
+| $\widehat{Y} = 1$ | False Positives (FP) | True Positives (TP)  |
+
+\vspace{4cm}
+
+## Confusion matrix
+
+| | No active disease | Active disease |
+| --- | :---: | :---: |
+| FC < 61 mcg/g | 15 | 7 |
+| FC $\geq$ 61 mcg/g | 3 | 37 |
+
+\vspace{4cm}
+
+
+
+
+
+
