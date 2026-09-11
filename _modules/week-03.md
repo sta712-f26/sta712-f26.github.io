@@ -17,3 +17,7 @@ September 11
   : Supplementary notes [Section 5.2](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/logistic_regression_assessment.html#sec-prediction_assessment)
 
 : **HW 3 released**{: .label .label-yellow }
+  : [HW 3](https://sta712-f26.github.io/homework/hw_03.html)
+  
+: **HW 4 released**{: .label .label-yellow }
+  : [HW 4](https://sta712-f26.github.io/homework/hw_04.html)
