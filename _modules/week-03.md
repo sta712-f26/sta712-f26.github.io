@@ -12,5 +12,8 @@ September 9
 September 11
 : Assessing predictions
   : [Slides](https://sta712-f26.github.io/slides/lecture_07.pdf), [Activity 1](https://sta712-f26.github.io/class_activities/ca_06_2.pdf), [Activity 2](https://sta712-f26.github.io/class_activities/ca_07.pdf)
+  
+: Reading for next class
+  : Supplementary notes [Section 5.2](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/logistic_regression_assessment.html#sec-prediction_assessment)
 
 : **HW 3 released**{: .label .label-yellow }
