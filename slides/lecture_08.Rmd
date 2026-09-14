@@ -1,0 +1,202 @@
+---
+title: "Assessing predictions"
+author: "Ciaran Evans"
+output: beamer_presentation
+---
+
+## Last time: assessing binary predictions
+
+**Thresholding:** $\widehat{Y}_i = \begin{cases} 1 & \widehat{p}_i \geq c \\ 0 & \widehat{p}_i < c \end{cases}$
+
+**Confusion matrix:**
+
+|  | $Y = 0$ | $Y = 1$ |
+| --- | --- | --- |
+| $\widehat{Y} = 0$ | True Negatives (TN)  | False Negatives (FN) |
+| $\widehat{Y} = 1$ | False Positives (FP) | True Positives (TP)  |
+
+\vspace{2cm}
+
+## Last time
+
+
+```{r, echo=F, message=F, warning=F}
+library(glmhelpR)
+m_dengue <- glm(Dengue ~ Age + WBC + PLT, 
+                family = binomial, data = dengue)
+table(predicted = ifelse(m_dengue$fitted.values > 0.33,
+                         "positive", "negative"),
+      actual = ifelse(dengue$Dengue == 1, "positive", "negative")) |>
+  knitr::kable() |>
+  kableExtra::add_header_above(c("Predicted Status" = 1, "Actual Status" = 2)) |>
+  kableExtra::kable_styling(bootstrap_options = c("bordered", "hover"))
+```
+
+
+```{r, echo=F}
+m_dengue <- glm(Dengue ~ Age + WBC + PLT, 
+                family = binomial, data = dengue)
+
+table(predicted = ifelse(m_dengue$fitted.values > 0.2,
+                         "positive", "negative"),
+      actual = ifelse(dengue$Dengue == 1, "positive", "negative")) |>
+  knitr::kable() |>
+  kableExtra::add_header_above(c("Predicted Status" = 1, 
+                                 "Actual Status" = 2)) |>
+  kableExtra::kable_styling(bootstrap_options = c("bordered", "hover"))
+```
+
+```{r, echo=F}
+m_dengue <- glm(Dengue ~ Age + WBC + PLT, 
+                family = binomial, data = dengue)
+
+table(predicted = ifelse(m_dengue$fitted.values > 0.5,
+                         "positive", "negative"),
+      actual = ifelse(dengue$Dengue == 1, "positive", "negative")) |>
+  knitr::kable() |>
+  kableExtra::add_header_above(c("Predicted Status" = 1, 
+                                 "Actual Status" = 2)) |>
+  kableExtra::kable_styling(bootstrap_options = c("bordered", "hover"))
+```
+
+
+## Changing thresholds
+
+## ROC Curves
+
+```{r, echo=F, message=F, warning=F, fig.width=6, fig.height=3}
+library(tidyverse)
+m_dengue <- glm(Dengue ~ Age + WBC + PLT, 
+                data = dengue, family = binomial)
+
+roc_obj <- pROC::roc(m_dengue$y, 
+                     m_dengue$fitted.values)
+
+m_dengue_small <- glm(Dengue ~ Age, 
+                data = dengue, family = binomial)
+
+roc_obj_small <- pROC::roc(m_dengue_small$y, 
+                           m_dengue_small$fitted.values)
+
+data.frame(tpr = c(roc_obj$sensitivities, 
+                   roc_obj_small$sensitivities), 
+           fpr = c(1 - roc_obj$specificities,
+                   1 - roc_obj_small$specificities),
+           model = c(rep("Age, WBC, PLT", 
+                         length(roc_obj$sensitivities)),
+                     rep("Age only", 
+                         length(roc_obj_small$sensitivities)))) |>
+  ggplot(aes(x = fpr, y = tpr, color = model)) +
+  geom_line() +
+  geom_abline(slope = 1, intercept = 0, lty = 2) +
+  theme_bw() +
+  labs(x = "False Positive Rate (1 - Specificity)", 
+       y = "True Positive Rate (Sensitivity)")
+```
+
+\vspace{2cm}
+
+## Another example: loan defaults
+
+Data on 948 real estate loans from CA, which were guaranteed by the US Small Business Administration (SBA). Variables include:
+
+* `Default`: whether the business defaulted on the loan (1 = yes, 0 = no)
+* `UrbanRural`: 1 if business is in urban area, 2 if business is in rural area, 0 if unknown
+* `NewExist`: 1 if business already existed, 2 if business is new, 0 if unknown
+* `Term`: Length of the loan term (months)
+* `NoEmp`: Number of employees of the business before receiving the loan
+* `GrAppv`: Gross amount of loan approved by the bank, in dollars
+* `SBA_Appv`: Amount of the loan guaranteed by the SBA, in dollars
+* `DisbursementGross`: The amount of money disbursed (loaned), in dollars
+
+## Another example: loan default
+
+Fit a model on the 948 loans:
+
+```{r, echo=F}
+m_sba <- glm(Default ~ log(GrAppv) + log(NoEmp + 1) + 
+                Term, 
+              data = sba_ca_train, family = binomial)
+
+summary(m_sba)$coefficients |>
+  round(digits = 3) |>
+  knitr::kable()
+```
+
+```{r, echo=F}
+table(predicted = ifelse(m_sba$fitted.values > 0.5,
+                         "yes", "no"),
+      actual = ifelse(m_sba$y == 1, "yes", "no")) |>
+  knitr::kable() |>
+  kableExtra::add_header_above(c("Default? (predicted)" = 1, 
+                                 "Default? (actual)" = 2)) |>
+  kableExtra::kable_styling(bootstrap_options = c("bordered", 
+                                                  "hover"))
+```
+
+
+
+## Predicting on new data?
+
+\begin{small}
+
+Predictions on the original 948 loans used to fit the model:
+
+
+```{r, echo=F}
+table(predicted = ifelse(m_sba$fitted.values > 0.5,
+                         "yes", "no"),
+      actual = ifelse(m_sba$y == 1, "yes", "no")) |>
+  knitr::kable() |>
+  kableExtra::add_header_above(c("Default? (predicted)" = 1, 
+                                 "Default? (actual)" = 2)) |>
+  kableExtra::kable_styling(bootstrap_options = c("bordered", 
+                                                  "hover"))
+```
+Acc. = 0.816, Sens. = 0.804, Spec. = 0.826, Deviance = 836.06
+
+
+Predictions on a \textbf{new} set of 407 loans (not used to fit model):
+
+```{r, echo=F}
+pred_probs <- predict(m_sba, 
+                      newdata = sba_ca_test, 
+                      type="response")
+
+table(predicted = ifelse(pred_probs > 0.5,
+                         "yes", "no"),
+      actual = ifelse(sba_ca_test$Default == 1, "yes", "no")) |>
+  knitr::kable() |>
+  kableExtra::add_header_above(c("Default? (predicted)" = 1, "Default? (actual)" = 2)) |>
+  kableExtra::kable_styling(bootstrap_options = c("bordered", "hover"))
+```
+Acc. = 0.762, Sens. = 0.732, Spec. = 0.790, Deviance = 405.78
+\end{small}
+
+## Predicting on new data
+
+**In general:** A model predicts **better** on the data used to fit the model than it does on **new** data.
+
+**Why?**
+
+\vspace{4cm}
+
+## Class activity
+
+Work on the class activity (course website)
+
+\vspace{4cm}
+
+## Terminology and notation
+
+## Loss functions
+
+## Risk (error)
+
+
+
+
+
+
+
+

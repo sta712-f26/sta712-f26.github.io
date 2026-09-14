@@ -1,0 +1,70 @@
+---
+title: "Simulation: Predictions on new data"
+format: html
+editor: source
+---
+
+## Setup
+
+Here is code that simulates $n_{\text{train}} = 1000$ training observations and $n_{\text{test}} = 400$ test observations from the logistic regression model
+
+$$
+\begin{aligned}
+Y_i \sim Bernoulli(p_i) \\
+\log\left( \frac{p_i}{1 - p_i} \right) = \mathbf{x}_i^T \boldsymbol{\beta}
+\end{aligned}
+$$
+
+where $\mathbf{x}_i \in \mathbb{R}^3$, and I have made $\boldsymbol{\beta} = \mathbf{0}$.
+
+Code:
+
+```{r}
+set.seed(13006234)
+
+# training and test sizes
+n_train <- 1000
+n_test <- 400
+
+# d = number of explanatory variables 
+# So d + 1 is the length of beta (including intercept)
+d <- 2 
+
+# generate training data
+x_train <- matrix(rnorm(n_train*d), nrow=n_train)
+y_train <- rbinom(n_train, 1, 0.5)
+train_data <- data.frame(x_train, y = y_train)
+
+# generate test data
+x_test <- matrix(rnorm(n_test*d), nrow=n_test)
+y_test <- rbinom(n_test, 1, 0.5)
+test_data <- data.frame(x_test, y = y_test)
+```
+
+We can then fit the logistic regression model, and compute the deviance on both the training and test data:
+
+```{r}
+# fit the model (correctly specified)
+m_sim <- glm(y ~ ., family = binomial, data = train_data)
+  
+# training deviance
+m_sim$deviance/n_train
+
+# make predictions and compute test deviance
+pred_probs <- predict(m_sim, newdata = test_data,
+                        type = "response")
+-2*sum(dbinom(test_data$y, 1, 
+              pred_probs, log = T))/n_test
+```
+
+## Questions
+
+1. In this example, the average test deviance is greater than the average training deviance (as we would expect). But is this a systematic difference, or is it due to chance? Run the simulation many times, storing the test and training deviance each time, and compare the average test deviance vs. the average training deviance.
+
+2. Change the number of explanatory variables (`d`). As you increase the number of explanatory variables, what happens to the difference in average test deviance vs. average training deviance?
+
+3. We will see that, if the model is correctly specified and some regularity conditions hold, 
+$$\mathbb{E}[\text{test deviance}] \approx \mathbb{E}[\text{training deviance}] + \frac{2(d+1)}{n_{\text{train}}}$$
+Verify that this holds in your simulated datasets.
+
+
