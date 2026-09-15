@@ -1,0 +1,105 @@
+---
+title: "Measuring error"
+author: "Ciaran Evans"
+output: beamer_presentation
+---
+
+
+## Warmup
+
+Your friend collects $n = 100$ observations with a binary response, and fits a logistic regression model:
+
+$$
+\begin{aligned}
+Y_i &\sim Bernoulli(p_i) \\
+\log \left( \frac{p_i}{1 - p_i} \right) &= \beta_0 + \beta_1 X_{i1} + \cdots + \beta_{99} X_{i,99}
+\end{aligned}
+$$
+
+Using this data, they then create a confusion matrix:
+
+```{r, echo=F}
+n_train <- 100
+n_test <- 400
+
+# d = number of explanatory variables 
+# So d + 1 is the length of beta (including intercept)
+d <- 99
+
+
+x_train <- matrix(rnorm(n_train*d), nrow=n_train)
+y_train <- rbinom(n_train, 1, 0.5)
+train_data <- data.frame(x_train, y = y_train)
+
+m_sim <- glm(y ~ ., family = binomial, data = train_data)
+table(predicted = ifelse(m_sim$fitted.values > 0.5,
+                         "positive", "negative"),
+      actual = ifelse(y_train == 1, "positive", "negative")) |>
+  knitr::kable() |>
+  kableExtra::add_header_above(c("Predicted Status" = 1, "Actual Status" = 2)) |>
+  kableExtra::kable_styling(bootstrap_options = c("bordered", "hover"))
+```
+
+What has gone wrong?
+
+## Take-aways from last class activity
+
+* Even if the model is correctly specified, prediction performance on the **training** data is a biased estimate of prediction performance on **new** data
+
+\vspace{1cm}
+
+* The bias gets worse as the number of explanatory variables in the model increases!
+
+\vspace{1cm}
+
+
+## Terminology and notation
+
+**Training data:**
+
+\vspace{2cm}
+
+**Fitted model:**
+
+\vspace{2cm}
+
+**New data:**
+
+\vspace{1cm}
+
+## Loss functions
+
+**Loss function:**
+
+\vspace{5cm}
+
+## Risk (error)
+
+**Training error:**
+
+\vspace{2cm}
+
+**Test error:**
+
+\vspace{2cm}
+
+**Expected test error:**
+
+\vspace{1cm}
+
+## What do we do??
+
+If training error is a **biased** estimate for error on new data, how do we proceed?
+
+\vspace{6cm}
+
+## Class activity
+
+Work on the class activity (course website)
+
+\vspace{3cm}
+
+
+
+
+
