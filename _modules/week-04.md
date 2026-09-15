@@ -8,6 +8,7 @@ September 14
 
 September 16
 : Measuring error
+  : [Slides](https://sta712-f26.github.io/slides/lecture_09.pdf), [Activity](https://sta712-f26.github.io/class_activities/ca_09.html)
 
 September 18
 : Measuring error

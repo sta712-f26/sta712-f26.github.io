@@ -1,0 +1,124 @@
+---
+title: "Cross validation"
+format: html
+editor: source
+---
+
+## Data
+
+Researchers collected data on 147 individuals in the Netherlands, 67 of whom kept a bird. The data include the following variables:
+
+* `Cancer`: whether the individual developed lung cancer (0 = no, 1 = yes)
+* `Bird`: whether the individual kept a bird at home for at least 6 consecutive months from 5 to 14 years before diagnosis (cases) or examination (controls)
+* `Sex`: male or female
+* `SocEc`: a rough measure of socioeconomic status. `Low` or `High`, depending on the principal wage earner in the household
+* `Age`: age in years
+* `SmokeYrs`: years of smoking prior to diagnosis or examination
+* `SmokeRate`: average number of cigarettes smoked per day
+
+The code below imports the data and fits a logistic regression model:
+
+```{r, message=F, warning=F}
+library(tidyverse)
+
+# import the data
+birdkp <- read_csv("https://sta712-f26.github.io/class_activities/birdkp.csv")
+
+# fit logistic regression model
+m_bird <- glm(Cancer ~ Bird + Sex + SocEc + Age + 
+                SmokeYrs + SmokeRate, 
+              data = birdkp, family = binomial)
+```
+
+
+## k-fold cross validation
+
+In **k-fold cross validation**, we divide the available data $\mathcal{T}$ into $k$ disjoint subsets (called **folds**) $\mathcal{T}_1,...,\mathcal{T}_k$.
+
+For each $j = 1,...,k$, we train the model on $\mathcal{T} \backslash\mathcal{T}_j$; let $\widehat{h}_{-j}$ denote this resulting model. This gives $k$ different models $\widehat{h}_{-1},...,\widehat{h}_{-k}$. The cross validation estimate of error is then
+$$
+R_{\text{CV}}(\widehat{h}) = \frac{1}{n} \sum \limits_{i=1}^n L(Y_i, \widehat{h}_{-j(i)}(\mathbf{x}_i))
+$${#eq-cv_error_estimate}
+where $j(i)$ denotes the fold to which observation $i$ belongs: $(\mathbf{x}_i, Y_i) \in \mathcal{T}_{j(i)}$.
+
+Common values of $k$ are 5 and 10.
+
+## Questions
+
+Here we will implement 5-fold cross validation for the bird data and the logistic regression model fit above.
+
+1. To begin, we need to generate folds. The code below is one way to randomly assign each observation in the data to one of five different folds:
+
+```{r}
+k <- 5
+# create the folds (shuffle in case row order matters)
+folds <- sample(ceiling((1:nrow(birdkp)) * k/nrow(birdkp)),
+                nrow(birdkp), replace=F)
+```
+
+2. Now let's make a vector to store the cross-validated predictions for each observation in the `birdkp` data. Right now, it will be full of `NA`s, since we haven't filled in the predicted probabilities yet.
+
+```{r}
+cv_preds <- rep(NA, nrow(birdkp))
+```
+
+
+2. Divide the `birdkp` data into two pieces: the observations belonging to fold 1 (i.e., where `folds == 1`), and the observations belonging to folds 2--5.
+
+3. Re-fit the logistic regression model on the data in folds 2--5.
+
+4. Using the `predict` function, calculate the predicted probabilities for the observations in fold 1, from the fitted model built on folds 2--5.
+
+5. Fill in the entries in `cv_preds` for fold 1 with the predicted probabilities from question 4.
+
+6. Repeat for each of the other folds in turn (you can make this efficient by using a `for` loop).
+
+7. Compute the deviance with the 5-fold CV predicted probabilities. The following function will be helpful:
+
+```{r}
+# function for computing deviance for binary logistic regression
+# y = true response values
+# phat = predicted probabilities
+logistic_deviance <- function(y, phat){
+  -2*sum(dbinom(y, 1, phat, log = T))
+}
+```
+
+
+```{r, include=F, eval=F}
+logistic_deviance <- function(y, phat){
+  -2*sum(dbinom(y, 1, phat, log = T))
+}
+
+set.seed(3126)
+k <- 5
+# create the folds (shuffle in case row order matters)
+folds <- sample(ceiling((1:nrow(birdkp)) * k/nrow(birdkp)),
+                nrow(birdkp), replace=F)
+
+# compute k-fold CV predictions
+cv_preds <- rep(NA, nrow(birdkp))
+for(j in 1:k){
+  # hold out fold j
+  fold_ids <- which(folds == j)
+  birdkp_train <- birdkp[-fold_ids,]
+  birdkp_test <- birdkp[fold_ids,]
+  
+  # train on remaining k-1 folds
+  m_bird_cv <- glm(Cancer ~ Bird + Sex + SocEc + Age + 
+                SmokeYrs + SmokeRate, 
+              data = birdkp_train, family = binomial)
+  
+  # predict on heldout fold
+  cv_preds[fold_ids] <- predict(m_bird_cv,
+                                birdkp_test,
+                                type = "response")
+}
+
+# CV error estimate
+logistic_deviance(birdkp$Cancer, cv_preds)/nrow(birdkp)
+```
+
+
+
+

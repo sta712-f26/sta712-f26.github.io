@@ -93,6 +93,20 @@ If training error is a **biased** estimate for error on new data, how do we proc
 
 \vspace{6cm}
 
+## Data splitting
+
+* Divide the available data $\mathcal{T}$ into two disjoint subsets: $\mathcal{T}_{\text{train}}$ and $\mathcal{T}_{\text{test}}$. 
+
+* Common train/test splits include 60/40, 70/30, 80/20
+
+\vspace{4cm}
+
+## k-fold cross validation
+
+* Divide the available data $\mathcal{T}$ into $k$ disjoint subsets (called **folds**) $\mathcal{T}_1,...,\mathcal{T}_k$
+
+\vspace{5cm}
+
 ## Class activity
 
 Work on the class activity (course website)
