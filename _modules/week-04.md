@@ -13,3 +13,6 @@ September 16
 September 18
 : Measuring error
   : [Slides](https://sta712-f26.github.io/slides/lecture_10.pdf)
+  
+: Reading for next class
+  : Supplementary notes [Chapter 6](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/measuring_error.html); *Elements of Statistical Learning* Sections 7.1 - 7.5, 7.10
