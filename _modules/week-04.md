@@ -12,3 +12,4 @@ September 16
 
 September 18
 : Measuring error
+  : [Slides](https://sta712-f26.github.io/slides/lecture_10.pdf)
