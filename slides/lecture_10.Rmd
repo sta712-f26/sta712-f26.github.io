@@ -1,0 +1,79 @@
+---
+title: "Measuring error"
+author: "Ciaran Evans"
+output: beamer_presentation
+---
+
+
+## Take-aways from last class activity
+
+* Even if the model is correctly specified, prediction performance on the **training** data is a biased estimate of prediction performance on **new** data
+
+\vspace{1cm}
+
+* The bias gets worse as the number of explanatory variables in the model increases!
+
+\vspace{1cm}
+
+
+## Bias of the training error
+
+Let $\mathcal{T} = \{(\mathbf{x}_1, Y_1),...,(\mathbf{x}_n, Y_n)\}$ be a training set, and let $\widehat{h}$ be a model fit on $\mathcal{T}$ by maximizing the likelihood.
+
+Two big results (under regularity conditions):
+
+\vspace{6cm}
+
+## Deriving bias of the training error
+
+Let $\mathbf{y} = (Y_1,...,Y_n) \overset{iid}{\sim} g$ for some unknown distribution $g$ be our **training set**, and let $\mathbf{y}^* = (Y_1^*,...,Y_n^*) \overset{iid}{\sim} g$ be another sample from $g$, *independent* of $\mathbf{y}$.
+
+\vspace{6cm}
+
+## Error quantities
+
+Let $\mathbf{y} = (Y_1,...,Y_n) \overset{iid}{\sim} g$ for some unknown distribution $g$ be our **training set**, and let $\mathbf{y}^* = (Y_1^*,...,Y_n^*) \overset{iid}{\sim} g$ be another sample from $g$, *independent* of $\mathbf{y}$.
+
+\vspace{6cm}
+
+## Idea
+
+$$
+\begin{aligned}
+\mathcal{R}_{\text{train}}(\widehat{\boldsymbol{\theta}}) &= -\frac{2}{n}\log f_{\widehat{\boldsymbol{\theta}}}(\mathbf{y}) \\
+\mathcal{R}_{\mathcal{T}}(\widehat{\boldsymbol{\theta}}) &= \mathbb{E}_{\mathbf{y}^*}\left[ -\frac{2}{n}\log f_{\widehat{\boldsymbol{\theta}}}(\mathbf{y}^*) \bigg| \mathbf{y}  \right] \\
+\mathcal{R} &= \mathbb{E}_{\mathbf{y}}[\mathcal{R}_{\mathcal{T}}(\widehat{\boldsymbol{\theta}})] = \mathbb{E}_{\mathbf{y}, \mathbf{y}^*}\left[-\frac{2}{n}\log f_{\widehat{\boldsymbol{\theta}}}(\mathbf{y}^*)\right]
+\end{aligned}
+$$
+
+\vspace{5cm}
+
+## Lemma 1 proof
+
+## AIC
+
+Let $\widehat{h}$ be a model fit on training data $\mathcal{T}$ by maximizing likelihood (equivalently, minimizing deviance). Let $p$ be the number of parameters in the model (i.e. for logistic regression, $\boldsymbol{\beta} \in \mathbb{R}^p$).
+
+\vspace{5cm}
+
+## Example
+
+```{r, echo=F, message=F}
+library(glmhelpR)
+```
+
+```{r}
+m_dengue <- glm(Dengue ~ Age + WBC + PLT, 
+                data = dengue, family = binomial)
+m_dengue$deviance
+m_dengue$aic
+```
+
+\vspace{2cm}
+
+
+
+
+
+
+

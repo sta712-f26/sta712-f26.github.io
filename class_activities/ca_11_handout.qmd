@@ -1,0 +1,23 @@
+---
+title: "Warmup: Cross validation"
+format: pdf
+editor: source
+---
+
+\vspace{-1.5cm}
+
+
+## Model building and cross validation
+
+Your friend collects training data of size $n = 500$ observations, on 1000 different explanatory variables ($X_1,...X_{500}$).
+
+They have too many explanatory variables available, so they do the following:
+
+* Look through all available explanatory variables, and choose the variable which best improves their prediction of the response
+* Add that variable to the model
+* Repeat, until no variables improve their ability to predict the response, or they have 25 variables in the model (whichever comes first)
+
+In the end, they have a regression model with 25 explanatory variables. Let's call this their `selected model`. To assess the predictive ability of their `selected model`, they use cross validation in the following way:
+
+* Divide the their training data into 10 folds
+* Fit the `selected model` (with the same)
