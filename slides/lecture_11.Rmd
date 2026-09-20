@@ -1,0 +1,201 @@
+---
+title: "Model selection"
+author: "Ciaran Evans"
+output: beamer_presentation
+---
+
+
+## Warmup
+
+Work on the warmup activity (handout).
+
+\vspace{4cm}
+
+## Warmup
+
+Which model would you prefer?
+
+```{r include=F}
+library(glmhelpR)
+```
+
+```{r}
+m_dengue1 <- glm(Dengue ~ Age + WBC + PLT, 
+                      data = dengue, 
+                      family = binomial)
+m_dengue1$deviance
+```
+
+```{r}
+m_dengue2 <- glm(Dengue ~ Age + WBC + PLT + HCT,
+                 data = dengue, family = binomial)
+m_dengue2$deviance
+```
+
+## Another example
+
+```{r}
+m_dengue1 <- glm(Dengue ~ Age + WBC + PLT, 
+                      data = dengue, 
+                      family = binomial)
+m_dengue1$aic
+```
+
+```{r}
+m_dengue2 <- glm(Dengue ~ Age + WBC + PLT +
+                        BMI + Temperature + Vomiting,
+                 data = dengue, family = binomial)
+m_dengue2$aic
+```
+
+## Another example
+
+```{r echo=F, fig.width = 5, fig.height=4, warning=F, message=F}
+library(tidyverse)
+library(patchwork)
+
+# function for computing deviance for binary logistic regression
+logistic_deviance <- function(y, phat){
+  -2*sum(dbinom(y, 1, phat, log = T))
+}
+
+set.seed(3126)
+k <- 10
+# create the folds (shuffle in case row order matters)
+folds <- sample(ceiling((1:nrow(dengue)) * k/nrow(dengue)),
+                nrow(dengue), replace=F)
+
+# compute k-fold CV predictions
+cv_preds1 <- rep(NA, nrow(dengue))
+cv_preds2 <- rep(NA, nrow(dengue))
+for(j in 1:k){
+  # hold out fold j
+  fold_ids <- which(folds == j)
+  dengue_train <- dengue[-fold_ids,]
+  dengue_test <- dengue[fold_ids,]
+  
+  # train on remaining k-1 folds
+  m_dengue_cv1 <- glm(Dengue ~ Age + WBC + PLT, 
+                      data = dengue_train, 
+                      family = binomial)
+  m_dengue_cv2 <- glm(Dengue ~ Age + WBC + PLT +
+                        BMI + Temperature + Vomiting, 
+                      data = dengue_train, 
+                      family = binomial)
+  
+  # predict on heldout fold
+  cv_preds1[fold_ids] <- predict(m_dengue_cv1,
+                                dengue_test,
+                                type = "response")
+  cv_preds2[fold_ids] <- predict(m_dengue_cv2,
+                                dengue_test,
+                                type = "response")
+}
+
+# CV error estimate
+#logistic_deviance(dengue$Dengue, cv_preds1)/nrow(dengue)
+#logistic_deviance(dengue$Dengue, cv_preds2)/nrow(dengue)
+
+roc_obj1 <- pROC::roc(dengue$Dengue, 
+                     cv_preds1)
+roc_obj2 <- pROC::roc(dengue$Dengue, 
+                     cv_preds2)
+p1 <- data.frame(tpr = c(roc_obj1$sensitivities,
+                   roc_obj2$sensitivities), 
+           fpr = c(1 - roc_obj1$specificities,
+                   1 - roc_obj2$specificities),
+           model = c(rep("Model 1", 
+                         length(roc_obj1$sensitivities)),
+                     rep("Model 2", 
+                         length(roc_obj2$sensitivities)))) |>
+  ggplot(aes(x = fpr, y = tpr, color = model)) +
+  geom_line() +
+  geom_abline(slope = 1, intercept = 0, lty = 2) +
+  theme_bw() +
+  labs(x = "FPR", 
+       y = "TPR",
+       color = "") +
+  theme(legend.position = "bottom")
+
+p2 <- calibration_plot(cv_preds1, dengue$Dengue) +
+  labs(title = "Model 1")
+p3 <- calibration_plot(cv_preds2, dengue$Dengue) +
+  labs(title = "Model 2")
+
+(p1 + p2)/(p3 + plot_spacer())
+```
+
+## Key points
+
+* Deviance (on the training data) can **never** increase when I add additional explanatory variables -- don't use raw deviance to compare models with different numbers of predictors
+* AIC is a better method to compare models (estimate of predictive ability on new data)
+* But, a difference in AIC does not always have **practical significance**
+* Other criteria for choosing a model: type of research question, model interpretability, model parsimony, ease of use by practitioners, model diagnostics
+
+## Types of research question
+
+For what different types of research question might I use a regression model?
+
+\vspace{6cm}
+
+## Other ways of comparing models
+
+Alternatives to AIC:
+
+\vspace{2cm}
+
+LRT:
+
+\vspace{2cm}
+
+## Activity
+
+Work on the class activity (handout).
+
+\vspace{4cm}
+
+## Activity
+
+LRT:
+$$G = \text{deviance}_{\text{reduced}} - \text{deviance}_{\text{full}}$$
+Reject when $G > \chi^2_{q, \alpha}$.
+
+\vspace{5cm}
+
+## Activity
+
+* LRT will choose the full model if $G > \chi^2_{q, \alpha}$
+* AIC will choose the full model if $G > 2q$
+* LRT is more strict when $\chi^2_{q, \alpha} > 2q$
+
+```{r}
+alpha = 0.05
+q <- 1:10
+qchisq(1 - alpha, q) - 2*q
+```
+```{r}
+alpha = 0.01
+q <- 1:20
+qchisq(1 - alpha, q) - 2*q
+```
+
+## AIC vs. LRT
+
+* LRT can only be used with nested models; AIC can compare non-nested models
+* LRT is more stringent when $q$ (difference in number of parameters between models) is small
+* AIC is more stringent when $q$ is large
+* But, they ask different questions!
+    * LRT: Is difference in model deviance due to chance?
+    * AIC: Estimate expected prediction error
+* **Neither** is asking whether difference in models is **meaningful** (*practical significance*)
+
+
+
+
+
+
+
+
+
+
+

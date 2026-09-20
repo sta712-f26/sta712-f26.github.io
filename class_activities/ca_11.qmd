@@ -1,0 +1,25 @@
+---
+title: "Activity: AIC vs. LRT"
+format: pdf
+editor: source
+---
+
+\vspace{-1.5cm}
+
+AIC can be used to compare any two models on the same data, with the same response variable. A likelihood ratio test, on the other hand, can only compare nested models. So, if we do have nested models, does a comparison based on AIC agree with the LRT results?
+
+Suppose we have two nested models, a *reduced model* that is a subset of a *full model*. Recall that the LRT uses the test statistic
+
+$$G = \text{deviance}_{\text{reduced}} - \text{deviance}_{\text{full}}$$
+
+and rejects when $G > \chi^2_{q, \alpha}$, where $q$ is the difference in number of parameters between the two models, and $\chi^2_{q, \alpha}$ is the upper $\alpha$ quantile of a $\chi^2_q$ distribution.
+
+1. Show that AIC will choose the full model if $G > 2q$.
+
+\vspace{4cm}
+
+2. Suppose we use a significance level of $\alpha = 0.05$. For what values of $q$ is the LRT more stringent than AIC for choosing the full model? (You can do this in `R`, you don't have to invert the $\chi^2$ cdf by hand!)
+
+\vspace{4cm}
+
+3. If we use $\alpha = 0.01$, for what values of $q$ is the LRT more stringent?

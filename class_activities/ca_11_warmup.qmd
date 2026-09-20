@@ -1,0 +1,37 @@
+---
+title: "Warmup: Deviance"
+format: pdf
+editor: source
+---
+
+\vspace{-1.5cm}
+
+
+## Dengue data
+
+To predict dengue status, you build a model that uses Age, WBC, and PLT as explanatory variables. You fit the model in R, and compute the deviance on the training data:
+
+```{r echo=F}
+library(glmhelpR)
+```
+
+```{r}
+m_dengue1 <- glm(Dengue ~ Age + WBC + PLT, 
+                      data = dengue, 
+                      family = binomial)
+m_dengue1$deviance
+```
+
+Your friend also builds a model, but they also include HCT in their model:
+
+
+```{r}
+m_dengue2 <- glm(Dengue ~ Age + WBC + PLT + HCT,
+                 data = dengue, family = binomial)
+m_dengue2$deviance
+```
+
+### Question
+
+1. Your friend notices that their model has a smaller deviance, and so they argue that their model is preferable to yours. What do you think?
+
