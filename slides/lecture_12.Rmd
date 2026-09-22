@@ -1,0 +1,214 @@
+---
+title: "Model selection"
+author: "Ciaran Evans"
+output: beamer_presentation
+---
+
+## Last time: Activity
+
+* LRT will choose the full model if $G > \chi^2_{q, \alpha}$
+* AIC will choose the full model if $G > 2q$
+* LRT is more strict when $\chi^2_{q, \alpha} > 2q$
+
+```{r}
+alpha = 0.05
+q <- 1:10
+qchisq(1 - alpha, q) - 2*q
+```
+```{r}
+alpha = 0.01
+q <- 1:20
+qchisq(1 - alpha, q) - 2*q
+```
+
+## AIC vs. LRT
+
+* LRT can only be used with nested models; AIC can compare non-nested models
+* LRT is more stringent when $q$ (difference in number of parameters between models) is small
+* AIC is more stringent when $q$ is large
+* But, they ask different questions!
+    * LRT: Is difference in model deviance due to chance?
+    * AIC: Estimate expected prediction error
+* **Neither** is asking whether difference in models is **meaningful** (*practical significance*)
+
+## Automated model search
+
+**Potential use case:** 
+
+* *Many* explanatory variables
+* Research question is not an inferential question about a particular variable of interest
+* Want to identify a subset of potentially useful variables for predicting response
+
+**Some types:**
+
+\vspace{3cm}
+
+## Best subset selection (BSS)
+
+* Fit *all* possible models (for every possible combination of the explanatory variables)
+* Choose the model with the best error
+
+\vspace{4cm}
+
+## Stepwise procedures
+
+**Forward selection:**
+
+\vspace{2cm}
+
+**Backward selection:**
+
+\vspace{2cm}
+
+**Bidirectional selection:**
+
+\vspace{1cm}
+
+## Example{.small}
+
+```{r, include=F}
+library(tidyverse)
+library(glmhelpR)
+
+dengue_sub <- dengue |>
+  select(Sex, Age, Vomiting, Abdominal, Temperature,
+         BMI, WBC, HCT, PLT, Dengue) |>
+  mutate(Sex = as.factor(Sex))
+```
+
+```{r}
+dengue_bss <- bestglm::bestglm(dengue_sub, binomial, "AIC")
+
+dengue_bss$BestModel$coefficients
+```
+
+## Example{.small}
+
+```{r}
+# forward selection, beginning with empty model
+m_null <- glm(Dengue ~ 1, data = dengue_sub, family = binomial)
+m_forward <- MASS::stepAIC(m_null, scope = ~ Sex + Age + 
+                             Vomiting + Abdominal + Temperature + 
+                             BMI + WBC + HCT + PLT, 
+                           direction = "forward", 
+                           trace = 0)
+
+m_forward$coefficients
+```
+
+## Example{.small}
+
+```{r}
+# backward selection, beginning with full model
+m_full <- glm(Dengue ~ Sex + Age + Vomiting + Abdominal + 
+                Temperature + BMI + WBC + HCT + PLT, 
+              data = dengue_sub, family = binomial)
+m_backward <- MASS::stepAIC(m_full, 
+                            direction = "backward", 
+                            trace = 0)
+
+m_backward$coefficients
+```
+
+## Example
+
+Simulate data with $n = 100$ observations and 15 explanatory variables, but no population relationship between $\mathbf{x}$ and $Y$.
+
+```{r, include=F}
+set.seed(2)
+n <- 100
+d <- 15
+X <- matrix(rnorm(n*(d-1)), nrow = n)
+y <- rbinom(n, 1, 0.5)
+```
+
+Backward selection (AIC):
+
+```{r, echo=F}
+m_full <- glm(y ~ .,
+          data = data.frame(X, y), family = binomial)
+backward_aic <- MASS::stepAIC(m_full,
+                      direction = "backward",
+                      trace = 0)
+backward_aic$coefficients
+```
+
+Forward selection (AIC):
+
+```{r, echo=F}
+m_null <- glm(y ~ 1, data = data.frame(X, y), family = binomial)
+forward_aic <- MASS::stepAIC(m_null, scope = formula(m_full), 
+                             direction = "forward",
+                             trace = 0)
+forward_aic$coefficients
+```
+## Example
+
+Forward selection (BIC):
+
+```{r, echo=F}
+m_null <- glm(y ~ 1, data = data.frame(X, y), family = binomial)
+forward_aic <- MASS::stepAIC(m_null, scope = formula(m_full), 
+                             direction = "forward",
+                             trace = 0, k = log(n))
+forward_aic$coefficients
+```
+
+\vspace{4cm}
+
+## Key points
+
+* Search methods are trying to find some set of explanatory variables that does reasonably well at predicting the response
+* BSS considers all possible models (may be computationally expensive!)
+* Stepwise procedures are greedy alternatives
+* Different stepwise procedures don't always agree
+* Using BIC tends to give a smaller model than AIC
+
+## Activity
+
+Work on the activity (handout), then we will discuss.
+
+
+## Activity{.small}
+
+```{r eval=F}
+# start with only an intercept
+initial_fit <- glm(y ~ 1, data = train_data, family = binomial)
+
+# add predictors one at a time based on AIC
+selected_fit <- step(initial_fit,
+                     scope = formula(glm(y ~ ., 
+                                         data = train_data,
+                                         family = binomial)),
+                     direction = "forward", trace = 0,
+                     steps = 25)
+
+# 10-fold cross validation estimate of prediction error
+k <- 10
+boot::cv.glm(train_data, selected_fit, 
+             cost = logistic_deviance, # loss function to use
+             K = k)$delta[1] * k/nrow(train_data) # average deviance
+```
+
+## Cross-validation and model selection
+
+**Crucial:** We must cross-validate the whole model selection process, not just the final chosen model!
+
+\vspace{6cm}
+
+## Activity
+
+Work on the activity (course website).
+
+
+
+
+
+
+
+
+
+
+
+
+

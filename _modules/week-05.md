@@ -8,6 +8,7 @@ September 21
 
 September 23
 : Model selection
+  : [Slides](https://sta712-f26.github.io/slides/lecture_12.pdf), [warmup](https://sta712-f26.github.io/class_activities/ca_12_handout.pdf), [Activity](https://sta712-f26.github.io/class_activities/ca_12.html)
 
 September 25
 : Model selection
