@@ -1,0 +1,183 @@
+---
+title: "Activity: Cross validation and model selection"
+format: html
+editor: source
+callout-icon: false
+---
+
+## Cross validation and model selection
+
+When estimating the predictive ability of a model, it is necessary to use data splitting, cross-validation, or a quantity like AIC to account for bias on the training data. 
+
+However, if we arrive at our model by some form of model selection, such as best subset selection or stepwise selection, then we cannot simply cross-validate the final model chosen by this procedure. Rather, we instead have to cross-validate the *whole* procedure, with model selection included *within* the cross-validation.
+
+The purpose of this activity is to see this in action.
+
+### Simulated data
+
+The code below simulates data from a logistic regression model, with $n = 500$ observations and 1000 possible explanatory variables. However, the response $Y$ is simulated so that $Y_i | \mathbf{x}_i \sim Bernoulli(0.5)$ -- that is, in the population there is no relationship between the explanatory variables and the response.
+
+```{r}
+n_train <- 500
+
+# d = number of explanatory variables 
+# So d + 1 is the length of beta (including intercept)
+d <- 1000
+
+set.seed(47234)
+x_train <- matrix(rnorm(n_train*d), nrow=n_train)
+y_train <- rbinom(n_train, 1, 0.5)
+train_data <- data.frame(x_train, y = y_train)
+```
+
+### Stepwise selection
+
+We now run forward stepwise selection (with AIC), allowing ourselves a maximum of 25 explanatory variables in the model. Notice that, with 1000 variables to choose from, the selection process will include some explanatory variables in the model (even though there is no true relationship in the population)!
+
+```{r stepwise, cache=T, warning=F, message=F}
+# start with only an intercept
+initial_fit <- glm(y ~ 1, data = train_data, family = binomial)
+
+# add predictors one at a time based on AIC
+selected_fit <- step(initial_fit,
+                     scope = formula(glm(y ~ ., 
+                                         data = train_data,
+                                         family = binomial)),
+                     direction = "forward", trace = 0,
+                     steps = 25)
+
+selected_fit
+```
+
+### Cross-validating the selected model
+
+```{r, eval = F, echo=F}
+#The *true* probability for all observations $Y_i$ is 0.5. Since $-2[Y_i\log(0.5) + (1 - Y_i)\log(0.5)] = -2\log(0.5) = 1.386$, then for our simulated data, the best possible expected test error (if we used the true probabilities) would be 1.386.
+```
+
+Suppose we cross-validate the final fitted model:
+
+```{r}
+logistic_deviance <- function(y, phat){
+  -2*sum(dbinom(y, 1, phat, log = T))
+}
+
+# 10-fold cross validation estimate of prediction error
+k <- 10
+boot::cv.glm(train_data, selected_fit, 
+             cost = logistic_deviance, # loss function to use
+             K = k)$delta[1] * k/nrow(train_data) # average deviance
+```
+
+However, this cross-validation is ignoring the model selection step! If we use a new sample of test data, we see that the test error for the selected model is about twice the cross-validation error:
+
+```{r}
+n_test <- 1000
+
+# generate test data
+x_test <- matrix(rnorm(n_test*d), nrow=n_test)
+y_test <- rbinom(n_test, 1, 0.5)
+test_data <- data.frame(x_test, y = y_test)
+
+# predicted probabilities on test data
+pred_probs <- predict(selected_fit, newdata = test_data,
+                      type = "response")
+
+# estimate of test error using test data
+logistic_deviance(test_data$y, pred_probs)/n_test
+```
+
+### Correct implementation
+
+The correct implementation is to cross-validate the whole procedure.
+
+::: {.callout-tip}
+## Question 1
+
+Use the code below to assign each observation in the data to one of 10 folds:
+
+```{r, eval=F}
+k <- 10
+# create the folds (shuffle in case row order matters)
+folds <- sample(ceiling((1:nrow(train_data)) * k/nrow(train_data)),
+                nrow(train_data), replace=F)
+```
+
+:::
+
+::: {.callout-tip}
+## Question 2
+
+Now use the code below to create two subsets of the data: `heldout_sub` contains the data in fold 1, and `train_sub` contains the data in the other nine folds.
+
+```{r, eval=F}
+# hold out fold 1
+fold_ids <- which(folds == 1)
+train_sub <- train_data[-fold_ids,]
+heldout_sub <- train_data[fold_ids,]
+```
+
+:::
+
+::: {.callout-tip}
+## Question 3
+
+Now let’s make a vector to store the cross-validated predictions for each observation in the training data. Right now, it will be full of `NA`s, since we haven’t filled in the predicted probabilities yet.
+
+```{r, eval=F}
+cv_preds <- rep(NA, nrow(train_data))
+```
+
+
+:::
+
+::: {.callout-tip}
+## Question 4
+
+Now use the code below to create two subsets of the data: `heldout_sub` contains the data in fold 1, and `train_sub` contains the data in the other nine folds.
+
+```{r, eval=F}
+# hold out fold 1
+fold_ids <- which(folds == 1)
+train_sub <- train_data[-fold_ids,]
+heldout_sub <- train_data[fold_ids,]
+```
+
+:::
+
+::: {.callout-tip}
+## Question 5
+
+Adapt the stepwise selection code above, to perform stepwise selection on the `train_sub` data.
+:::
+
+::: {.callout-tip}
+## Question 6
+
+Use the selected model from question 5 to make predictions on fold 1 (`heldout_sub`). Store in the appropriate indices of the `cv_preds` vector:
+
+```{r, eval=F}
+cv_preds[fold_ids] <- ...
+```
+
+:::
+
+::: {.callout-tip}
+## Question 7
+
+Repeat the process (in a loop) for all 10 folds.
+:::
+
+::: {.callout-tip}
+## Question 8
+
+Compute the average deviance on the *correct* cross validated predictions:
+
+```{r, eval=F}
+# CV error estimate
+logistic_deviance(train_data$y, cv_preds)/nrow(train_data)
+```
+
+:::
+
+
