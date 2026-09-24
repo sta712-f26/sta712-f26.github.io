@@ -1,0 +1,40 @@
+---
+title: "Activity: Cross validation and model selection"
+format: html
+editor: source
+callout-icon: false
+---
+
+In this activity, we will see what happens when we try to test hypotheses after performing variable selection (and why it is problematic).
+
+The code below generates $n = 500$ observations, with 100 different explanatory variables. The data is generated so there is *no relationship* between any of the explanatory variables and the response.
+
+It then fits a model using all explanatory variables, and creates a histogram of the p-values for the hypothesis test $H_0: \beta_j = 0$ vs. $H_A: \beta_j \neq 0$ for each coefficient $\beta_j$. *By construction, $H_0$ is true for all these tests!*
+
+```{r, eval = F}
+n <- 500
+d <- 100
+x <- matrix(rnorm(n*d),nrow=n)
+y <- rbinom(n, 1, 0.5)
+df <- data.frame(y=y,x)
+
+m1 <- glm(y ~ ., data = df, family = binomial)
+hist(summary(m1)$coefficients[,4], 
+     xlab = "p-values", main = "Histogram of p-values")
+```
+
+1. Run the above code several times. What do you notice about the distribution of the p-values? For what fraction of the tests do you reject the null hypothesis that $\beta_j = 0$ (i.e, what is the type I error rate)?
+
+2. Now perform stepwise selection with the simulated data and report the selected model. E.g., here is code for forward selection with AIC:
+
+```{r, eval=F}
+m_null <- glm(y ~ 1, data = df, family = binomial)
+m_forward <- MASS::stepAIC(m_null, scope = list(upper = m1), 
+                           direction = "forward", 
+                           trace = 0)
+```
+
+
+3. Look at the p-values for the variables selected by the model. What do you notice? How do they compare to the distribution of p-values in question 1?
+
+4. What problem is caused by performing hypothesis testing on the model chosen by a variable selection procedure? Why do you think this occurs? Can you think of any way to fix this issue?

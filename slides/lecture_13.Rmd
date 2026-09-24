@@ -1,0 +1,124 @@
+---
+title: "Model selection"
+author: "Ciaran Evans"
+output: beamer_presentation
+---
+
+## Last time: Cross-validation and model selection
+
+**Crucial:** We must cross-validate the whole model selection process, not just the final chosen model!
+
+\vspace{6cm}
+
+## Today
+
+* Model selection and hypothesis testing: can I perform valid inference after choosing a model? (activity and discussion)
+
+\vspace{1cm}
+
+* Cross-validation and model selection: activity
+
+\vspace{3cm}
+
+## Activity 1: Model selection and hypothesis testing
+
+Work on the first class activity (course website)
+
+## Activity 1
+
+Distribution of reported p-values across all variables:
+
+```{r, echo=F, fig.width = 4, fig.height = 2.5}
+set.seed(7)
+
+n <- 500
+d <- 100
+x <- matrix(rnorm(n*d),nrow=n)
+y <- rbinom(n, 1, 0.5)
+df <- data.frame(y=y,x)
+
+m1 <- glm(y ~ ., data = df, family = binomial)
+hist(summary(m1)$coefficients[,4], 
+     xlab = "p-values", main = "Histogram of p-values")
+
+pvals <- summary(m1)$coefficients[,4]
+```
+
+```{r}
+mean(pvals < 0.05)
+```
+
+
+## Activity 1
+
+Distribution of reported p-values for only the *selected* variables:
+
+```{r, echo=F, fig.width = 4, fig.height = 2.5}
+set.seed(7)
+
+n <- 500
+d <- 100
+x <- matrix(rnorm(n*d),nrow=n)
+y <- rbinom(n, 1, 0.5)
+df <- data.frame(y=y,x)
+
+m1 <- glm(y ~ ., data = df, family = binomial)
+
+m_null <- glm(y ~ 1, data = df, family = binomial)
+m_forward <- MASS::stepAIC(m_null, scope = list(upper = m1), 
+                           direction = "forward", 
+                           trace = 0)
+
+hist(summary(m_forward)$coefficients[,4], 
+     xlab = "p-values", main = "Histogram of p-values",
+     xlim = c(0, 1))
+
+pvals <- summary(m_forward)$coefficients[,4]
+```
+
+```{r}
+mean(pvals < 0.05)
+```
+
+**Question:** Why is testing hypotheses on the selected variables problematic?
+
+## The problem
+
+* Model selection will choose the variables that appear related to the response *in the observed data*
+* If we test only the selected variables, and use the same data for selection and testing, then we have biased the outcome ahead of time: we *know* that these variables must appear related to $Y$ in the data!
+* As a result, we lose type I error control
+
+\vspace{3cm}
+
+## Data splitting
+
+## Limitations of automated search methods
+
+* Not suitable if we have particular inferential questions to test
+* BSS can be computationally expensive
+* Stepwise procedures are greedy and are not guaranteed to find an optimal model (or even a "good" model)
+* Automated procedures **don't** do any of the following:
+    * Check model diagnostics
+    * Experiment with different transformations
+    * Assess model performance
+    * Identify unusual observations
+    * etc.
+
+
+
+## Activity
+
+Work on the activity (course website).
+
+
+
+
+
+
+
+
+
+
+
+
+
