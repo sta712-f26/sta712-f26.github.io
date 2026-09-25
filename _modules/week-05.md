@@ -12,6 +12,6 @@ September 23
 
 September 25
 : Model selection
-  : [Slides](https://sta712-f26.github.io/slides/lecture_13.pdf), [Activity 1](https://sta712-f26.github.io/class_activities/ca_12.html), [Activity 2](https://sta712-f26.github.io/class_activities/ca_12.html)
+  : [Slides](https://sta712-f26.github.io/slides/lecture_13.pdf), [Activity 1](https://sta712-f26.github.io/class_activities/ca_13.html), [Activity 2](https://sta712-f26.github.io/class_activities/ca_12.html)
 
 : **HW 5 released**{: .label .label-yellow }
