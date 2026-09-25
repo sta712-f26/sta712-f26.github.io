@@ -1,0 +1,27 @@
+---
+title: "Homework 5"
+format: html
+---
+
+**Due:** Friday, October 2, 11:59pm on Canvas
+
+**Homework grading and resubmissions:** Homework will be graded on completeness, correctness, and effort. If you make an honest, good-faith effort attempt at a question, but your submitted work has some important errors or is missing a component I think is necessary, I may ask you to *resubmit* your work after receiving feedback. Your grade for that question would then be based on your resubmission.
+
+
+**Collaborators and AI statement:** At the top of your assignment, list any collaborators (Dr. Evans does not count -- he is a resource, not a collaborator), and provide an AI statement describing your use of AI to complete the questions. If you did not use AI in any way, let me know that too. If you did use AI, provide: the model used, the HW questions on which you used AI, and a summary of the ways in which AI provided assistance. As described in the syllabus, AI use is permitted on homework assignments, but submissions without a complete AI statement may not receive full credit.
+
+## Questions
+
+1. [Data splitting in small samples](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/logistic_regression_exercises.html#exr-data_splitting_simulation)
+
+2. [A problematic approach to model building](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/logistic_regression_exercises.html#exr-problematic_model_building)
+
+3. [Relation between AIC and LOOCV](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/logistic_regression_exercises.html#exr-aic_loocv)
+
+### Inference after selection
+
+In class, we saw that using the same data for both model selection and hypothesis testing causes inflated type I errors. We also discussed data splitting as a potential solution to this problem (if, for whatever reason, we are in a situation in which both model selection and testing are relevant). 
+
+4. **Data splitting for hypothesis testing:** Conduct a small simulation study to verify that data splitting does, in fact, allow us to control type I error after model selection. 
+
+

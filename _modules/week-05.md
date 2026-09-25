@@ -13,5 +13,9 @@ September 23
 September 25
 : Model selection
   : [Slides](https://sta712-f26.github.io/slides/lecture_13.pdf), [Activity 1](https://sta712-f26.github.io/class_activities/ca_13.html), [Activity 2](https://sta712-f26.github.io/class_activities/ca_12.html)
+  
+: Reading for next class
+  : Supplementary notes [Chapter 7](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/model_selection.html)
 
 : **HW 5 released**{: .label .label-yellow }
+  : [HW 5](https://sta712-f26.github.io/homework/hw_05.html)
