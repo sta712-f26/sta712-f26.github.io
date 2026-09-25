@@ -1,5 +1,5 @@
 ---
-title: "Activity: Cross validation and model selection"
+title: "Activity: hypothesis testing and model selection"
 format: html
 editor: source
 callout-icon: false
