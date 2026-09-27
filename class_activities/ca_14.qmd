@@ -1,0 +1,26 @@
+---
+title: "Activity: exponential dispersion models"
+format: pdf
+editor: source
+---
+
+\vspace{-1.5cm}
+
+## Exponential dispersion models
+
+We say that a distribution belongs to the *exponential dispersion model* family if the distribution's probability function can be written in the form
+
+$$f(y; \theta, \phi) = a(y, \phi) \exp \left\lbrace \frac{y \theta - \kappa(\theta)}{\phi} \right\rbrace$$
+
+where $\theta$ is called the *canonical parameter*, $\kappa(\theta)$ is the *cumulant function*, $\phi > 0$ is the *dispersion parameter*, and $a(y, \phi)$ is a function -- which does not depend on $\theta$ -- that ensures $f(y; \theta, \phi)$ integrates or sums to 1.
+
+## Normal distribution
+
+The $N(\mu, \sigma^2)$ distribution has pdf
+
+$$\frac{1}{\sqrt{2 \pi \sigma^2}} \exp\left\lbrace-\frac{1}{2\sigma^2}(y - \mu)^2 \right\rbrace$$
+
+Show that the $N(\mu, \sigma^2)$ distribution belongs to the EDM family.
+
+
+

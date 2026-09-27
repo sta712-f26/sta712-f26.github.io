@@ -1,0 +1,98 @@
+---
+title: "Poisson regression"
+author: "Ciaran Evans"
+output: beamer_presentation
+---
+
+## Count variables
+
+**Data:** Data on medical facilities and doctors from a sample of 53 different counties in the US. Variables include:
+
+* `MDs`: the number of medical doctors in the county
+* `Hospitals`: the number of hospitals in the county
+
+**Research question:** Can we model the relationship between the number of hospitals and the number of doctors?
+
+\vspace{2cm}
+
+
+## Plotting the data
+
+```{r echo=F, message=FALSE, warning=F, fig.align='center', fig.width=3.5, fig.height=2.5}
+library(tidyverse)
+library(Stat2Data)
+data("CountyHealth")
+
+CountyHealth %>%
+  ggplot(aes(x = Hospitals, y = MDs)) +
+  geom_point(size = 0.5) +
+  labs(x = "Number of hospitals",
+       y = "Number of doctors") +
+  theme_bw()
+```
+
+**Question:** Does a linear regression model seem appropriate for this relationship?
+
+\vspace{2cm}
+
+## Trying a transformation
+
+```{r echo=F, message=FALSE, warning=F, fig.align='center', fig.width=3.5, fig.height=2.5}
+
+CountyHealth %>%
+  ggplot(aes(x = Hospitals, y = sqrt(MDs))) +
+  geom_point(size = 0.5) +
+  labs(x = "Number of hospitals",
+       y = "sqrt(Number of doctors)") +
+  theme_bw() 
+```
+
+Is a linear regression model appropriate now?
+
+\vspace{2cm}
+
+## Limitation of transformations
+
+
+## Poisson regression
+
+
+## Fitting the Poisson regression model
+
+```{r}
+m1 <- glm(MDs ~ Hospitals, data = CountyHealth, 
+          family = poisson)
+summary(m1)$coefficients
+```
+
+\vspace{4cm}
+
+
+## Interpreting the Poisson regression model
+
+```{r}
+m1 <- glm(MDs ~ Hospitals, data = CountyHealth, 
+          family = poisson)
+summary(m1)$coefficients
+```
+
+\vspace{4cm}
+
+## Exponential dispersion models
+
+## Activity
+
+Work on the activity (handout).
+
+
+
+
+
+
+
+
+
+
+
+
+
