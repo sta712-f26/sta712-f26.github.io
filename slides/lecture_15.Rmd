@@ -1,0 +1,49 @@
+---
+title: "Exponential dispersion models"
+author: "Ciaran Evans"
+output: beamer_presentation
+---
+
+## Last time: Exponential dispersion models
+
+We say that a distribution belongs to the *exponential dispersion model* family if the distribution's probability function can be written in the form
+
+$$f(y; \theta, \phi) = a(y, \phi) \exp \left\lbrace \frac{y \theta - \kappa(\theta)}{\phi} \right\rbrace$$
+
+**Example** $Y \sim N(\mu, \sigma^2)$
+
+\vspace{4cm}
+
+## Exponential dispersion models
+
+$$f(y; \theta, \phi) = a(y, \phi) \exp \left\lbrace \frac{y \theta - \kappa(\theta)}{\phi} \right\rbrace$$
+
+**Example** $Y \sim Bernoulli(p)$
+
+\vspace{5cm}
+
+## EDM components
+
+$$f(y; \theta, \phi) = a(y, \phi) \exp \left\lbrace \frac{y \theta - \kappa(\theta)}{\phi} \right\rbrace$$
+
+\vspace{6cm}
+
+## Cumulants and the cumulant generating function
+
+
+## Activity
+
+Work on the activity (handout).
+
+
+
+
+
+
+
+
+
+
+
+
+

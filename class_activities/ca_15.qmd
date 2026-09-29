@@ -1,0 +1,17 @@
+---
+title: "Activity: cumulant generating function"
+format: pdf
+editor: source
+---
+
+\vspace{-1.5cm}
+
+## Cumulant generating function
+
+Let $Y$ be a random variable. The **cumulant generating function** (CGF) of $Y$ is the log of the moment generating function:
+
+$$C(t) = \log \mathbb{E}[e^{tY}]$$
+
+Show that
+
+$$\frac{d}{dt}C(t) \bigg\lvert_{t=0} = \mathbb{E}[Y] \hspace{1.5cm} \frac{d^2}{dt^2}C(t) \bigg\lvert_{t=0} = Var(Y)$$
