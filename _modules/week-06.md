@@ -18,3 +18,4 @@ October 2
   : [Slides](https://sta712-f26.github.io/slides/lecture_16.pdf), [Activity](https://sta712-f26.github.io/class_activities/ca_16.pdf)
 
 : **HW 6 released**{: .label .label-yellow }
+  : [HW 6](https://sta712-f26.github.io/homework/hw_06.html)

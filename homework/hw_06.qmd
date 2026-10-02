@@ -1,0 +1,51 @@
+---
+title: "Homework 6"
+format: html
+---
+
+**Due:** Friday, October 9, 11:59pm on Canvas
+
+**Homework grading and resubmissions:** Homework will be graded on completeness, correctness, and effort. If you make an honest, good-faith effort attempt at a question, but your submitted work has some important errors or is missing a component I think is necessary, I may ask you to *resubmit* your work after receiving feedback. Your grade for that question would then be based on your resubmission.
+
+
+**Collaborators and AI statement:** At the top of your assignment, list any collaborators (Dr. Evans does not count -- he is a resource, not a collaborator), and provide an AI statement describing your use of AI to complete the questions. If you did not use AI in any way, let me know that too. If you did use AI, provide: the model used, the HW questions on which you used AI, and a summary of the ways in which AI provided assistance. As described in the syllabus, AI use is permitted on homework assignments, but submissions without a complete AI statement may not receive full credit.
+
+## Practice with EDMs
+
+1. Determine which of these functions are suitable link functions for a GLM. For those that are not suitable, explain why not.
+
+   a. $g(\mu) = -1/\mu^2$ when $\mu > 0$
+   b. $g(\mu) = |\mu|$ when $-\infty < \mu < \infty$
+   c. $g(\mu) = \log(\mu)$ when $\mu > 0$
+   d. $g(\mu) = \mu^2$ when $-\infty < \mu < \infty$
+   e. $g(\mu) = \mu^2$ when $0 < \mu < \infty$
+   
+2. Suppose $Y \sim Gamma(\alpha, \beta)$, with shape $\alpha > 0$ and scale $\beta > 0$. The density function for $Y$ is given by
+$$f(y; \alpha, \beta) = \dfrac{y^{\alpha - 1}}{\Gamma(\alpha) \beta^\alpha} \exp \{ -y/\beta\}.$$
+
+   a. Show that the gamma distribution is an EDM by identifying $\theta$, $\kappa(\theta)$, and $\phi$.
+   b. Find $\mu = \mathbb{E}[Y]$ as a function of $\alpha$ and $\beta$ by using the fact that $\mu = \dfrac{d}{d \theta} \kappa(\theta)$.
+   c. Using (b), what is the canonical link function for the gamma distribution?
+   d. Using the fact that $Var(Y) = \phi \cdot \dfrac{d \mu}{d \theta} = \phi \cdot V(\mu)$, find $V(\mu)$ as a function of $\mu$, and find $Var(Y)$ as a function of $\alpha$ and $\beta$.
+   
+## EDMs and mean-variance relationship
+   
+A very cool property of EDMs is that the mean-variance relationship encoded by $V(\mu)$ uniquely determines the EDM. For example, a normal distribution is the only EDM for which $V(\mu) = 1$, a Poisson distribution is the only EDM for which $V(\mu) = \mu$, etc. This means that, given a desired mean-variance relationship, we can work backwards to figure out what the EDM should be!
+
+3. Suppose we are told that $Y \sim EDM(\mu, \phi)$, and we know that $V(\mu) = \mu^3$. In this problem, we will derive the corresponding EDM for $Y$.
+    a. Using the fact that $V(\mu) = \frac{d \mu}{d \theta}$, find $\theta$ as a function of $\mu$.
+    b. Using the fact that $\mu = \frac{d \kappa(\theta)}{d \theta}$, show that $\kappa(\theta) = - \sqrt{- 2 \theta} = -\dfrac{1}{\mu}$.
+    c. Conclude that $f(y; \mu, \phi) = a(y, \phi) \exp \left \lbrace \dfrac{-y/(2 \mu^2) + 1/\mu}{\phi} \right\rbrace$. Then rearrange to show that 
+$$f(y; \mu, \phi) = b(y, \phi) \exp \left \lbrace -\dfrac{1}{2\phi}\dfrac{(y - \mu)^2}{y \mu^2} \right\rbrace. $$
+
+The density function of an inverse Gaussian distribution is given by
+$$f(y; \mu, \phi) = (2 \pi y^3 \phi)^{-1/2} \exp \left \lbrace -\dfrac{1}{2\phi}\dfrac{(y - \mu)^2}{y \mu^2} \right\rbrace, $$
+so we have shown that if $V(\mu) = \mu^3$, then $Y$ must have an inverse Gaussian distribution!
+   
+## GLMs vs. variance stabilizing transformations
+
+Read section 5.8 in Dunn and Smyth ("Regression tranformations approximate GLMs), then answer the following questions.
+
+4. Show that, if $Y$ has mean-variance relationship $V(\mu) = \mu^2$ (gamma distribution), then fitting a *linear* regression model with $\log(Y)$ as the response is roughly equivalent to fitting a gamma GLM using the log link function. 
+
+5. If variance stabilizing transformations approximate GLMs, what is the advantage of using an appropriate GLM instead of linear regression with the transformed response?
