@@ -44,7 +44,7 @@ so we have shown that if $V(\mu) = \mu^3$, then $Y$ must have an inverse Gaussia
    
 ## GLMs vs. variance stabilizing transformations
 
-Read section 5.8 in Dunn and Smyth ("Regression tranformations approximate GLMs), then answer the following questions.
+Read section 5.8 in Dunn and Smyth ("Regression tranformations approximate GLMs"), then answer the following questions.
 
 4. Show that, if $Y$ has mean-variance relationship $V(\mu) = \mu^2$ (gamma distribution), then fitting a *linear* regression model with $\log(Y)$ as the response is roughly equivalent to fitting a gamma GLM using the log link function. 
 
