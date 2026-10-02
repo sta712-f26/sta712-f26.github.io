@@ -1,0 +1,40 @@
+---
+title: "Activity: maximum likelihood estimation for GLMs"
+format: pdf
+editor: source
+---
+
+\vspace{-1.5cm}
+
+## GLMs
+
+We say that a distribution belongs to the *exponential dispersion model* family if the distribution's probability function can be written in the form
+
+$$f(y; \theta, \phi) = a(y, \phi) \exp \left\lbrace \frac{y \theta - \kappa(\theta)}{\phi} \right\rbrace$$
+
+For iid observations $(\mathbf{x}_1, Y_1),...,(\mathbf{x}_n, Y_n)$, a **generalized linear model** (GLM) consists of two components:
+
+$$
+\begin{aligned}
+Y_i | \mathbf{x}_i &\sim \text{EDM}(\mu_i, \phi) \\
+g(\mu_i) &= \mathbf{x}_i^T \boldsymbol{\beta}
+\end{aligned}
+$$
+
+For this activity, we will assume that $g$ is the **canonical link function** -- that is, $g(\mu_i) = \theta_i$ (the canonical parameter).
+
+Furthermore, recall the following facts about EDMs:
+
+* $\dfrac{d}{d\theta_i} \kappa(\theta_i) = \mu_i$
+* $\dfrac{d^2}{d \theta_i^2} \kappa(\theta_i) = \dfrac{d \mu_i}{d \theta_i} = V(\mu_i)$
+
+where $\mathbb{E}[Y_i | \mathbf{x}_i] = \mu_i$ and $Var(Y_i|\mathbf{x}_i) = \phi V(\mu_i)$.
+
+## Questions
+
+Maximum likelihood estimation for GLMs does not, in general, have a closed form. Instead, iterative procedures like Newton's method are commonly used. Find expressions for:
+
+* The score $U(\boldsymbol{\beta})$
+* The Hessian $\mathbf{H}(\boldsymbol{\beta})$
+* The Fisher information (for a single observation) $\mathcal{I}_1(\boldsymbol{\beta})$
+* An *estimate* of the Fisher information 

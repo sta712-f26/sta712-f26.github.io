@@ -14,6 +14,7 @@ September 30
   : Dunn and Smyth, Sections 5.1 - 5.3
 
 October 2
-: Exponential dispersion models
+: GLMs
+  : [Slides](https://sta712-f26.github.io/slides/lecture_16.pdf), [Activity](https://sta712-f26.github.io/class_activities/ca_16.pdf)
 
 : **HW 6 released**{: .label .label-yellow }
