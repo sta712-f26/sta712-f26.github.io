@@ -1,0 +1,61 @@
+---
+title: "Deviance"
+author: "Ciaran Evans"
+output: beamer_presentation
+---
+
+## EDMs and GLMs
+
+We say that a distribution belongs to the **exponential dispersion model** family if the distribution's probability function can be written in the form
+
+$$f(y; \theta, \phi) = a(y, \phi) \exp \left\lbrace \frac{y \theta - \kappa(\theta)}{\phi} \right\rbrace$$
+
+
+For iid observations $(\mathbf{x}_1, Y_1),...,(\mathbf{x}_n, Y_n)$, a **generalized linear model** (GLM) consists of two components:
+
+$$
+\begin{aligned}
+Y_i | \mathbf{x}_i &\sim \text{EDM}(\mu_i, \phi) \\
+g(\mu_i) &= \mathbf{x}_i^T \boldsymbol{\beta}
+\end{aligned}
+$$
+
+**Notice:** We want to model the mean $\mu$ of an EDM, but the probability function is written in terms of $\theta$.
+
+\vspace{1cm}
+
+## Rewriting the probability function
+
+$$f(y; \theta, \phi) = a(y, \phi) \exp \left\lbrace \frac{y \theta - \kappa(\theta)}{\phi} \right\rbrace$$
+
+\vspace{6cm}
+
+## Unit deviance and dispersion model form
+
+**Unit deviance:** $d(y, \mu) = 2[t(y, y) - t(y, \mu)]$
+
+\vspace{6cm}
+
+## Example: Normal
+
+## Example: Bernoulli
+
+## Why do we care? 
+
+
+## Activity
+
+Work on the activity (handout).
+
+
+
+
+
+
+
+
+
+
+
+
+
