@@ -1,0 +1,42 @@
+---
+title: "Activity: unit deviance"
+format: pdf
+editor: source
+---
+
+\vspace{-3cm}
+
+## Unit deviance
+
+We say that a distribution belongs to the **exponential dispersion model** family if the distribution's probability function can be written in the form
+
+$$f(y; \theta, \phi) = a(y, \phi) \exp \left\lbrace \frac{y \theta - \kappa(\theta)}{\phi} \right\rbrace$$
+
+The **unit deviance** is 
+
+$$d(y, \mu) = 2[t(y, y) - t(y, \mu)]$$
+
+where $t(y, \mu) = y\theta - \kappa(\theta)$. This allows us to write the probability function in **dispersion model form**:
+
+$$f(y; \mu, \phi) = b(y, \phi) \exp \left\lbrace -\frac{d(y, \mu)}{2\phi} \right\rbrace$$
+
+## Poisson distribution
+
+Suppose $Y \sim Poisson(\mu)$. We have previously verified that the Poisson is an EDM, with $\theta = \log(\mu)$, $\kappa(\theta) = \mu$, and $\phi = 1$.
+
+1. Find the unit deviance $d(y, \mu)$ for the Poisson.
+
+\newpage
+
+## Negative binomial distribution
+
+Suppose that $Y \sim NB(\mu, r)$, where $r$ is a **known** constant. Then, the probability function for $Y$ is
+
+$$f(y; \mu, r) = \frac{\Gamma(y + r)}{\Gamma(y + 1)\Gamma(r)} \left(\frac{\mu}{\mu + r} \right)^y \left(1 - \frac{\mu}{\mu + r} \right)^k$$
+
+
+2. Show that the negative binomial (with known $r$) is an EDM, by identifying $\phi$, $\theta$, and $\kappa(\theta)$. **Note:** $r$ is a known value -- it does *not* have to be part of $\mu$ or $\phi$!
+
+\vspace{6cm}
+
+3. Find the unit deviance $d(y, \mu)$ for the negative binomial.
