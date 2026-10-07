@@ -1,0 +1,82 @@
+---
+title: "Estimating dispersion"
+author: "Ciaran Evans"
+output: beamer_presentation
+---
+
+## EDMs and GLMs
+
+We say that a distribution belongs to the **exponential dispersion model** family if the distribution's probability function can be written in the form
+
+$$
+\begin{aligned}
+f(y; \theta, \phi) &= a(y, \phi) \exp \left\lbrace \frac{y \theta - \kappa(\theta)}{\phi} \right\rbrace \\
+f(y;\mu, \phi)&= b(y, \phi) \exp \left\lbrace -\frac{d(y, \mu)}{2\phi} \right\rbrace
+\end{aligned}
+$$
+
+
+For iid observations $(\mathbf{x}_1, Y_1),...,(\mathbf{x}_n, Y_n)$, a **generalized linear model** (GLM) consists of two components:
+
+$$
+\begin{aligned}
+Y_i | \mathbf{x}_i &\sim \text{EDM}(\mu_i, \phi) \\
+g(\mu_i) &= \mathbf{x}_i^T \boldsymbol{\beta}
+\end{aligned}
+$$
+
+\vspace{1cm}
+
+## Estimating $\boldsymbol{\beta}$
+
+$$
+\begin{aligned}
+Y_i | \mathbf{x}_i &\sim \text{EDM}(\mu_i, \phi) \\
+g(\mu_i) &= \mathbf{x}_i^T \boldsymbol{\beta}
+\end{aligned}
+$$
+
+Newton's method:
+
+* $U(\boldsymbol{\beta}) = \frac{1}{\phi} \sum \limits_{i=1}^n (Y_i - \mu_i) \mathbf{x}_i = \frac{1}{\phi} \mathbf{X}^T(\mathbf{y} - \boldsymbol{\mu})$
+* $\mathbf{H}(\boldsymbol{\beta}) = -\frac{1}{\phi} \sum \limits_{i=1}^n V(\mu_i) \mathbf{x}_i \mathbf{x}_i^T$
+* $\mathcal{I}_1(\boldsymbol{\beta}) = \frac{1}{\phi} \mathbb{E}[V(\mu_i) \mathbf{x}_i \mathbf{x}_i^T]$
+
+\vspace{3cm}
+
+## Estimating $\phi$
+
+Dispersion model form:
+
+$$f(y; \mu, \phi) = b(y, \phi) \exp \left\lbrace -\frac{d(y, \mu)}{2\phi} \right\rbrace$$
+
+\vspace{6cm}
+
+## Approximating $b(y, \phi)$
+
+## Saddlepoint approximation
+
+## MLE for $\phi$ and the mean deviance estimator
+
+$$f(y; \mu, \phi) = b(y, \phi) \exp \left\lbrace -\frac{d(y, \mu)}{2\phi} \right\rbrace \approx \frac{1}{\sqrt{2\pi \phi V(y)}} \exp \left\lbrace -\frac{d(y, \mu)}{2\phi} \right\rbrace$$
+
+\vspace{7cm}
+
+## Pearson estimator
+
+## Activity
+
+Work on the activity (course website).
+
+
+
+
+
+
+
+
+
+
+
+
+
