@@ -1,0 +1,88 @@
+---
+title: "Activity: saddlepoint approximation and dispersion estimates"
+format: html
+editor: source
+callout-icon: false
+---
+
+## Gamma distribution
+
+In homework, you are working on showing that the gamma distribution is an example of an EDM. Written in dispersion model form, the gamma distribution has pdf
+
+$$f(y; \mu, \phi) = \frac{1}{y(\phi e)^{1/\phi} \ \Gamma(1/\phi)} \exp\left\lbrace -\frac{d(y, \mu)}{2\phi} \right\rbrace$$
+
+where the unit deviance is
+
+$$d(y, \mu) = 2\left(-\log\left(\frac{y}{\mu} \right) + \frac{y - \mu}{\mu} \right)$$
+
+### Saddlepoint approximation
+
+Since $V(\mu) = \mu^2$ for the gamma, the saddlepoint approximation is
+
+$$f(y; \mu, \phi) \approx \frac{1}{y\sqrt{2\pi \phi}} \exp\left\lbrace -\frac{d(y, \mu)}{2\phi} \right\rbrace$$
+
+In other words, the saddlepoint approximation uses
+
+$$\frac{1}{y(\phi e)^{1/\phi} \ \Gamma(1/\phi)} \approx \frac{1}{y\sqrt{2\pi \phi}}$$
+
+### Questions
+
+The code below computes $f(y; \mu, \phi)$ and the saddlepoint approximation to the density for the gamma distribution with $\phi = 0.1$ and $\mu = 5$.
+
+```{r}
+phi <- 0.1
+mu <- 5
+y <- seq(0, 10, 0.1)
+
+# approximate normalizing constant with saddlepoint
+saddlepoint_constant <- 1/(y * sqrt(2*pi*phi))
+
+# true normalizing constant
+original_constant <- (exp(1) * phi)^(-1/phi)/(y * gamma(1/phi))
+
+# unit deviance for the gamma
+unit_deviance <- 2*(-log(y/mu) + (y-mu)/mu)
+
+# densities (saddlepoint approximation and true density)
+saddlepoint_dens <- saddlepoint_constant * exp(-unit_deviance/(2*phi))
+original_dens <- original_constant * exp(-unit_deviance/(2*phi))
+```
+
+1. Plot the two densities -- does the saddlepoint approximation do a good job?
+
+2. Try different values of $\phi$. How does the shape of the gamma distribution change as you change $\phi$? How does the quality of the saddlepoint approximation change as you change $\phi$?
+
+
+## Estimating $\phi$
+
+Suppose we have $Y_1,...,Y_n \overset{iid}{\sim} Gamma(\mu, \phi)$. (No explanatory variables to consider for now). Let's use $\overline{Y}$ as our sample estimate of $\mu$.
+
+Then, the mean deviance and Pearson estimators of $\phi$ are:
+
+$$
+\begin{aligned}
+\widehat{\phi}_D &= \frac{\sum \limits_{i=1}^n d(Y_i, \overline{Y})}{n-1} = \frac{\sum \limits_{i=1}^n 2\left(-\log\left(\frac{Y_i}{\overline{Y}} \right) + \frac{Y_i - \overline{Y}}{\overline{Y}} \right)}{n-1} \\
+\widehat{\phi}_P &= \frac{1}{n-1} \sum \limits_{i=1}^n \frac{(Y_i - \overline{Y})^2}{(\overline{Y})^2}
+\end{aligned}
+$$
+
+Here is code to simulate $n = 100$ observations from a gamma with $\mu = 5$ and $\phi = 0.1$:
+
+```{r}
+mu = 5
+phi = 0.1
+n <- 100
+y <- rgamma(n, shape = 1/phi, scale = mu*phi)
+```
+
+### Questions
+
+3. Compute the two estimators, and compare with the true value of $\phi$.
+
+4. Simulate many samples, and compare the bias and variance of the two estimators.
+
+5. How do the bias and variance change as $\phi$ changes?
+
+
+
+
