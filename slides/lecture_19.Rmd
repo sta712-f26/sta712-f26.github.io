@@ -1,0 +1,273 @@
+---
+title: "Poisson regression"
+author: "Ciaran Evans"
+output: beamer_presentation
+---
+
+## Warmup
+
+Work on the warmup activity (handout)
+
+\vspace{4cm}
+
+## Warmup
+
+```{r, include=F}
+library(foreign)
+library(tidyverse)
+articles <- read.dta("http://www.stata-press.com/data/lf2/couart2.dta")
+
+m_art <- glm(art ~ phd + ment + kid5, 
+             family = poisson, data = articles)
+#summary(m_art)
+```
+
+```
+             Estimate Std. Error z value Pr(>|z|)    
+(Intercept)  0.276493   0.087294   3.167  0.00154 ** 
+phd          0.008071   0.026358   0.306  0.75944    
+ment         0.026537   0.002001  13.264  < 2e-16 ***
+kid5        -0.099696   0.035248  -2.828  0.00468 ** 
+```
+
+How would we interpret the coefficient on the number of articles published by the student's mentor?
+
+\vspace{3cm}
+
+## Warmup
+
+```
+             Estimate Std. Error z value Pr(>|z|)    
+(Intercept)  0.276493   0.087294   3.167  0.00154 ** 
+phd          0.008071   0.026358   0.306  0.75944    
+ment         0.026537   0.002001  13.264  < 2e-16 ***
+kid5        -0.099696   0.035248  -2.828  0.00468 ** 
+```
+
+What is the predicted number of articles for a student at a PhD program with a prestige score of 4, whose mentor published 30 articles in the last 3 years, and who has no children?
+
+\vspace{3cm}
+
+
+## EDMs and GLMs
+
+We say that a distribution belongs to the **exponential dispersion model** family if the distribution's probability function can be written in the form
+
+$$
+\begin{aligned}
+f(y; \theta, \phi) &= a(y, \phi) \exp \left\lbrace \frac{y \theta - \kappa(\theta)}{\phi} \right\rbrace \\
+f(y;\mu, \phi)&= b(y, \phi) \exp \left\lbrace -\frac{d(y, \mu)}{2\phi} \right\rbrace
+\end{aligned}
+$$
+
+
+For iid observations $(\mathbf{x}_1, Y_1),...,(\mathbf{x}_n, Y_n)$, a **generalized linear model** (GLM) consists of two components:
+
+$$
+\begin{aligned}
+Y_i | \mathbf{x}_i &\sim \text{EDM}(\mu_i, \phi) \\
+g(\mu_i) &= \mathbf{x}_i^T \boldsymbol{\beta}
+\end{aligned}
+$$
+
+\vspace{1cm}
+
+## What we know so far
+
+GLMs:
+
+* Estimating $\boldsymbol{\beta}$ (and $\phi$ if needed)
+* Key properties of EDMs
+
+Linear and logistic regression:
+
+* Model assessment
+* Predictions and prediction error
+* Inference
+* Model selection
+
+Today: Model assumptions and diagnostics for *Poisson* models
+
+## Poisson regression
+
+$$
+\begin{aligned}
+Y_i | \mathbf{x}_i &\sim Poisson(\mu_i) \\
+\log(\mu_i) &= \mathbf{x}_i^T \boldsymbol{\beta}
+\end{aligned}
+$$
+
+**Question:** What assumptions is this model making? How would we assess those assumptions?
+
+\vspace{6cm}
+
+## Activity
+
+Use the provided packet to answer the following questions:
+
+* Does the Poisson regression model appear to be a good fit?
+* If not, which piece of the model do you think is mis-specified?
+
+\vspace{4cm}
+
+## Rootograms: an overall assessment of model fit
+
+```{r, fig.width=4, fig.height=3}
+topmodels::rootogram(m_art)
+```
+
+## Rootograms: an overall assessment of model fit
+
+* horizontal axis: possible values for the response variable
+* vertical axis (square root scale): predicted count for the model (points) and *observed* counts from the data (bars)
+* Assessing whether predicted counts match observed counts
+* Lack of fit could be due to:
+    * Wrong choice of distribution
+    * Additional explanatory variables need to be added to model
+    * Issues with shape assumption
+    
+\vspace{1cm}
+
+**Question:** We didn't make a rootogram for binary logistic regression. Why not?
+
+## (Randomized) quantile residual plots
+
+```{r echo=F, fig.width=4, fig.height=2.5, message=F, warning=F}
+articles |>
+  mutate(res = statmod::qresid(m_art)) |>
+  ggplot(aes(x = phd, y = res)) +
+  geom_point(size=0.5) +
+  geom_smooth() +
+  theme_bw() +
+  labs(x = "Prestige of PhD program",
+       y = "Quantile residuals")
+```
+
+What I am looking for in a quantile residual plot?
+
+\vspace{2cm}
+
+## Examining influential points
+
+**Cook's distance:**
+
+\vspace{3cm}
+
+```{r}
+articles[which(cooks.distance(m_art) > 0.1),
+         c("art", "kid5", "phd", "ment")]
+```
+
+
+## (Randomized) quantile residual plots
+
+```{r echo=F, fig.width=4, fig.height=2.5, message=F, warning=F}
+articles |>
+  mutate(res = statmod::qresid(m_art)) |>
+  ggplot(aes(x = ment, y = res)) +
+  geom_point(size=0.5) +
+  geom_smooth() +
+  theme_bw() +
+  labs(x = "Number of articles published by mentor",
+       y = "Quantile residuals")
+```
+
+How could I decide whether deviations in the quantile residual plot are just due to random chance?
+
+\vspace{1cm}
+
+## Plot lineup
+
+```{r echo=F, message=F, warning=F, fig.height=3.5, fig.width=4}
+library(regressinator)
+
+set.seed(70)
+qresid_fn <- function(f){
+  data.frame(resid = statmod::qresid(f),
+             x = model.frame(f)$ment)
+}
+
+model_lineup(m_art, fn = qresid_fn, nsim = 20) |> 
+  ggplot(aes(x = x, y = resid)) +
+  geom_point(size = 0.4) +
+  geom_smooth() +
+  facet_wrap(vars(.sample)) +
+  labs(x = "Mentor articles", y = "Quantile residuals") +
+  theme_bw() +
+  theme(
+  strip.background = element_blank(),
+  strip.text.x = element_blank()
+)
+```
+
+## Quantile residual plot
+
+Plot without the two rows with the most number of mentor publications:
+
+```{r echo=F, fig.width=4, fig.height=2.5, message=F, warning=F}
+articles |>
+  mutate(res = statmod::qresid(m_art)) |>
+  filter(ment < 60) |>
+  ggplot(aes(x = ment, y = res)) +
+  geom_point(size=0.5) +
+  geom_smooth() +
+  theme_bw() +
+  labs(x = "Number of articles published by mentor",
+       y = "Quantile residuals")
+```
+
+## QQ plot
+
+**If** the model is a good fit to the data, randomized quantile residuals should be approximately $N(0, 1)$.
+
+```{r echo=F, message=F, warning=F, fig.height=3, fig.width=3}
+articles |>
+  mutate(res = statmod::qresid(m_art)) |>
+  ggplot(aes(sample = res)) +
+  geom_qq(size = 0.5) +
+  geom_qq_line() +
+  theme_bw() +
+  labs(x = "Theoretical normal quantiles",
+       y = "Observed residual quantiles")
+```
+
+## QQ plot
+
+**If** the model is a good fit to the data, randomized quantile residuals should be approximately $N(0, 1)$.
+
+```{r echo=F, message=F, warning=F, fig.height=3, fig.width=3}
+articles |>
+  mutate(res = statmod::qresid(m_art)) |>
+  ggplot(aes(sample = res)) +
+  geom_qq(size = 0.5) +
+  geom_qq_line() +
+  geom_abline(slope = 1, intercept = 0, 
+              lty = 2, color = "orange") +
+  theme_bw() +
+  labs(x = "Theoretical normal quantiles",
+       y = "Observed residual quantiles")
+```
+
+## Summary so far
+
+For the Poisson regression on the articles data, here is my perspective:
+
+* There are several potential outliers
+* The rootogram shows our predicted counts are somewhat low in the tails of the distribution, compared to the observed counts
+* Quantile residual plots suggest the shape assumption is overall pretty reasonable
+* The QQ plot suggests that the quantile residuals are approximately normal, but variability of the residuals is higher than expected
+
+**Question:** If this particular model is mis-specified, what do you think is the cause? How could we modify the model?
+
+
+
+
+
+
+
+
+
+
+
+
+

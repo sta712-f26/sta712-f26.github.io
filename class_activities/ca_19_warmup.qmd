@@ -1,0 +1,46 @@
+---
+title: "Warmup"
+format: 
+  pdf:
+    header-includes:
+      - \usepackage{float}
+      - \floatplacement{table}{H}
+editor: source
+---
+
+\vspace{-3cm}
+
+## Biochemistry PhD students
+
+We have information on 915 biochemistry PhD students, with variables including:
+
+* `art`: articles published by the student in last three years of Ph.D.
+* `kid5`: number of children under age six
+* `phd`: prestige of Ph.D. program (a numeric score from 0 to 5)
+* `ment`: articles published by their mentor in last three years
+
+We are interested in modeling the number of articles published by the student in the last three years of their PhD, and so we fit a Poisson regression model:
+
+```{r include=F}
+library(foreign)
+library(tidyverse)
+articles <- read.dta("http://www.stata-press.com/data/lf2/couart2.dta")
+```
+
+```{r}
+m_art <- glm(art ~ phd + ment + kid5, 
+             family = poisson, data = articles)
+summary(m_art)
+```
+
+## Questions
+
+1. How would we interpret the coefficient on the number of articles published by the student's mentor?
+
+\vspace{3cm}
+
+2. What is the predicted number of articles for a student at a PhD program with a prestige score of 4, whose mentor published 30 articles in the last 3 years, and who has no children?
+
+\vspace{3cm}
+
+3. What assumptions is this model making? How would we assess those assumptions?

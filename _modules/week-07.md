@@ -14,4 +14,5 @@ October 7
   : [Slides](https://sta712-f26.github.io/slides/lecture_18.pdf), [Activity](https://sta712-f26.github.io/class_activities/ca_18.html)
 
 October 9
-: GLMs
+: Poisson regression assumptions and diagnostics
+  : [Slides](https://sta712-f26.github.io/slides/lecture_19.pdf), [warmup](https://sta712-f26.github.io/class_activities/ca_19_warmup.pdf), [activity](https://sta712-f26.github.io/class_activities/ca_19.pdf)

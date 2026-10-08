@@ -1,0 +1,228 @@
+---
+title: "Activity: Poisson assumptions and diagnostics"
+format: 
+  pdf:
+    header-includes:
+      - \usepackage{float}
+      - \floatplacement{table}{H}
+editor: source
+---
+
+\vspace{-3cm}
+
+## Model
+
+```{r include=F}
+library(foreign)
+library(tidyverse)
+articles <- read.dta("http://www.stata-press.com/data/lf2/couart2.dta")
+```
+
+```{r}
+m_art <- glm(art ~ phd + ment + kid5, 
+             family = poisson, data = articles)
+```
+
+```{r echo=F}
+gtsummary::tbl_regression(m_art, exponentiate=T)
+```
+
+(The *Incidence Rate Ratio* is just $e^{\beta}$, i.e. the multiplicative change in the estimated mean response).
+
+## Data and EDA
+
+```{r echo=F}
+articles |>
+  select(art, phd, ment, kid5) |>
+  gtsummary::tbl_summary()
+```
+
+```{r echo=F, message=F, warning=F, fig.width=9, fig.height=3}
+library(patchwork)
+p1 <- articles |>
+  ggplot(aes(x = art)) +
+  geom_bar(fill = "lightgrey", color = "black") +
+  theme_classic() +
+  labs(x = "Number of articles published \n by the student (art)")
+
+p2 <- articles |>
+  ggplot(aes(x = ment)) +
+  geom_histogram(fill = "lightgrey", color = "black") +
+  theme_classic() +
+  labs(x = "Number of articles published \n by the mentor (ment)")
+
+p3 <- articles |>
+  ggplot(aes(x = phd)) +
+  geom_histogram(fill = "lightgrey", color = "black", bins=15) +
+  theme_classic() +
+  labs(x = "PhD program prestige (phd)")
+
+p1 + p2 + p3
+```
+
+## Rootogram
+
+A *rootogram* is a tool used to assess overall model fit, by assessing whether the predicted counts from the fitted model match the observed counts from the data.
+
+* horizontal axis: possible values for the response variable
+* vertical axis (square root scale): predicted count for the model (points) and *observed* counts from the data (bars)
+* Lack of fit could be due to:
+    * Wrong choice of distribution
+    * Additional explanatory variables need to be added to model
+    * Issues with shape assumption
+    
+```{r echo=F, fig.width=4, fig.height=3}
+topmodels::rootogram(m_art)
+```
+    
+## (Randomized) quantile residual plots
+
+
+```{r echo=F, fig.width=9, fig.height=3, message=F, warning=F}
+p1 <- articles |>
+  mutate(res = statmod::qresid(m_art)) |>
+  ggplot(aes(x = phd, y = res)) +
+  geom_point(size=0.5) +
+  geom_smooth() +
+  theme_bw() +
+  labs(x = "Prestige of PhD program (phd)",
+       y = "Quantile residuals")
+
+p2 <- articles |>
+  mutate(res = statmod::qresid(m_art)) |>
+  ggplot(aes(x = ment, y = res)) +
+  geom_point(size=0.5) +
+  geom_smooth() +
+  theme_bw() +
+  labs(x = "Number of articles published by mentor (ment)",
+       y = "Quantile residuals")
+
+p3 <- articles |>
+  mutate(res = statmod::qresid(m_art)) |>
+  ggplot(aes(x = as.factor(kid5), y = res)) +
+  geom_boxplot() +
+  geom_smooth() +
+  theme_bw() +
+  labs(x = "Number of children under age 6 (kid5)",
+       y = "Quantile residuals")
+
+p1 + p2 + p3
+```
+
+## QQ plot of quantile residuals
+
+**If** the model is a good fit to the data, randomized quantile residuals should be approximately $N(0, 1)$.
+
+The solid black line in the plot is drawn through the 1st and 3rd quartiles of the residuals (this is how a line on a QQ plot is usually created). The dashed orange line is the line of slope 1 and intercept 0.
+
+```{r echo=F, message=F, warning=F, fig.height=3, fig.width=3}
+articles |>
+  mutate(res = statmod::qresid(m_art)) |>
+  ggplot(aes(sample = res)) +
+  geom_qq(size = 0.5) +
+  geom_qq_line() +
+  geom_abline(slope = 1, intercept = 0, 
+              lty = 2, color = "orange") +
+  theme_bw() +
+  labs(x = "Theoretical normal quantiles",
+       y = "Observed residual quantiles")
+```
+
+## Plot lineups
+
+```{r echo=F, message=F, warning=F, fig.height=6, fig.width=7}
+library(regressinator)
+
+set.seed(72)
+qresid_fn <- function(f){
+  data.frame(resid = statmod::qresid(f),
+             x = model.frame(f)$phd)
+}
+
+model_lineup(m_art, fn = qresid_fn, nsim = 20) |> 
+  ggplot(aes(x = x, y = resid)) +
+  geom_point(size = 0.4) +
+  geom_smooth() +
+  facet_wrap(vars(.sample)) +
+  labs(x = "PhD prestige", y = "Quantile residuals") +
+  theme_bw() +
+  theme(
+  strip.background = element_blank(),
+  strip.text.x = element_blank()
+)
+```
+
+```{r echo=F, message=F, warning=F, fig.height=6, fig.width=7}
+
+set.seed(70)
+qresid_fn <- function(f){
+  data.frame(resid = statmod::qresid(f),
+             x = model.frame(f)$ment)
+}
+
+model_lineup(m_art, fn = qresid_fn, nsim = 20) |> 
+  ggplot(aes(x = x, y = resid)) +
+  geom_point(size = 0.4) +
+  geom_smooth() +
+  facet_wrap(vars(.sample)) +
+  labs(x = "Mentor articles", y = "Quantile residuals") +
+  theme_bw() +
+  theme(
+  strip.background = element_blank(),
+  strip.text.x = element_blank()
+)
+```
+
+```{r echo=F, message=F, warning=F, fig.height=6, fig.width=7}
+library(regressinator)
+
+set.seed(71)
+qresid_fn <- function(f){
+  data.frame(resid = statmod::qresid(f),
+             x = model.frame(f)$kid5)
+}
+
+model_lineup(m_art, fn = qresid_fn, nsim = 20) |> 
+  ggplot(aes(x = as.factor(x), y = resid)) +
+  geom_boxplot() +
+  geom_smooth() +
+  facet_wrap(vars(.sample)) +
+  labs(x = "Kids under age 6", y = "Quantile residuals") +
+  theme_bw() +
+  theme(
+  strip.background = element_blank(),
+  strip.text.x = element_blank()
+)
+```
+
+## Cook's distance
+
+The following table shows the first few rows of the data with their associated Cook's distances, ordered by descending Cook's distance. (The numbers next to the table are just the row numbers in the original data).
+
+```{r, echo=F}
+articles |>
+  select(art, phd, ment, kid5) |>
+  mutate(cooks_distance = cooks.distance(m_art)) |>
+  arrange(desc(cooks_distance)) |>
+  head(10) |>
+  knitr::kable()
+```
+
+## Correlation and VIFs
+
+```{r, echo=F, message=F, warning=F, fig.width = 5, fig.height = 5}
+library(GGally)
+articles |>
+  select(art, phd, ment, kid5) |>
+  ggpairs(upper = list(continuous = "points"),
+          lower = list(continuous = 
+                         GGally::wrap(ggally_cor, stars = F))) +
+  theme_classic()
+```
+
+```{r}
+car::vif(m_art)
+```
+
+
+
