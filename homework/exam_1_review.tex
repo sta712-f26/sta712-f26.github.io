@@ -1,0 +1,127 @@
+\documentclass[11pt]{article}
+\usepackage{url}
+\usepackage{alltt}
+\usepackage{bm}
+\usepackage{bbm}
+\linespread{1}
+\textwidth 6.5in
+\oddsidemargin 0.in
+\addtolength{\topmargin}{-1in}
+\addtolength{\textheight}{2in}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{hyperref}
+
+\begin{document}
+
+
+\begin{center}
+\Large
+STA 712 Exam 1 Review\\
+\normalsize
+\vspace{5mm}
+\end{center} 
+
+\noindent \textbf{Information:} The midterm exam will cover class material through October 7, and homeworks 1 -- 6. The questions below are not completely comprehensive, but will give you a sense of the kinds of questions I could ask on the exam.
+
+\section*{EDM Questions}
+
+\begin{enumerate}
+\item Suppose we are told that $Y \sim EDM(\mu, \phi)$, and we know that $V(\mu) = \mu + \dfrac{\mu^2}{r}$, where $r$ is a \textbf{known} constant. 
+
+\begin{enumerate}
+\item Find the canonical parameter $\theta$ as a function of $\mu$.
+\item Find the cumulant function $\kappa(\theta)$ as a function of $\theta$.
+\end{enumerate}
+
+These values of $\theta$ and $\kappa(\theta)$ match the values for a negative binomial distribution, so if $Y \sim EDM(\mu, \phi)$ and $V(\mu) = \mu + \dfrac{\mu^2}{r}$, then $Y$ must be negative binomial!
+
+\bigskip
+
+\item Determine which of these functions are suitable link functions for a GLM. For those that are not suitable, explain why not.
+
+\begin{enumerate}
+\item $g(\mu) = e^\mu$ when $-\infty < \mu < \infty$
+\item $g(\mu) = e^{-\mu}$ when $-\infty < \mu < \infty$
+\item $g(\mu) = \log \left( \dfrac{\mu}{\mu + 1} \right)$ when $\mu > 0$
+\item $g(\mu) = \log(\mu)$ when $-\infty < \mu < \infty$
+\end{enumerate}
+
+\bigskip
+
+\item Determine which of the following distributions are EDMs by identifying (where possible) $\theta, \kappa(\theta)$, and $\phi$.
+
+\begin{enumerate}
+\item Beta distribution:
+$$f(y; a, b) = \frac{\Gamma(a + b)}{\Gamma(a)\Gamma(b)}y^{a-1}(1 - y)^{b-1}$$
+for $0 < y < 1$, $a > 0$, and $b > 0$.
+
+\item Strict arcsine distribution:
+$$f(y; p) = \frac{A(y)}{y!} \exp\{y \log(p) - \arcsin(p) \}$$
+where $y = 0, 1, 2, ...$ and $0 < p < 1$, and $A(y)$ is a complicated function depending only on $y$.
+\end{enumerate}
+
+\bigskip
+
+\item
+\begin{enumerate}
+\item Let $Y \sim Geometric(p)$, with probability function
+$$f(y; p) = p(1 - p)^y$$
+for $y = 0, 1, 2,...$ and $0 < p < 1$. (This parameterization of the geometric distribution counts the number of failures until the first success, where $p$ is the probability of success). Show that the geometric distribution is an EDM by identifying $\theta$, $\kappa(\theta)$, and $\phi$.
+
+\item Use part (a) and properties of EDMs to find $\mathbb{E}[Y]$ and $Var(Y)$.
+
+\item Find the unit deviance $d(y, \mu)$.
+
+\item Suppose that we observed iid sample $(\mathbf{x}_1, Y_1),...,(\mathbf{x}_n, Y_n)$ from some distribution, where
+\begin{align*}
+Y_i | \mathbf{x}_i &\sim Geometric(p_i) \\
+h(p_i) &= \mathbf{x}_i^T \boldsymbol{\beta}
+\end{align*}
+If $h(p_i) = g(\mu_i) = \theta_i$, write down either $h(p_i)$ or $g(\mu_i)$.
+
+\item For the model in part (d) (using the canonical link), write down an expression for $U(\boldsymbol{\beta})$ and $\mathbf{H}(\boldsymbol{\beta})$. You do \textbf{not} need to re-derive these from the log-likelihood -- you may rely on general EDM results from class.
+\end{enumerate}
+
+\bigskip
+
+\item Recall that the \textbf{cumulant generating function} $C_Y(t)$ for a random variable $Y$ is defined by
+$$C_Y(t) = \log \mathbb{E}[e^{tY}]$$
+(This definition is not specific to the EDM family). Suppose we have two independent random variables $Y_1$ and $Y_2$ (not necessarily EDMs), for both of which the cgf exists at $t$. Show that
+$$C_{Y_1 + Y_2}(t) = C_{Y_1}(t) + C_{Y_2}(t)$$
+
+\bigskip
+
+\item An important property of EDMs (as we have defined them) is that they are \textbf{reproductive}. If $Y_1,...,Y_n \overset{iid}{\sim} EDM(\mu, \phi)$ then
+$$\overline{Y} = \frac{1}{n} \sum \limits_{i=1}^n Y_i \sim EDM\left(\mu, \frac{1}{n}\phi\right)$$
+
+\begin{enumerate}
+\item In class, we showed that the cgf of $Y \sim EDM(\mu, \phi)$ is 
+$$C_Y(t) = \frac{\kappa(\theta + \phi t) - \kappa(\theta)}{\phi}$$
+Use this result to show that $\overline{Y} \sim EDM\left(\mu, \frac{1}{n}\phi\right)$.
+
+\item Using part (a), argue that -- for small values of $\phi$ -- if $Y \sim EDM(\mu, \phi)$ then $Y \approx N(\mu, \phi V(\mu))$.
+\end{enumerate}
+
+\end{enumerate}
+
+\section*{Logistic regression questions}
+
+\begin{enumerate}
+\item[7.] Let $Y_i^*$ be a \textit{continuous} random variable, defined by
+$$Y_i^* = \mathbf{x}_i^T \boldsymbol{\beta}^* + \varepsilon_i$$
+where the $\varepsilon_i$ are iid samples from the \textbf{Gumbel distribution}, with pdf 
+$$f_{\varepsilon}(t) = \exp\{-(t - e^{-t})\} \hspace{0.5cm} t \in (-\infty, \infty)$$
+Then, let $Y_i = \mathbb{I}\{Y_i^* > 0\}$. Show that $Y_i | \mathbf{x}_i \sim Bernoulli(p_i)$, with
+$$\log(-\log(1 - p_i)) = \mathbf{x}_i^T \boldsymbol{\beta}$$
+(where $\boldsymbol{\beta} = - \boldsymbol{\beta}^*$).
+
+The function $\log(-\log(1 - p_i))$ is called the \textbf{complementary log-log} (cloglog) link.
+
+\bigskip
+
+\item[8.] Your friend fits a logistic regression model, and wants to check the quality of the predicted probabilities. They notice that $\frac{1}{n} \sum \limits_{i=1}^n \widehat{p}_i = \frac{1}{n} \sum \limits_{i=1}^n Y_i$ for their fitted model, and they claim this is evidence that the model is well-calibrated. Comment on your friend's interpretation.
+\end{enumerate}
+
+\end{document}
