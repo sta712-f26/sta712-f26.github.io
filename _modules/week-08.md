@@ -16,4 +16,5 @@ October 14
   : [review questions](https://sta712-f26.github.io/homework/exam_1_review.pdf)
 
 October 16
-: Negative binomial and quasi-Poisson models
+: Poisson diagnostics
+  : [Slides](https://sta712-f26.github.io/slides/lecture_21.pdf), [Activity](https://sta712-f26.github.io/class_activities/ca_21.html)
