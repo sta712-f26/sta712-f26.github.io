@@ -1,0 +1,192 @@
+---
+title: "Poisson regression"
+author: "Ciaran Evans"
+output: beamer_presentation
+---
+
+
+
+```{r, include=F}
+library(foreign)
+library(tidyverse)
+articles <- read.dta("http://www.stata-press.com/data/lf2/couart2.dta")
+
+m_art <- glm(art ~ phd + ment + kid5, 
+             family = poisson, data = articles)
+#summary(m_art)
+```
+
+## Previously: Activity
+
+Use the provided packet to answer the following questions:
+
+* Does the Poisson regression model appear to be a good fit?
+* If not, which piece of the model do you think is mis-specified?
+
+## A goodness-of-fit test
+
+## Parametric bootstrapping
+
+## Parametric bootstrapping
+
+```{r par_boot, cache = T, include=F, message=F, warning=F}
+m_art <- glm(art ~ phd + ment + kid5, 
+             family = poisson, data = articles)
+
+nsim <- 10000
+n <- nrow(articles)
+boot_dev <- rep(NA, nsim)
+for(i in 1:nsim){
+  articles_sim <- articles |>
+    mutate(art_sim = rpois(n, m_art$fitted.values))
+  m_sim <- glm(art_sim ~ phd + ment + kid5, 
+             family = poisson, data = articles_sim)
+  boot_dev[i] <- m_sim$deviance
+}
+```
+
+```{r, echo=F, fig.width=4, fig.height=2.5, message=F, warning=F}
+data.frame(boot_dev) |>
+  ggplot(aes(x = boot_dev)) +
+  geom_histogram() +
+  theme_bw() +
+  labs(x = "Deviance",
+       title = "Parametric bootstrap distribution of deviance")
+```
+
+```{r}
+m_art$deviance
+```
+
+## Approximate null distribution
+
+## Parametric bootstrapping
+
+```{r, echo=F, fig.width=4, fig.height=2.5, message=F, warning=F}
+data.frame(boot_dev) |>
+  ggplot(aes(x = boot_dev)) +
+  geom_histogram() +
+  theme_bw() +
+  labs(x = "Deviance",
+       title = "Parametric bootstrap distribution of deviance")
+```
+
+This isn't quite a $\chi^2_{911}$ distribution. Why not?
+
+## Another dataset
+
+Data on the number of lung cancer cases in different Danish cities. Poisson regression model:
+
+```{r, include = F}
+library(GLMsData)
+data("danishlc")
+```
+
+```{r}
+m_lung <- glm(Cases ~ City + Age, 
+              family = poisson, data = danishlc)
+summary(m_lung)$coefficients
+```
+
+## Some diagnostics
+
+```{r echo=F, fig.width=4, fig.height=2.5}
+topmodels::rootogram(m_lung)
+```
+
+## Some diagnostics
+
+```{r echo=F, fig.width=4, fig.height=2.5}
+danishlc |>
+  mutate(res = statmod::qresid(m_lung)) |>
+  ggplot(aes(sample = res)) +
+  geom_qq() +
+  geom_qq_line() +
+  geom_abline(slope = 1, intercept = 0,
+              lty = 2, color = "orange") +
+  theme_bw() +
+  labs(x = "Theoretical normal quantiles",
+       y = "Observed residual quantiles")
+```
+
+## Some diagnostics
+
+```{r}
+table(danishlc$Cases)
+```
+
+```{r}
+m_lung$deviance
+```
+
+```{r}
+pchisq(m_lung$deviance, m_lung$df.residual, lower.tail=F)
+```
+
+## Model interpretation
+
+```{r echo=F}
+summary(m_lung)$coefficients
+```
+
+Are there any additional variables we would want to add to the model?
+
+\vspace{1cm}
+
+## Offsets
+
+We can account for population size by including an **offset** in the model:
+$$\log(\mu_i) = \beta_0 + \beta_1\text{Horsens}_i + \cdots + \beta_8 \text{Age70-74}_i + \log(\text{Population}_i)$$
+
+\vspace{6cm}
+
+## Fitting a model with offsets
+
+```{r}
+m_lung <- glm(Cases ~ City + Age, offset = log(Pop),
+              family = poisson, data = danishlc)
+```
+
+```
+               Estimate Std. Error     z value     Pr(>|z|)
+(Intercept) -4.21241109  0.2081915 -20.2333461 4.980576e-91
+CityHorsens -0.33005999  0.1815033  -1.8184791 6.899094e-02
+CityKolding -0.37154616  0.1878063  -1.9783480 4.788946e-02
+CityVejle   -0.27231769  0.1878534  -1.4496291 1.471620e-01
+Age40-54    -1.41965342  0.2502707  -5.6724722 1.407514e-08
+Age55-59    -0.31863942  0.2520492  -1.2641953 2.061599e-01
+Age60-64     0.09895893  0.2356616   0.4199197 6.745441e-01
+Age65-69     0.34805283  0.2334288   1.4910451 1.359497e-01
+Age70-74     0.43720988  0.2392942   1.8270809 6.768761e-02
+```
+
+\vspace{2cm}
+
+
+## Offsets
+
+Offsets are useful when our counts come from groups of very different sizes (e.g., different cities). The offset lets us interpret model coefficients in terms of rates rather than average counts.
+
+**Question:** Can you think of other examples of data in which the response is a count variable, and an offset would be useful?
+
+\vspace{4cm}
+
+## Articles data
+
+* `art`: articles published by the student in last three years of Ph.D.
+* `kid5`: number of children under age six
+* `phd`: prestige of Ph.D. program
+* `ment`: articles published by their mentor in last three years
+
+**Question:** Do you think we would want an offset for a Poisson model with this data?
+
+\vspace{3cm}
+
+
+
+
+
+
+
+
+
