@@ -1,0 +1,485 @@
+---
+title: "Exam 1 Review: Data Analysis"
+format: html
+---
+
+```{r, include=F}
+library(tidyverse)
+library(car)
+prostate <- read_csv("https://cmustatistics.github.io/data-repository/data/prostatectomy-storage.csv")
+
+prostate <- prostate |>
+  select(RBC.Age.Group, FamHx, TVol,
+         T.Stage, sGS, OrganConfined, PreopTherapy, Age,
+         Recurrence) |>
+  mutate(RBC.Age.Group = as.factor(RBC.Age.Group),
+         T.Stage = as.factor(T.Stage),
+         sGS = as.factor(sGS)) |>
+  drop_na()
+```
+
+# Blood transfusions in prostatectomies
+
+A radical prostatectomy is a one treatment for prostate cancer, in which the prostate is completely removed. However, it is still possible for cancer to return after surgery, and researchers are interested in understanding what factors are related to cancer recurrence.
+
+One possible factor is related to the blood transfusions some patients received during surgery. Here we examine data from a study investigating whether the *age* of the transfused blood is related to cancer recurrence. 
+
+We have data on 298 patients with prostate cancer, who received a blood transfusion during prostatectomy surgery. The patients were then followed for 5 years after surgery to check whether cancer returned.
+
+**Research question:** Is the risk of recurrence related to the age of blood transfused?
+
+**Information provided:**
+
+* Below is a description of the data
+* At the end of this document is an Appendix which contains EDA and output for six different regression models
+
+## Data
+
+Each observation is one patient, and we have the following variables:
+
+* `RBC.Age.Group`: Red blood cell (RBC) storage duration, grouped (1 = less than 13 days, 2 = 13-18 days, 3 = more than 18 days)
+* `Age`: Patient age (years)
+* `FamHx`: 1 if patient has family history of prostate cancer
+* `TVol`: Tumor volume (1 = low, 2 = medium, 3 = extensive)
+* `T.Stage`: Clinical T category, a measure of the stage of cancer, estimated before surgery. 1 = stages T1-T2a, indicating tumor can’t be felt or seen in imaging, or is felt/seen in half of only one side of the prostate. 2 = stages T2b-T3, indicating tumor is felt/seen in more than half of one side, is in both sides, or has spread outside the prostate.
+* `sGS`: Surgical Gleason score, discretized. Based on examination of the tumor removed in surgery. 1 = not assigned, 2 = no disease or score 0-6, 3 = score 7, 4 = score 8-10.
+* `OrganConfined`: 1 if cancer is limited to the prostate gland, 0 if it has spread outside it
+* `PreopTherapy`: Whether the patient received cancer treatment prior to surgery (1 = yes, 0 = no)
+* `Recurrence`: Whether the prostate cancer recurred within 5 years (1 = yes, 0 = no)
+
+# Questions
+
+1. You notice that there is cancer recurrence for 50 out of the 298 patients in the data (about 17%). Concerned about class imbalance, a colleague suggests down-sampling the data so you have 50 patients with recurrence and 50 patients without recurrence. Comment on your colleague's suggestion.
+
+2. Explain why the estimated coefficient for `PreopTherapy` in **Model 2** is `NA`.
+
+3. Explain how you would assess whether any deviations in the quantile residual plots shown in the appendix are due to model mis-specification, or do to chance.
+
+### Model and interpretation
+
+4. Choose one of the six models in the appendix to investigate the research question, and explain your choice.
+
+5. For your chosen model, interpret (in terms of the odds) the estimated coefficients in the fitted model that are relevant to the research question.
+
+### Probabilities
+
+Two patients receive a prostatectomy at the hospital. Here are there characteristics:
+
+```{r echo=F}
+set.seed(3)
+prostate |>
+  slice_sample(n=2) |>
+  select(-Recurrence)
+```
+
+6. Using your chosen model, estimate the probability of recurrence for Patient 1 (the first row).
+
+7. Explain how you would create a 95% confidence interval for the *difference* in probabilities ($p_1 - p_2$) for these two patients.
+
+### AIC
+
+8. Compute the AIC for your chosen model, then explain the purpose of the penalty term in the AIC. For your chosen model, do you think the AIC will be a good estimate of prediction error on new data?
+
+9. If AIC is an approximation to LOOCV, what is the benefit of calculating AIC instead of computing the LOOCV error? Is there a scenario in which LOOCV would give a better estimate than AIC?
+
+### Addressing the research question
+
+10. Using information in the Appendix, address the main research question: Is the risk of recurrence related to the age of blood transfused?
+
+### Model selection
+
+Your colleague decides they want to build the best predictive model for prostate cancer recurrence. To do so, they use best subset selection:
+
+```{r, eval=F}
+prostate_bss <- bestglm::bestglm(prostate, binomial, "AIC")
+```
+
+```{r, include=F}
+prostate_bss <- bestglm::bestglm(data.frame(prostate), binomial, "AIC")
+```
+
+```{r}
+prostate_bss$BestModel$coefficients
+prostate_bss$BestModel$aic
+```
+
+11. Is the AIC from their chosen model a good estimate of prediction error on new data? Explain why or why not. If not, explain what you would do differently.
+
+
+
+# Appendix
+
+## EDA
+
+```{r}
+table("PreopTherapy" = prostate$PreopTherapy, 
+      "T.Stage" = prostate$T.Stage)
+```
+
+```{r}
+table("PreopTherapy" = prostate$PreopTherapy, 
+      "RBC.Age.Group" = prostate$RBC.Age.Group)
+```
+
+```{r}
+table("PreopTherapy" = prostate$PreopTherapy, 
+      "sGS" = prostate$sGS)
+```
+
+```{r}
+table("T.Stage" = prostate$T.Stage, 
+      "sGS" = prostate$sGS)
+```
+
+```{r}
+table("T.Stage" = prostate$T.Stage, 
+      "Recurrence" = prostate$Recurrence)
+```
+
+```{r}
+table("sGS" = prostate$sGS, 
+      "Recurrence" = prostate$Recurrence)
+```
+```{r}
+table("PreopTherapy" = prostate$PreopTherapy, 
+      "Recurrence" = prostate$Recurrence)
+```
+
+```{r}
+table("RBC.Age.Group" = prostate$RBC.Age.Group, 
+      "Recurrence" = prostate$Recurrence)
+```
+
+
+
+## Model 1
+
+```{r}
+m1 <- glm(Recurrence ~ RBC.Age.Group,
+          data = prostate, family = binomial)
+```
+
+```
+Coefficients:
+               Estimate Std. Error z value Pr(>|z|)    
+(Intercept)    -1.58563    0.26621  -5.956 2.58e-09 ***
+RBC.Age.Group2 -0.01123    0.38213  -0.029    0.977    
+RBC.Age.Group3 -0.03551    0.37592  -0.094    0.925    
+---
+
+    Null deviance: 269.6  on 297  degrees of freedom
+Residual deviance: 269.6  on 295  degrees of freedom
+```
+
+```{r}
+summary(cooks.distance(m1))
+```
+
+```{r, echo=F, message=F}
+roc_obj <- pROC::roc(m1$y, 
+                     m1$fitted.values)
+
+data.frame(tpr = roc_obj$sensitivities,
+           fpr = 1 - roc_obj$specificities) |>
+  ggplot(aes(x = fpr, y = tpr)) +
+  geom_path() +
+  geom_abline(slope = 1, intercept = 0, lty = 2) +
+  theme_bw() +
+  labs(x = "False Positive Rate (1 - Specificity)", 
+       y = "True Positive Rate (Sensitivity)",
+       title = paste("AUC:", round(as.numeric(roc_obj$auc), 3)))
+```
+
+## Model 2
+
+```{r}
+m2 <- glm(Recurrence ~ Age + FamHx + TVol +
+            T.Stage + sGS + OrganConfined + PreopTherapy,
+          data = prostate, family = binomial)
+```
+
+```
+Coefficients: (1 not defined because of singularities)
+              Estimate Std. Error z value Pr(>|z|)    
+(Intercept)   -3.86924    1.94159  -1.993 0.046282 *  
+Age            0.02247    0.02485   0.904 0.365870    
+FamHx         -0.70464    0.50433  -1.397 0.162357    
+TVol           0.94633    0.33536   2.822 0.004775 ** 
+T.Stage2       0.22313    0.49228   0.453 0.650359    
+sGS2          -1.76486    0.67266  -2.624 0.008698 ** 
+sGS3          -1.62246    0.45640  -3.555 0.000378 ***
+sGS4           0.06700    0.58596   0.114 0.908964    
+OrganConfined -0.10317    0.42280  -0.244 0.807216    
+PreopTherapy        NA         NA      NA       NA    
+---
+
+    Null deviance: 269.60  on 297  degrees of freedom
+Residual deviance: 214.68  on 289  degrees of freedom
+```
+
+```{r, error = T}
+vif(m2)
+```
+
+```{r, echo=F, message=F}
+roc_obj <- pROC::roc(m2$y, 
+                     m2$fitted.values)
+
+data.frame(tpr = roc_obj$sensitivities,
+           fpr = 1 - roc_obj$specificities) |>
+  ggplot(aes(x = fpr, y = tpr)) +
+  geom_path() +
+  geom_abline(slope = 1, intercept = 0, lty = 2) +
+  theme_bw() +
+  labs(x = "False Positive Rate (1 - Specificity)", 
+       y = "True Positive Rate (Sensitivity)",
+       title = paste("AUC:", round(as.numeric(roc_obj$auc), 3)))
+```
+
+```{r echo=F, message=F}
+prostate |>
+  mutate(res = statmod::qresid(m2)) |>
+  ggplot(aes(x = Age, y = res)) +
+  geom_point() +
+  geom_smooth() +
+  labs(x = "Age", y = "Randomized quantile residuals") +
+  theme_bw()
+```
+
+## Model 3
+
+```{r}
+m3 <- glm(Recurrence ~ Age + FamHx + TVol +
+            T.Stage + sGS + OrganConfined,
+          data = prostate, family = binomial)
+```
+
+```
+Coefficients:
+              Estimate Std. Error z value Pr(>|z|)    
+(Intercept)   -3.86924    1.94159  -1.993 0.046282 *  
+Age            0.02247    0.02485   0.904 0.365870    
+FamHx         -0.70464    0.50433  -1.397 0.162357    
+TVol           0.94633    0.33536   2.822 0.004775 ** 
+T.Stage2       0.22313    0.49228   0.453 0.650359    
+sGS2          -1.76486    0.67266  -2.624 0.008698 ** 
+sGS3          -1.62246    0.45640  -3.555 0.000378 ***
+sGS4           0.06700    0.58596   0.114 0.908964    
+OrganConfined -0.10317    0.42280  -0.244 0.807216    
+---
+
+    Null deviance: 269.60  on 297  degrees of freedom
+Residual deviance: 214.68  on 289  degrees of freedom
+```
+
+```{r}
+vif(m3)
+```
+
+```{r}
+summary(cooks.distance(m3))
+```
+
+```{r, echo=F, message=F}
+roc_obj <- pROC::roc(m3$y, 
+                     m3$fitted.values)
+
+data.frame(tpr = roc_obj$sensitivities,
+           fpr = 1 - roc_obj$specificities) |>
+  ggplot(aes(x = fpr, y = tpr)) +
+  geom_path() +
+  geom_abline(slope = 1, intercept = 0, lty = 2) +
+  theme_bw() +
+  labs(x = "False Positive Rate (1 - Specificity)", 
+       y = "True Positive Rate (Sensitivity)",
+       title = paste("AUC:", round(as.numeric(roc_obj$auc), 3)))
+```
+
+```{r echo=F, message=F}
+prostate |>
+  mutate(res = statmod::qresid(m3)) |>
+  ggplot(aes(x = Age, y = res)) +
+  geom_point() +
+  geom_smooth() +
+  labs(x = "Age", y = "Randomized quantile residuals") +
+  theme_bw()
+```
+
+## Model 4
+
+```{r}
+m4 <- glm(Recurrence ~ Age + FamHx + TVol +
+            T.Stage + OrganConfined + PreopTherapy,
+          data = prostate, family = binomial)
+```
+
+```
+Coefficients:
+              Estimate Std. Error z value Pr(>|z|)    
+(Intercept)   -5.42836    1.89960  -2.858 0.004268 ** 
+Age            0.02268    0.02423   0.936 0.349458    
+FamHx         -0.74231    0.49418  -1.502 0.133069    
+TVol           1.05048    0.31201   3.367 0.000761 ***
+T.Stage2       0.49969    0.46883   1.066 0.286502    
+OrganConfined -0.29664    0.39876  -0.744 0.456934    
+PreopTherapy   1.26632    0.42659   2.968 0.002993 ** 
+---
+
+    Null deviance: 269.60  on 297  degrees of freedom
+Residual deviance: 224.61  on 291  degrees of freedom
+```
+
+```{r}
+vif(m4)
+```
+
+```{r}
+summary(cooks.distance(m4))
+```
+
+```{r, echo=F, message=F}
+roc_obj <- pROC::roc(m4$y, 
+                     m4$fitted.values)
+
+data.frame(tpr = roc_obj$sensitivities,
+           fpr = 1 - roc_obj$specificities) |>
+  ggplot(aes(x = fpr, y = tpr)) +
+  geom_path() +
+  geom_abline(slope = 1, intercept = 0, lty = 2) +
+  theme_bw() +
+  labs(x = "False Positive Rate (1 - Specificity)", 
+       y = "True Positive Rate (Sensitivity)",
+       title = paste("AUC:", round(as.numeric(roc_obj$auc), 3)))
+```
+
+```{r echo=F, message=F}
+prostate |>
+  mutate(res = statmod::qresid(m4)) |>
+  ggplot(aes(x = Age, y = res)) +
+  geom_point() +
+  geom_smooth() +
+  labs(x = "Age", y = "Randomized quantile residuals") +
+  theme_bw()
+```
+
+## Model 5
+
+```{r}
+m5 <- glm(Recurrence ~ RBC.Age.Group + Age + FamHx + TVol +
+            T.Stage + sGS + OrganConfined,
+          data = prostate, family = binomial)
+```
+
+```
+Coefficients:
+               Estimate Std. Error z value Pr(>|z|)    
+(Intercept)    -3.76899    1.95529  -1.928 0.053906 .  
+RBC.Age.Group2 -0.26255    0.44710  -0.587 0.557054    
+RBC.Age.Group3 -0.05067    0.42376  -0.120 0.904827    
+Age             0.02231    0.02480   0.900 0.368321    
+FamHx          -0.73249    0.50957  -1.437 0.150586    
+TVol            0.95973    0.33682   2.849 0.004381 ** 
+T.Stage2        0.18375    0.49428   0.372 0.710084    
+sGS2           -1.75729    0.67202  -2.615 0.008924 ** 
+sGS3           -1.65830    0.46131  -3.595 0.000325 ***
+sGS4            0.10114    0.58826   0.172 0.863495    
+OrganConfined  -0.10616    0.42456  -0.250 0.802550    
+---
+
+    Null deviance: 269.6  on 297  degrees of freedom
+Residual deviance: 214.3  on 287  degrees of freedom
+```
+
+```{r}
+vif(m5)
+```
+
+```{r}
+summary(cooks.distance(m5))
+```
+
+```{r, echo=F, message=F}
+roc_obj <- pROC::roc(m5$y, 
+                     m5$fitted.values)
+
+data.frame(tpr = roc_obj$sensitivities,
+           fpr = 1 - roc_obj$specificities) |>
+  ggplot(aes(x = fpr, y = tpr)) +
+  geom_path() +
+  geom_abline(slope = 1, intercept = 0, lty = 2) +
+  theme_bw() +
+  labs(x = "False Positive Rate (1 - Specificity)", 
+       y = "True Positive Rate (Sensitivity)",
+       title = paste("AUC:", round(as.numeric(roc_obj$auc), 3)))
+```
+
+```{r echo=F, message=F}
+prostate |>
+  mutate(res = statmod::qresid(m5)) |>
+  ggplot(aes(x = Age, y = res)) +
+  geom_point() +
+  geom_smooth() +
+  labs(x = "Age", y = "Randomized quantile residuals") +
+  theme_bw()
+```
+
+## Model 6
+
+```{r}
+m6 <- glm(Recurrence ~ RBC.Age.Group + Age + FamHx + TVol +
+            T.Stage + OrganConfined + PreopTherapy,
+          data = prostate, family = binomial)
+```
+
+```
+Coefficients:
+               Estimate Std. Error z value Pr(>|z|)    
+(Intercept)    -5.47574    1.91965  -2.852 0.004338 ** 
+RBC.Age.Group2  0.02383    0.42083   0.057 0.954838    
+RBC.Age.Group3  0.10768    0.41326   0.261 0.794434    
+Age             0.02284    0.02426   0.941 0.346546    
+FamHx          -0.74786    0.49664  -1.506 0.132114    
+TVol            1.05090    0.31234   3.365 0.000767 ***
+T.Stage2        0.49533    0.47216   1.049 0.294151    
+OrganConfined  -0.30559    0.40045  -0.763 0.445393    
+PreopTherapy    1.26455    0.42748   2.958 0.003095 ** 
+---
+
+    Null deviance: 269.60  on 297  degrees of freedom
+Residual deviance: 224.53  on 289  degrees of freedom
+```
+
+```{r}
+vif(m6)
+```
+
+```{r}
+summary(cooks.distance(m6))
+```
+
+```{r, echo=F, message=F}
+roc_obj <- pROC::roc(m6$y, 
+                     m6$fitted.values)
+
+data.frame(tpr = roc_obj$sensitivities,
+           fpr = 1 - roc_obj$specificities) |>
+  ggplot(aes(x = fpr, y = tpr)) +
+  geom_path() +
+  geom_abline(slope = 1, intercept = 0, lty = 2) +
+  theme_bw() +
+  labs(x = "False Positive Rate (1 - Specificity)", 
+       y = "True Positive Rate (Sensitivity)",
+       title = paste("AUC:", round(as.numeric(roc_obj$auc), 3)))
+```
+
+```{r echo=F, message=F}
+prostate |>
+  mutate(res = statmod::qresid(m6)) |>
+  ggplot(aes(x = Age, y = res)) +
+  geom_point() +
+  geom_smooth() +
+  labs(x = "Age", y = "Randomized quantile residuals") +
+  theme_bw()
+```
+
+

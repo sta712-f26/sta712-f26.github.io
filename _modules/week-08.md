@@ -13,7 +13,7 @@ October 14
   : Dunn and Smyth, Sections 7.4, 7.5, 8.3, 8.4, 8.7 - 8.9
   
 : Exam 1 review
-  : [review questions](https://sta712-f26.github.io/homework/exam_1_review.pdf)
+  : [mathematical review questions](https://sta712-f26.github.io/homework/exam_1_review.pdf), [data analysis review questions](https://sta712-f26.github.io/homework/exam_1_data_review.html)
 
 October 16
 : Poisson diagnostics
