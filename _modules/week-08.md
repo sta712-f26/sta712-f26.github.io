@@ -17,4 +17,4 @@ October 14
 
 October 16
 : Poisson diagnostics
-  : [Slides](https://sta712-f26.github.io/slides/lecture_21.pdf), [Activity](https://sta712-f26.github.io/class_activities/ca_21.html)
+  : [Slides](https://sta712-f26.github.io/slides/lecture_21.pdf)
