@@ -1,0 +1,111 @@
+---
+title: "Quasi-Poisson and Negative Binomial models"
+author: "Ciaran Evans"
+output: beamer_presentation
+---
+
+
+
+```{r, include=F}
+library(foreign)
+library(tidyverse)
+articles <- read.dta("http://www.stata-press.com/data/lf2/couart2.dta")
+
+m_art <- glm(art ~ phd + ment + kid5, 
+             family = poisson, data = articles)
+#summary(m_art)
+```
+
+## Overdispersion
+
+**Overdispersion** occurs when the response variable $Y_i$ has greater variability than the model accounts for.
+
+\vspace{6cm}
+
+## quasi-Poisson models
+
+## Example: articles data
+
+```{r, eval=F}
+glm(art ~ phd + ment + kid5, family = poisson, data = articles)
+```
+
+```
+             Estimate Std. Error z value Pr(>|z|)    
+(Intercept)  0.276493   0.087294   3.167  0.00154 ** 
+phd          0.008071   0.026358   0.306  0.75944    
+ment         0.026537   0.002001  13.264  < 2e-16 ***
+kid5        -0.099696   0.035248  -2.828  0.00468 ** 
+(Dispersion parameter for poisson family 
+   taken to be 1)
+```
+
+```{r, eval=F}
+glm(art ~ phd + ment + kid5, family = quasipoisson, data = articles)
+```
+
+```
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  0.276493   0.119839   2.307   0.0213 *  
+phd          0.008071   0.036184   0.223   0.8235    
+ment         0.026537   0.002747   9.662   <2e-16 ***
+kid5        -0.099696   0.048389  -2.060   0.0397 *  
+(Dispersion parameter for quasipoisson family 
+   taken to be 1.88461)
+```
+
+## Example: articles data
+
+```{r, eval=F}
+glm(art ~ phd + ment + kid5, family = quasipoisson, data = articles)
+```
+
+```
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  0.276493   0.119839   2.307   0.0213 *  
+phd          0.008071   0.036184   0.223   0.8235    
+ment         0.026537   0.002747   9.662   <2e-16 ***
+kid5        -0.099696   0.048389  -2.060   0.0397 *  
+
+(Dispersion parameter for quasipoisson family 
+   taken to be 1.88461)
+
+    Null deviance: 1817.4  on 914  degrees of freedom
+Residual deviance: 1661.1  on 911  degrees of freedom
+AIC: NA
+```
+
+## Inference for quasi-Poisson models
+
+## Negative Binomial models
+
+## Example: articles data
+
+```{r}
+m3 <- MASS::glm.nb(art ~ phd + ment + kid5, data = articles)
+```
+
+```
+             Estimate Std. Error z value Pr(>|z|)    
+(Intercept)  0.233528   0.117585   1.986   0.0470 *  
+phd          0.008203   0.036069   0.227   0.8201    
+ment         0.030374   0.003240   9.373   <2e-16 ***
+kid5        -0.093256   0.046475  -2.007   0.0448 *  
+```
+
+## Inference for negative binomial models
+
+## Example: articles data
+
+```{r}
+m3 <- MASS::glm.nb(art ~ phd + ment + kid5, data = articles)
+m4 <- MASS::glm.nb(art ~ phd + kid5, data = articles)
+
+pchisq(m3$twologlik - m4$twologlik, 1, lower.tail=F)
+```
+
+\vspace{4cm}
+
+
+
+
