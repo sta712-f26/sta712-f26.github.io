@@ -1,0 +1,64 @@
+---
+title: "Activity: quasi-Poisson inference"
+format: 
+  pdf:
+    header-includes:
+      - \usepackage{float}
+      - \floatplacement{table}{H}
+editor: source
+---
+
+\vspace{-3cm}
+
+## $t$-tests for quasi-Poisson models
+
+For a quasi-Poisson model, 
+$$\widehat{\boldsymbol{\beta}} \approx N(\boldsymbol{\beta}, \phi (\mathbf{X}^T \mathbf{V} \mathbf{X})^{-1})$$
+where $\mathbf{V} = \text{diag}(V(\widehat{\mu}_i)) = \text{diag}(\widehat{\mu}_i)$.
+
+To test $H_0: \beta_j = b$ for one of the coefficients $\beta_j$, the test statistic
+
+$$Z = \dfrac{\widehat{\beta}_j - b}{\sqrt{\phi [(\mathbf{X}^T \mathbf{V} \mathbf{X})^{-1}]_{jj}}} \approx N(0, 1)$$
+
+where $[(\mathbf{X}^T \mathbf{V} \mathbf{X})^{-1}]_{jj}$ denotes the diagonal entry of $(\mathbf{X}^T \mathbf{V} \mathbf{X})^{-1}$ corresponding to $\beta_j$.
+
+However, $\phi$ is typically unknown, in which case we use the test statistic
+
+$$t = \dfrac{\widehat{\beta}_j - b}{\sqrt{\widehat{\phi} [(\mathbf{X}^T \mathbf{V} \mathbf{X})^{-1}]_{jj}}}$$
+
+### Facts
+
+Recall the following:
+
+* If $Z \sim N(0, 1)$ and $X \sim \chi^2_d$ are independent, then $\dfrac{Z}{\sqrt{X/d}} \sim t_{d}$
+* Common estimates of $\phi$ include 
+
+$$\widehat{\phi}_D = \frac{D(\mathbf{y}, \widehat{\boldsymbol{\mu}})}{n-p} \hspace{1cm} \widehat{\phi}_P = \frac{1}{n-p} \sum \limits_{i=1}^n \frac{(Y_i - \widehat{\mu}_i)^2}{V(\widehat{\mu}_i)}$$
+
+* We have argued that
+
+$$\frac{D(\mathbf{y}, \widehat{\boldsymbol{\mu}})}{\phi} \approx \chi^2_{n-p} \hspace{1cm} \frac{1}{\phi} \sum \limits_{i=1}^n \frac{(Y_i - \widehat{\mu}_i)^2}{V(\widehat{\mu}_i)} \approx \chi^2_{n-p}$$
+
+* If $X_1 \sim \chi^2_{d_1}$ and $X_2 \sim \chi^2_{d_2}$ are independent, then
+
+$$\dfrac{X_1/d_1}{X_2/d_2} \sim F_{d_1, d_2}$$
+
+* If we have two nested models (full and reduced), then
+
+$$\frac{D(\mathbf{y}, \widehat{\boldsymbol{\mu}}_{reduced}) - D(\mathbf{y}, \widehat{\boldsymbol{\mu}}_{full})}{\phi} \approx \chi^2_{p_{full} - p_{reduced}}$$
+
+### Questions
+
+1. Show that
+
+$$t = \dfrac{\widehat{\beta}_j - b}{\sqrt{\widehat{\phi} [(\mathbf{X}^T \mathbf{V} \mathbf{X})^{-1}]_{jj}}} \approx t_{n-p}$$
+
+\newpage
+
+2. Show that
+
+$$\frac{(D(\mathbf{y}, \widehat{\boldsymbol{\mu}}_{reduced}) - D(\mathbf{y}, \widehat{\boldsymbol{\mu}}_{full}))/(p_{full} - p_{reduced})}{\widehat{\phi}} \approx F_{p_{full} - p_{reduced}, \ n-p_{full}}$$
+
+
+
+
