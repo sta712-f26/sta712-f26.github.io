@@ -49,13 +49,15 @@ $$\frac{D(\mathbf{y}, \widehat{\boldsymbol{\mu}}_{reduced}) - D(\mathbf{y}, \wid
 
 ### Questions
 
-1. Show that
+Show the following. You can assume the necessary independence.
+
+1.
 
 $$t = \dfrac{\widehat{\beta}_j - b}{\sqrt{\widehat{\phi} [(\mathbf{X}^T \mathbf{V} \mathbf{X})^{-1}]_{jj}}} \approx t_{n-p}$$
 
 \newpage
 
-2. Show that
+2.
 
 $$\frac{(D(\mathbf{y}, \widehat{\boldsymbol{\mu}}_{reduced}) - D(\mathbf{y}, \widehat{\boldsymbol{\mu}}_{full}))/(p_{full} - p_{reduced})}{\widehat{\phi}} \approx F_{p_{full} - p_{reduced}, \ n-p_{full}}$$
 

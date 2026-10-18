@@ -20,9 +20,23 @@ m_art <- glm(art ~ phd + ment + kid5,
 
 **Overdispersion** occurs when the response variable $Y_i$ has greater variability than the model accounts for.
 
-\vspace{6cm}
+\vspace{1cm}
+
+**Poisson:** $Var(Y_i | \mathbf{x}_i) = \mathbb{E}[Y_i | \mathbf{x}_i] = \mu_i$
+
+\vspace{2cm}
 
 ## quasi-Poisson models
+
+$$
+\begin{aligned}
+\log(\mu_i) &= \mathbf{x}_i^T \boldsymbol{\beta} \\
+Var(Y_i | \mathbf{x}_i) &= \phi \mu_i
+\end{aligned}
+$$
+
+\vspace{6cm}
+
 
 ## Example: articles data
 
@@ -75,9 +89,31 @@ Residual deviance: 1661.1  on 911  degrees of freedom
 AIC: NA
 ```
 
-## Inference for quasi-Poisson models
+## t-tests for quasi-Poisson models
+
+$$\widehat{\boldsymbol{\beta}} \approx N(\boldsymbol{\beta}, \phi (\mathbf{X}^T \mathbf{V} \mathbf{X})^{-1})$$
+
+$H_0: \beta_j = b \hspace{1cm} Z = \dfrac{\widehat{\beta}_j - b}{\sqrt{\phi [(\mathbf{X}^T \mathbf{V} \mathbf{X})^{-1}]_{jj}}} \approx N(0, 1)$
+
+\vspace{5cm}
+
+## F-tests for quasi-Poisson models
+
+The quasi-Poisson does not specify a full distribution.
+
+\vspace{1cm}
+
+But, the deviance still exists.
+
+\vspace{5cm}
 
 ## Negative Binomial models
+
+$$Y \sim NB(\mu, r) \hspace{1cm} f(y; \mu, r) = \frac{\Gamma(y + r)}{\Gamma(y + 1)\Gamma(r)} \left(\frac{\mu}{\mu + r} \right)^y \left(1 - \frac{\mu}{\mu + r} \right)^r$$
+
+$$Y_i | \mathbf{x}_i \sim NB(\mu_i, r) \hspace{1cm} \log(\mu_i) = \mathbf{x}_i^T \boldsymbol{\beta}$$
+
+\vspace{6cm}
 
 ## Example: articles data
 
@@ -99,6 +135,11 @@ AIC: 3145.6
 ```
 
 ## Inference for negative binomial models
+
+* Can use the usual Wald tests for $\boldsymbol{\beta}$ (from asymptotic normality)
+* LRT also works because a full distribution is specified
+
+\vspace{7cm}
 
 ## Example: articles data
 
