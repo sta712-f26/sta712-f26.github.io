@@ -91,6 +91,11 @@ m3 <- MASS::glm.nb(art ~ phd + ment + kid5, data = articles)
 phd          0.008203   0.036069   0.227   0.8201    
 ment         0.030374   0.003240   9.373   <2e-16 ***
 kid5        -0.093256   0.046475  -2.007   0.0448 *  
+
+(Dispersion parameter for Negative Binomial(2.1647) 
+   family taken to be 1)
+
+AIC: 3145.6
 ```
 
 ## Inference for negative binomial models
