@@ -110,12 +110,11 @@ Use this result to show that $\overline{Y} \sim EDM\left(\mu, \frac{1}{n}\phi\ri
 
 \begin{enumerate}
 \item[7.] Let $Y_i^*$ be a \textit{continuous} random variable, defined by
-$$Y_i^* = \mathbf{x}_i^T \boldsymbol{\beta}^* + \varepsilon_i$$
+$$Y_i^* = \mathbf{x}_i^T \boldsymbol{\beta} + \varepsilon_i$$
 where the $\varepsilon_i$ are iid samples from the \textbf{Gumbel distribution}, with pdf 
-$$f_{\varepsilon}(t) = \exp\{-(t - e^{-t})\} \hspace{0.5cm} t \in (-\infty, \infty)$$
+$$f_{\varepsilon}(t) = \exp\{-(t + e^{-t})\} \hspace{0.5cm} t \in (-\infty, \infty)$$
 Then, let $Y_i = \mathbb{I}\{Y_i^* > 0\}$. Show that $Y_i | \mathbf{x}_i \sim Bernoulli(p_i)$, with
 $$\log(-\log(1 - p_i)) = \mathbf{x}_i^T \boldsymbol{\beta}$$
-(where $\boldsymbol{\beta} = - \boldsymbol{\beta}^*$).
 
 The function $\log(-\log(1 - p_i))$ is called the \textbf{complementary log-log} (cloglog) link.
 
