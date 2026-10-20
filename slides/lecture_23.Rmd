@@ -30,6 +30,8 @@ If we fit a Poisson regression model, overdispersion means that $Var(Y_i | \math
 
 \vspace{2cm}
 
+## Behavior of estimated coefficients in a mis-specified model
+
 ## quasi-Poisson models
 
 $$
@@ -120,52 +122,6 @@ Options for estimating $SE(\widehat{\beta}_j)$ when we fit a Poisson model:
 How do the estimates compare? What will be the effect (on confidence intervals and hypothesis tests) of incorrectly assuming a Poisson distribution when the data are overdispersed?
 
 \vspace{3cm}
-
-
-## Negative Binomial models
-
-$$Y \sim NB(\mu, r) \hspace{1cm} f(y; \mu, r) = \frac{\Gamma(y + r)}{\Gamma(y + 1)\Gamma(r)} \left(\frac{\mu}{\mu + r} \right)^y \left(1 - \frac{\mu}{\mu + r} \right)^r$$
-
-$$Y_i | \mathbf{x}_i \sim NB(\mu_i, r) \hspace{1cm} \log(\mu_i) = \mathbf{x}_i^T \boldsymbol{\beta}$$
-
-\vspace{6cm}
-
-## Example: articles data
-
-```{r}
-m3 <- MASS::glm.nb(art ~ phd + ment + kid5, data = articles)
-```
-
-```
-             Estimate Std. Error z value Pr(>|z|)    
-(Intercept)  0.233528   0.117585   1.986   0.0470 *  
-phd          0.008203   0.036069   0.227   0.8201    
-ment         0.030374   0.003240   9.373   <2e-16 ***
-kid5        -0.093256   0.046475  -2.007   0.0448 *  
-
-(Dispersion parameter for Negative Binomial(2.1647) 
-   family taken to be 1)
-
-AIC: 3145.6
-```
-
-## Inference for negative binomial models
-
-* Can use the usual Wald tests for $\boldsymbol{\beta}$ (from asymptotic normality)
-* LRT also works because a full distribution is specified
-
-\vspace{7cm}
-
-## Example: articles data
-
-```{r}
-m3 <- MASS::glm.nb(art ~ phd + ment + kid5, data = articles)
-m4 <- MASS::glm.nb(art ~ phd + kid5, data = articles)
-
-pchisq(m3$twologlik - m4$twologlik, 1, lower.tail=F)
-```
-
-\vspace{4cm}
 
 
 
