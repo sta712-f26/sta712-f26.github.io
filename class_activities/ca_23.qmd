@@ -1,0 +1,154 @@
+---
+title: "Class activity: Confidence intervals"
+format: html
+callout-icon: false
+---
+
+## Biochemistry PhD students
+
+We have information on 915 biochemistry PhD students, with variables including:
+
+* `art`: articles published by the student in last three years of Ph.D.
+* `kid5`: number of children under age six
+* `phd`: prestige of Ph.D. program (a numeric score from 0 to 5)
+* `ment`: articles published by their mentor in last three years
+
+We are interested in modeling the number of articles published by the student in the last three years of their PhD, and so we fit a Poisson regression model:
+
+```{r}
+m_art <- glm(art ~ phd + ment + kid5, 
+             family = poisson, data = articles)
+
+summary(m_art)$coefficients
+```
+::: {.callout-tip}
+## Question 1
+
+Using the R output, create a 95% confidence interval ($z^* = 1.96$) for the change in the expected number of articles published associated with an increase of one in the number of children under age 6, holding PhD prestige and mentor publications fixed.
+:::
+
+## Standard errors
+
+The standard error you used in Question 1 is calculated from the Poisson regression model, which assumes that the response distribution is Poisson. However, we have previously found (with model diagnostics) that the model is not a good fit to the data, and the issue is probably that the response distribution has more variability than accounted for by a Poisson model.
+
+This means that our standard error from the Poisson output may be incorrect! What can we do instead?
+
+* Estimate the standard error using bootstrap resampling. The estimate from bootstrap resampling should be close to the true standard error even if the model is incorrect.
+* Use the sandwich variance estimator, which does not make the assume that the model is correctly specified. As we saw in 711, the sandwich variance is approximately correct for M-estimators in general.
+* Fit a quasi-Poisson model instead of the Poisson. Our estimated coefficients $\widehat{\boldsymbol{\beta}}$ stay the same, but our standard errors change (because we estimate the dispersion parameter)
+
+
+## Bootstrap resampling
+
+The bootstrap resampling process works like this:
+
+1. Create a bootstrap sample by resampling $n$ observations (with replacement) from the observed data.
+2. Compute the statistic of interest on the bootstrap sample (in this case, that means fitting the model and extracting the estimated coefficient; let $\widehat{\beta}_3^*$ denote the estimate from the bootstrap sample)
+3. Repeat many times.
+
+A confidence interval for the quantity of interest can then be constructed from the bootstrap statistics. One option is to use the bootstrap percentile interval that we used on HW 1. Another possibility is a Normal bootstrap interval (which uses the usual formula for a confidence interval, but replaces the standard error with the standard deviation of the bootstrap samples). E.g. a 95% interval would be
+
+$$\widehat{\beta}_3 \pm 1.96 SE(\widehat{\beta}_3^*)$$
+
+where $SE(\widehat{\beta}_3^*)$ is the standard deviation of the bootstrap statistics.
+
+
+
+::: {.callout-tip}
+## Question 2
+
+Fill in the code below to take 1000 bootstrap samples and store the resulting statistics:
+:::
+
+```{r, eval=F}
+# number of bootstrap samples
+n_boot <- 1000 
+# vector to store the results
+boot_ests <- rep(NA, n_boot) 
+
+for(i in 1:n_boot){
+  # take the bootstrap sample
+  articles_boot <- articles |>
+    slice_sample(n = nrow(articles), replace = T)
+  
+  # fit model on the boostrap sample
+  # (fill in code)
+  ...
+  
+  # store the relevant coefficients from the fitted model
+  # (fill in code)
+  boot_ests[i] <- ...
+}
+```
+
+::: {.callout-tip}
+## Question 3
+
+Compute the standard deviation of your bootstrap estimates (`boot_ests`) and use this standard deviation to re-create the confidence interval from question 1. How do the two intervals compare?
+:::
+
+## Sandwich variance
+
+Under some mild assumptions (which do not require the model to be correctly specified!), for a Poisson regression model
+
+$$\sqrt{n}(\widehat{\boldsymbol{\beta}} - \boldsymbol{\beta}) \overset{d}{\to} N(\mathbf{0}, \mathbf{S})$$
+
+where
+
+$$
+\begin{aligned}
+\mathbf{S} &= \mathbf{A}^{-1} \mathbf{B} \mathbf{A}^{-1} \\
+\mathbf{A} &= -\mathbb{E}[\mu_i \mathbf{x}_i \mathbf{x}_i^T] \\
+\mathbf{B} &= \mathbb{E}[(Y_i - \mu_i)^2 \mathbf{x}_i \mathbf{x}_i^T]
+\end{aligned}
+$$
+
+Estimating $\mathbf{A}$ and $\mathbf{B}$ from the data, this implies that the sandwich variance estimate is
+
+$$\widehat{Var}(\widehat{\boldsymbol{\beta}})_{\text{sandwich}} = (\mathbf{X}^T \mathbf{V} \mathbf{X})^{-1} \mathbf{X}^T \mathbf{W} \mathbf{X} (\mathbf{X}^T \mathbf{V} \mathbf{X})^{-1}$$
+
+where $\mathbf{V} = \text{diag}(\widehat{\mu}_i)$ and $\mathbf{W} = \text{diag}((Y_i - \widehat{\mu}_i)^2)$.
+
+```{r, include=F}
+X <- model.matrix(m_art)
+V <- diag(m_art$fitted.values)
+W <- diag((m_art$y - m_art$fitted.values)^2)
+
+solve(t(X) %*% V %*% X) %*% t(X) %*% W %*% X %*% solve(t(X) %*% V %*% X)
+```
+
+In R, this can be computed with the `sandwich` function in the `sandwich` package:
+
+```{r}
+sandwich::sandwich(m_art)
+```
+
+## quasi-Poisson model
+
+Finally, an alternative is to estimate the dispersion parameter and inflate the standard errors accordingly. For a quasi-Poisson model, 
+
+$$SE(\widehat{\beta}_3)_{\text{quasi-poisson}} = \sqrt{\widehat{\phi}} SE(\widehat{\beta}_3)_{\text{poisson}}$$
+
+In R:
+
+```{r}
+m_art_qp <- glm(art ~ phd + ment + kid5, 
+                family = quasipoisson, data = articles)
+
+summary(m_art_qp)$coefficients
+```
+
+::: {.callout-tip}
+## Question 4
+
+Consider the four different estimates of the standard error (the original Poisson estimate, the bootstrap estimate, the sandwich estimate, and the quasi-Poisson estimate). Assuming the bootstrap estimate is close to the truth, how do the other estimates compare?
+:::
+
+::: {.callout-tip}
+## Question 5
+
+Suppose we fit a Poisson model, but there is overdispersion in the data (more variability in the response than accounted for by a Poisson distribution). However, we still use the estimated standard errors from the Poisson fit. What will be the effect on the coverage of our confidence intervals? On the type I error of our test statistics?
+:::
+
+
+
