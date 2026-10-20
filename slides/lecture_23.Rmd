@@ -1,0 +1,172 @@
+---
+title: "Quasi-Poisson and Negative Binomial models"
+author: "Ciaran Evans"
+output: beamer_presentation
+---
+
+
+
+```{r, include=F}
+library(foreign)
+library(tidyverse)
+articles <- read.dta("http://www.stata-press.com/data/lf2/couart2.dta")
+
+m_art <- glm(art ~ phd + ment + kid5, 
+             family = poisson, data = articles)
+#summary(m_art)
+```
+
+## Overdispersion
+
+**Overdispersion** occurs when the response variable $Y_i$ has greater variability than the model accounts for.
+
+\vspace{1cm}
+
+**Poisson:** $Var(Y_i | \mathbf{x}_i) = \mathbb{E}[Y_i | \mathbf{x}_i] = \mu_i$
+
+\bigskip
+
+If we fit a Poisson regression model, overdispersion means that $Var(Y_i | \mathbf{x}_i) > \mu_i$
+
+\vspace{2cm}
+
+## quasi-Poisson models
+
+$$
+\begin{aligned}
+\log(\mu_i) &= \mathbf{x}_i^T \boldsymbol{\beta} \\
+Var(Y_i | \mathbf{x}_i) &= \phi \mu_i
+\end{aligned}
+$$
+
+\bigskip
+
+* Estimated coefficients ($\widehat{\boldsymbol{\beta}}$) are the same
+* Different estimated variance-covariance matrix
+
+\vspace{4cm}
+
+## Example: articles data
+
+```{r, eval=F}
+glm(art ~ phd + ment + kid5, family = poisson, data = articles)
+```
+
+```
+             Estimate Std. Error z value Pr(>|z|)    
+(Intercept)  0.276493   0.087294   3.167  0.00154 ** 
+phd          0.008071   0.026358   0.306  0.75944    
+ment         0.026537   0.002001  13.264  < 2e-16 ***
+kid5        -0.099696   0.035248  -2.828  0.00468 ** 
+(Dispersion parameter for poisson family 
+   taken to be 1)
+```
+
+```{r, eval=F}
+glm(art ~ phd + ment + kid5, family = quasipoisson, data = articles)
+```
+
+```
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  0.276493   0.119839   2.307   0.0213 *  
+phd          0.008071   0.036184   0.223   0.8235    
+ment         0.026537   0.002747   9.662   <2e-16 ***
+kid5        -0.099696   0.048389  -2.060   0.0397 *  
+(Dispersion parameter for quasipoisson family 
+   taken to be 1.88461)
+```
+
+## Activity: comparing standard errors
+
+Work on the class activity (course website).
+
+\vspace{6cm}
+
+## Activity
+
+Poisson output:
+
+```
+                Estimate  Std. Error    z value     Pr(>|z|)
+(Intercept)  0.276493292 0.087294456  3.1673637 1.538278e-03
+phd          0.008071036 0.026357684  0.3062119 7.594433e-01
+ment         0.026537317 0.002000733 13.2637987 3.753884e-40
+kid5        -0.099696463 0.035248105 -2.8284205 4.677832e-03
+```
+95% confidence interval for $e^{\beta_3}$:
+
+\vspace{4cm}
+
+
+## Activity: comparing standard errors
+
+Options for estimating $SE(\widehat{\beta}_j)$ when we fit a Poisson model:
+
+* Estimate from the original Poisson model (may be wrong!)
+* Bootstrap resampling (should be approximately correct even if model is misspecified)
+* Sandwich variance (should be approximately correct even if model is misspecified)
+* quasi-Poisson (inflate standard errors by $\sqrt{\widehat{\phi}}$)
+
+
+## Activity: comparing standard errors
+
+* Poisson estimate: $\widehat{SE}(\widehat{\beta}_3)_{\text{poisson}} = 0.03525$
+* Bootstrap estimate: $\widehat{SE}(\widehat{\beta}_3)_{\text{boot}} = 0.0490$
+* Sandwich estimate: $\widehat{SE}(\widehat{\beta}_3)_{\text{sandwich}} = 0.0483$
+* quasi-Poisson estimate: $\widehat{SE}(\widehat{\beta}_3)_{\text{quasi-poisson}} = 0.0484$
+
+\bigskip
+
+How do the estimates compare? What will be the effect (on confidence intervals and hypothesis tests) of incorrectly assuming a Poisson distribution when the data are overdispersed?
+
+\vspace{3cm}
+
+
+## Negative Binomial models
+
+$$Y \sim NB(\mu, r) \hspace{1cm} f(y; \mu, r) = \frac{\Gamma(y + r)}{\Gamma(y + 1)\Gamma(r)} \left(\frac{\mu}{\mu + r} \right)^y \left(1 - \frac{\mu}{\mu + r} \right)^r$$
+
+$$Y_i | \mathbf{x}_i \sim NB(\mu_i, r) \hspace{1cm} \log(\mu_i) = \mathbf{x}_i^T \boldsymbol{\beta}$$
+
+\vspace{6cm}
+
+## Example: articles data
+
+```{r}
+m3 <- MASS::glm.nb(art ~ phd + ment + kid5, data = articles)
+```
+
+```
+             Estimate Std. Error z value Pr(>|z|)    
+(Intercept)  0.233528   0.117585   1.986   0.0470 *  
+phd          0.008203   0.036069   0.227   0.8201    
+ment         0.030374   0.003240   9.373   <2e-16 ***
+kid5        -0.093256   0.046475  -2.007   0.0448 *  
+
+(Dispersion parameter for Negative Binomial(2.1647) 
+   family taken to be 1)
+
+AIC: 3145.6
+```
+
+## Inference for negative binomial models
+
+* Can use the usual Wald tests for $\boldsymbol{\beta}$ (from asymptotic normality)
+* LRT also works because a full distribution is specified
+
+\vspace{7cm}
+
+## Example: articles data
+
+```{r}
+m3 <- MASS::glm.nb(art ~ phd + ment + kid5, data = articles)
+m4 <- MASS::glm.nb(art ~ phd + kid5, data = articles)
+
+pchisq(m3$twologlik - m4$twologlik, 1, lower.tail=F)
+```
+
+\vspace{4cm}
+
+
+
+

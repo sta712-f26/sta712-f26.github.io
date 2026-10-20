@@ -11,6 +11,7 @@ October 19
 
 October 21
 : quasi-Poisson and negative binomial models
+  : [Slides](https://sta712-f26.github.io/slides/lecture_23.pdf), [Activity](https://sta712-f26.github.io/class_activities/ca_23.html)
 
 October 23
 : Exam 1

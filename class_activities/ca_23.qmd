@@ -15,7 +15,11 @@ We have information on 915 biochemistry PhD students, with variables including:
 
 We are interested in modeling the number of articles published by the student in the last three years of their PhD, and so we fit a Poisson regression model:
 
-```{r}
+```{r message=F, warning=F}
+library(tidyverse)
+
+articles <- read_csv("https://sta712-f26.github.io/class_activities/articles_small.csv")
+
 m_art <- glm(art ~ phd + ment + kid5, 
              family = poisson, data = articles)
 
@@ -34,7 +38,7 @@ The standard error you used in Question 1 is calculated from the Poisson regress
 This means that our standard error from the Poisson output may be incorrect! What can we do instead?
 
 * Estimate the standard error using bootstrap resampling. The estimate from bootstrap resampling should be close to the true standard error even if the model is incorrect.
-* Use the sandwich variance estimator, which does not make the assume that the model is correctly specified. As we saw in 711, the sandwich variance is approximately correct for M-estimators in general.
+* Use the sandwich variance estimator, which does not make the assumption that the model is correctly specified. As we saw in 711, the sandwich variance is approximately correct for M-estimators in general.
 * Fit a quasi-Poisson model instead of the Poisson. Our estimated coefficients $\widehat{\boldsymbol{\beta}}$ stay the same, but our standard errors change (because we estimate the dispersion parameter)
 
 
