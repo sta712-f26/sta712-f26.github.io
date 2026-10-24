@@ -15,3 +15,6 @@ October 21
 
 October 23
 : Exam 1
+
+: **HW 7 released**{: .label .label-yellow }
+  : [HW 7](https://sta712-f26.github.io/homework/hw_07.html)
