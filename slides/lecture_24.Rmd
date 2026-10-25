@@ -1,0 +1,226 @@
+---
+title: "Negative Binomial models, intro to ZIP models"
+author: "Ciaran Evans"
+output: beamer_presentation
+---
+
+
+
+```{r, include=F}
+library(foreign)
+library(tidyverse)
+articles <- read.dta("http://www.stata-press.com/data/lf2/couart2.dta")
+
+m_art <- glm(art ~ phd + ment + kid5, 
+             family = poisson, data = articles)
+#summary(m_art)
+```
+
+## Overdispersion
+
+**Overdispersion** occurs when the response variable $Y_i$ has greater variability than the model accounts for.
+
+\vspace{1cm}
+
+**Poisson:** $Var(Y_i | \mathbf{x}_i) = \mathbb{E}[Y_i | \mathbf{x}_i] = \mu_i$
+
+\vspace{2cm}
+
+## quasi-Poisson models
+
+$$
+\begin{aligned}
+\log(\mu_i) &= \mathbf{x}_i^T \boldsymbol{\beta} \\
+Var(Y_i | \mathbf{x}_i) &= \phi \mu_i
+\end{aligned}
+$$
+
+\vspace{6cm}
+
+
+## Negative Binomial models
+
+$$Y \sim NB(\mu, r) \hspace{1cm} f(y; \mu, r) = \frac{\Gamma(y + r)}{\Gamma(y + 1)\Gamma(r)} \left(\frac{\mu}{\mu + r} \right)^y \left(1 - \frac{\mu}{\mu + r} \right)^r$$
+
+$$Y_i | \mathbf{x}_i \sim NB(\mu_i, r) \hspace{1cm} \log(\mu_i) = \mathbf{x}_i^T \boldsymbol{\beta}$$
+
+\vspace{6cm}
+
+## Example: articles data
+
+```{r}
+m3 <- MASS::glm.nb(art ~ phd + ment + kid5, data = articles)
+```
+
+```
+             Estimate Std. Error z value Pr(>|z|)    
+(Intercept)  0.233528   0.117585   1.986   0.0470 *  
+phd          0.008203   0.036069   0.227   0.8201    
+ment         0.030374   0.003240   9.373   <2e-16 ***
+kid5        -0.093256   0.046475  -2.007   0.0448 *  
+
+(Dispersion parameter for Negative Binomial(2.1647) 
+   family taken to be 1)
+
+AIC: 3145.6
+```
+
+## Inference for negative binomial models
+
+* Can use the usual Wald tests for $\boldsymbol{\beta}$ (from asymptotic normality)
+* LRT also works because a full distribution is specified
+
+\vspace{7cm}
+
+## Example: articles data
+
+```{r}
+m3 <- MASS::glm.nb(art ~ phd + ment + kid5, data = articles)
+m4 <- MASS::glm.nb(art ~ phd + kid5, data = articles)
+
+pchisq(m3$twologlik - m4$twologlik, 1, lower.tail=F)
+```
+
+\vspace{4cm}
+
+## New data
+
+Survey data from 77 college students on a dry campus (i.e., alcohol is prohibited) in the US. Survey asks students "How many alcoholic drinks did you consume last weekend?"
+
+* `drinks`: number of drinks the student reports consuming
+* `sex`: whether the student identifies as male
+* `OffCampus`: whether the student lives off campus
+* `FirstYear`: whether the student is a first-year student
+
+Our goal: model the number of drinks students report consuming.
+
+## EDA: drinks
+
+```{r echo=F, message=F, warning=F, fig.align='center', fig.width=4, fig.height=3}
+library(tidyverse)
+
+wdrinks <- read.csv("../class_activities/weekendDrinks.csv")
+
+FirstYear <- ifelse( wdrinks$dorm %in% c("mohn","kittlesby", "kildahl"), "TRUE", "FALSE")
+OffCampus <- ifelse( wdrinks$dorm == "off campus", "TRUE", "FALSE")
+
+wdrinks <- cbind(wdrinks, FirstYear, OffCampus)
+
+wdrinks %>%
+  ggplot(aes(x = drinks)) +
+  geom_bar() +
+  theme_bw()
+```
+
+What do you notice about this distribution?
+
+## Comparisons with Poisson distributions
+
+```{r echo=F, message=F, warning=F, fig.align='center', fig.width=4, fig.height=3.5}
+library(gridExtra)
+set.seed(1)
+p1 <- wdrinks %>%
+  ggplot(aes(x = drinks)) +
+  geom_bar() +
+  theme_bw() +
+  #theme(text = element_text(size = 25)) +
+  labs(title = "Observed data", x = "", y = "") +
+  scale_x_continuous(limits = c(-1, 25)) +
+  scale_y_continuous(limits = c(0, 45))
+
+p2 <- data.frame(x = rpois(100, 1)) %>%
+  ggplot(aes(x = x)) +
+  geom_bar() +
+  theme_bw() +
+  #theme(text = element_text(size = 25)) +
+  labs(title = "Poisson(1)", x = "", y = "") +
+  scale_x_continuous(limits = c(-1, 25)) +
+  scale_y_continuous(limits = c(0, 45))
+
+p3 <- data.frame(x = rpois(100, 2)) %>%
+  ggplot(aes(x = x)) +
+  geom_bar() +
+  theme_bw() +
+  #theme(text = element_text(size = 25)) +
+  labs(title = "Poisson(2)", x = "", y = "") +
+  scale_x_continuous(limits = c(-1, 25)) +
+  scale_y_continuous(limits = c(0, 45))
+
+p4 <- data.frame(x = rpois(100, 5)) %>%
+  ggplot(aes(x = x)) +
+  geom_bar() +
+  theme_bw() +
+  #theme(text = element_text(size = 25)) +
+  labs(title = "Poisson(5)", x = "", y = "") +
+  scale_x_continuous(limits = c(-1, 25)) +
+  scale_y_continuous(limits = c(0, 45))
+
+grid.arrange(p1, p2, p3, p4, ncol=2)
+```
+
+## Excess zeros
+
+*Why might there be excess 0s in the data, and why is that a problem for modeling the number of drinks consumed?*
+
+```{r echo=F, message=F, warning=F, fig.align='center', fig.width=3, fig.height=2.5}
+wdrinks %>%
+  ggplot(aes(x = drinks)) +
+  geom_bar() +
+  theme_bw()
+```
+
+## Zero-inflated Poisson (ZIP) model
+
+## In R
+
+```{r message=F, warning=F}
+library(pscl)
+
+m1 <- zeroinfl(drinks ~ sex + FirstYear + OffCampus, 
+               dist = "poisson", data = wdrinks)
+
+m1$coefficients
+```
+
+\vspace{4cm}
+
+## Activity
+
+Work on the activity (handout).
+
+\vspace{5cm}
+
+## Activity
+
+```{r}
+m1$coefficients
+```
+
+What is the estimated probability that a female first-year student who lives on campus never drinks?
+
+\vspace{4cm}
+
+
+## Activity
+
+```{r}
+m1$coefficients
+```
+
+What is the estimated average number of drinks for a second-year male student who lives off campus and sometimes drinks?
+
+\vspace{4cm}
+
+## Activity
+
+```{r}
+m1$coefficients
+```
+
+What is the estimated probability that a male first-year student who lives off campus had at least one drink last weekend?
+
+\vspace{4cm}
+
+
+
+

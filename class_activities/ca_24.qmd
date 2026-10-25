@@ -1,0 +1,72 @@
+---
+title: "Activity: ZIP models"
+format: 
+  pdf:
+    header-includes:
+      - \usepackage{float}
+      - \floatplacement{table}{H}
+editor: source
+---
+
+\vspace{-3cm}
+
+# Weekend drinking
+
+In the first part of this class activity, we work with survey data from 77 college students on a dry campus (i.e., alcohol is prohibited) in the US. The survey asks students “How many alcoholic drinks did you consume last weekend?” The data includes the following variables:
+
+* `drinks`: the number of drinks the student reports consuming
+* `sex`: an indicator for whether the student identifies as male (1 = male)
+* `OffCampus`: an indicator for whether the student lives off campus (1 = off campus, 0 = on campus)
+* `FirstYear`: an indicator for whether the student is a first-year student (1 = first year, 0 = not first year)
+
+## The model
+
+To account for excess zeros in the data, we fit a *zero-inflated Poisson* (ZIP) model. Here is the probability function for our model:
+
+$$P(Y_i = y | \mathbf{x}_i) = \begin{cases} e^{-\lambda_i}(1 - p_i) + p_i & y = 0 \\ \dfrac{e^{-\lambda_i} \lambda_i^y}{y!}(1 - p_i) & y > 0 \end{cases}$$
+
+where
+
+$$
+\begin{aligned}
+\log \left( \frac{p_i}{1 - p_i} \right) &= \mathbf{x}_i^T \boldsymbol{\gamma} \\
+\log(\lambda_i) &= \mathbf{x}_i^T \boldsymbol{\beta}
+\end{aligned}
+$$
+
+## Model output
+
+```{r include=F}
+library(pscl)
+library(tidyverse)
+
+wdrinks <- read.csv("../class_activities/weekendDrinks.csv")
+
+FirstYear <- ifelse( wdrinks$dorm %in% c("mohn","kittlesby", "kildahl"), "TRUE", "FALSE")
+OffCampus <- ifelse( wdrinks$dorm == "off campus", "TRUE", "FALSE")
+
+wdrinks <- cbind(wdrinks, FirstYear, OffCampus)
+```
+
+```{r}
+m1 <- zeroinfl(drinks ~ sex + FirstYear + OffCampus, 
+               dist = "poisson", data = wdrinks)
+
+summary(m1)
+```
+
+\newpage
+
+## Questions
+
+1. What is the estimated probability that a female first-year student who lives on campus never drinks?
+
+\vspace{4cm}
+
+2. What is the estimated average number of drinks for a second-year male student who lives off campus and sometimes drinks?
+
+\vspace{4cm}
+
+3. What is the estimated probability that a male first-year student who lives off campus had at least one drink last weekend?
+
+
