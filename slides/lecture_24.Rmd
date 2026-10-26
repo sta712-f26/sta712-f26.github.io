@@ -16,6 +16,36 @@ m_art <- glm(art ~ phd + ment + kid5,
 #summary(m_art)
 ```
 
+## Project
+
+Assignment: conduct an analysis with the provided dataset to answer the research question of interest. 
+
+* Can be completed individually or in groups
+    * More expectations for groups (more models and more deliverables)
+    * Groups will be randomly assigned
+    * Tell me by **October 27** whether you want to be in a group
+* Completed in several stages
+
+## Project timeline
+
+* **October 27:** Email me to tell me whether you will complete the project individually, or wish to work in a group. I will randomly create groups of 2-3 students from all those who elect to work in a group.
+* **November 6:** Statistical analysis plan (15% of grade)
+* **November 13:** Exploratory data analysis (15% of grade)
+* **November 16-20:** Check-in appointment with Dr. Evans (15% of grade)
+* **December 4:** Final submission (55% of grade)
+
+## Final submission
+
+For groups:
+
+* an extended written report (in the style of a journal article)
+* a 10-15 minute presentation to Dr. Evans, plus questions
+
+For individuals: choose *one* of the following
+
+* an extended written report (in the style of a journal article)
+* OR a short written report (magazine article) + a 10-15 minute presentation to Dr. Evans (plus questions)
+
 ## Overdispersion
 
 **Overdispersion** occurs when the response variable $Y_i$ has greater variability than the model accounts for.
@@ -25,17 +55,6 @@ m_art <- glm(art ~ phd + ment + kid5,
 **Poisson:** $Var(Y_i | \mathbf{x}_i) = \mathbb{E}[Y_i | \mathbf{x}_i] = \mu_i$
 
 \vspace{2cm}
-
-## quasi-Poisson models
-
-$$
-\begin{aligned}
-\log(\mu_i) &= \mathbf{x}_i^T \boldsymbol{\beta} \\
-Var(Y_i | \mathbf{x}_i) &= \phi \mu_i
-\end{aligned}
-$$
-
-\vspace{6cm}
 
 
 ## Negative Binomial models
