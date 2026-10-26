@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Project</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="project_files/libs/clipboard/clipboard.min.js"></script>
+<script src="project_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="project_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="project_files/libs/quarto-html/popper.min.js"></script>
+<script src="project_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="project_files/libs/quarto-html/anchor.min.js"></script>
+<link href="project_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="project_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="project_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="project_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="project_files/libs/bootstrap/bootstrap-138a6193a3bd40baf1e627da441a4734.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Project</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="overview" class="level1">
+<h1>Overview</h1>
+<p>In this project, you will work on an extended analysis with a challenging dataset, to address a research question of interest. The data and research question are described below.</p>
+<p><strong>Individual vs.&nbsp;group work:</strong> All students will work with the same data and research question. However, you may choose to complete the project individually, or in a group. I will randomly assign all students who choose the “group” option into groups of 2 or 3 (if only 1 student chooses the “group” option, everyone will complete the project independently).</p>
+<p><strong>Email Dr.&nbsp;Evans by October 27 with your choice for individual or group work</strong>.</p>
+<p>The expectations for groups will be greater than for individuals (more analysis and more deliverables – more details below).</p>
+<section id="timeline-and-tentative-due-dates" class="level2">
+<h2 class="anchored" data-anchor-id="timeline-and-tentative-due-dates">Timeline and tentative due dates</h2>
+<p>Here is a rough timeline for the project. Full requirements for each component are described below.</p>
+<ul>
+<li><strong>October 27:</strong> Email me to tell me whether you will complete the project individually, or wish to work in a group. I will randomly create groups of 2-3 students from all those who elect to work in a group.</li>
+<li><strong>November 6:</strong> Statistical analysis plan (15% of grade)</li>
+<li><strong>November 13:</strong> Exploratory data analysis (15% of grade)</li>
+<li><strong>November 16-20:</strong> Check-in appointment with Dr.&nbsp;Evans (15% of grade)</li>
+<li><strong>December 4:</strong> Final submission (55% of grade)</li>
+</ul>
+</section>
+<section id="extensions" class="level2">
+<h2 class="anchored" data-anchor-id="extensions">Extensions</h2>
+<p>Your individual banks of 5 extensions days may <em>not</em> be used for the project. Instead, each group (or individual, if you choose not to work in a group) will receive an additional bank of <strong>2 days</strong> to be used exclusively for the project. You may apply 1–2 days to any part of the assignment; all group members must agree to use an extension day.</p>
+</section>
+<section id="group-expectations" class="level2">
+<h2 class="anchored" data-anchor-id="group-expectations">Group expectations</h2>
+<p>If you choose to complete the project in a group, you will be expected to positively contribute to your group and do your fair share of the work.</p>
+<p>Groups should begin by setting group meeting times and dividing work between the group members. There are many steps involved in a data analysis. Different possible tasks that could be assigned include background and literature review, different components of exploratory data analysis, different possible models, writing the report, preparing slides, etc.</p>
+<p>Part of your statistical analysis plan will involve describing your agreed division of work.</p>
+</section>
+<section id="grading-with-groups" class="level2">
+<h2 class="anchored" data-anchor-id="grading-with-groups">Grading with groups</h2>
+<ul>
+<li>(Generally) All members of the group get the same grade for the project.</li>
+<li>If all members of a group think that one member isn’t pulling their weight then you can come and talk to me about it. I can fire that member and have them do the project on their own.</li>
+<li>Students should keep a record of all the times that they worked on the project and the work that they did. Every time that you spend more than 15 minutes on the project you should write down the start and stop time and what they did. Group members should be spending roughly the same amount of time on the project (I will ask you to report on time spent on the project so far at the check-in appointment).</li>
+<li>Attendance: you should keep track of who is or isn’t showing up to group project meetings.</li>
+</ul>
+</section>
+<section id="completing-the-project-individually-vs.-in-a-group" class="level2">
+<h2 class="anchored" data-anchor-id="completing-the-project-individually-vs.-in-a-group">Completing the project individually vs.&nbsp;in a group</h2>
+<p>If you complete the project in a group, your group is required to:</p>
+<ul>
+<li>use at least <em>two</em> different modeling approaches to address the research question. This helps us judge how sensitive the results are to our modeling choices. Linear regression, logistic regression, Poisson/NB regression, and mixed effects models would generally count as different modeling choices. Fitting both a Poisson and Negative Binomial model would <em>not</em> count as two different modeling choices, nor would fitting models with slightly different sets of explanatory variables.</li>
+<li>complete both an extended research paper and a project presentation for your final submission.</li>
+</ul>
+<p>On the other hand, if you complete the project individually, you need only use <em>one</em> main modeling approach, and you may choose between:</p>
+<ul>
+<li>an extended research paper</li>
+<li>a short written report and a project presentation</li>
+</ul>
+</section>
+<section id="ai-use" class="level2">
+<h2 class="anchored" data-anchor-id="ai-use">AI use</h2>
+<p>The purpose of this project is for you to demonstrate <em>your</em> statistics and data analysis skills on a challenging problem. I am not interested in a demonstration of AI’s skills at statistics and data analysis.</p>
+<p>Therefore, you may only use AI tools to help you with small, general questions that are not specific to your data or research question; essentially, the equivalent of a google search. Examples include:</p>
+<ul>
+<li>Asking about error messages in R</li>
+<li>Appropriate functions/packages for fitting a specific type of model</li>
+<li>How to identify missing values in R</li>
+<li>How to create a new variable</li>
+<li>How to calculate summary statistics</li>
+</ul>
+<p>You <strong>may not</strong> do any of the following:</p>
+<ul>
+<li>Share the project dataset or its description with AI</li>
+<li>Ask AI for advice on how to model this specific data</li>
+<li>Ask AI to describe how other researchers have modeled this (or similar) data</li>
+<li>Ask AI which type of model you should fit, or which variables to include</li>
+<li>Ask AI to make any big-picture decisions about the project</li>
+</ul>
+<p><strong>AI statement:</strong> All submissions must cite sources and external resources, including any use of AI. If you used AI, explain which AI tool was used and how it was used (a summary of the prompts you asked). If you did not use AI, state that too.</p>
+<p>Failure to abide by this AI policy may result in a points deduction, potentially up to a 0 on the entire project.</p>
+</section>
+</section>
+<section id="project-components" class="level1">
+<h1>Project components</h1>
+<section id="statistical-analysis-plan-due-november-6" class="level2">
+<h2 class="anchored" data-anchor-id="statistical-analysis-plan-due-november-6">Statistical analysis plan (due: November 6)</h2>
+<p>This portion should be approximately 1–3 pages (single-spaced), and should describe the data you will use and the analysis you will perform. Your analysis plan must address the following <a href="https://onlinelibrary.wiley.com/doi/abs/10.1002/sta4.528">(Cressman &amp; Sharp, 2022)</a>:</p>
+<ol type="1">
+<li>What is/are the research question(s) or objectives?</li>
+<li>What are the variables that will be measured in the study? For each variable, what will the data look like?
+<ul>
+<li>This includes the response variable, the explanatory variable of interest, and any other variables to include in your analysis</li>
+</ul></li>
+<li>What is the study design, and why is the study set up this way? You aren’t designing the data collection, so here I really want you to describe the following:
+<ul>
+<li>What is the source of the data, and how were they collected?</li>
+<li>What is the size of the data, and what does a row in the data represent?</li>
+<li>Is there any dependence (e.g.&nbsp;groups) between observations?</li>
+</ul></li>
+<li>How will data and any patterns/results be summarized? (i.e., how you will do exploratory data analysis)</li>
+<li>What will be examined statistically? Link directly back to the research questions.
+<ul>
+<li>Which models will you fit?</li>
+<li>How will you assess the suitability of these models? (diagnostics, etc.)</li>
+<li>How will you use the models to address the research question(s)? (hypothesis tests, confidence intervals, etc.)</li>
+<li>What software will you use?</li>
+</ul></li>
+<li>What alternative strategies should be considered, and when? (i.e., what will you do if as- sumptions are violated? How would you modify the model or statistical analysis?)</li>
+<li>What are the statistical results that will be presented? (refer back to 4 and 5)</li>
+</ol>
+<p>See the <a href="https://onlinelibrary.wiley.com/doi/abs/10.1002/sta4.528">linked article</a>, particularly Table 1, for more guidance on crafting a statistical analysis plan.</p>
+<p><strong>Remember:</strong> If you are working in a group, you must propose at least <strong>two</strong> different modeling strategies to address the research question.</p>
+</section>
+<section id="exploratory-data-analysis-due-november-13" class="level2">
+<h2 class="anchored" data-anchor-id="exploratory-data-analysis-due-november-13">Exploratory data analysis (due: November 13)</h2>
+<p>Before you finalize the models that you are fitting, you should carefully explore the data to make sure you understand what is being recorded, and identify any potential issues with the data.</p>
+<p>Here are some important questions to consider (this is not an exhaustive list!):</p>
+<ul>
+<li>Are there any missing values? If so, in which variables? Does missingness in one variable correlate with certain values of other explanatory variables?</li>
+<li>What does a row represent in the data? Which variables can be used to uniquely identify a row?</li>
+<li>Is a row the same as one <em>individual</em> in the data, or are there multiple rows per individual? If there are multiple rows, what variable(s) can be used to uniquely identify an individual?</li>
+<li>At what level are the different variables recorded?</li>
+<li>Which column will you use for your outcome variable? How is this column related to other variables in the data?</li>
+<li>Are there any errors in the recorded values?</li>
+<li>Are there any extreme observations or outliers?</li>
+<li>Are there any categorical variables with many different levels, or levels with only a few observations? How will you handle this situation?</li>
+<li>Will you be creating any new variables or modifying any of the existing variables?</li>
+<li>Use a combination of plots and summary statistics to begin addressing the research question – what does EDA suggest about this question?</li>
+</ul>
+<p><strong>EDA write-up:</strong> This portion should be approximately 2-3 pages, and should contain information on the available variables and their distributions, exploration of the relationships between key variables, and a few carefully chosen figures.</p>
+<ul>
+<li>Figures should be labeled and numbered, with information captions</li>
+<li>No code or unformatted code output should be shown in your write-up</li>
+<li>Writing should be in full sentences and paragraphs; no list responses</li>
+<li>In the course of performing your EDA, you will undoubtedly make many different plots and tables and summary statistics – I do <em>not</em> want you to submit all of that! Choose the most important and informative results to present.</li>
+</ul>
+</section>
+<section id="check-in-appointment-november-16---20" class="level2">
+<h2 class="anchored" data-anchor-id="check-in-appointment-november-16---20">Check-in appointment (November 16 - 20)</h2>
+<p>Sometime during the week of November 16, your group will meet with me to discuss your plan, your progress so far, and the contributions of each group member. During the meeting, I will give feedback and suggestions on next steps.</p>
+</section>
+<section id="final-submission-due-december-4" class="level2">
+<h2 class="anchored" data-anchor-id="final-submission-due-december-4">Final submission (due: December 4)</h2>
+<p>There are two pieces to the final submission:</p>
+<ul>
+<li>an extended research report (written in the style of an applied academic journal article)</li>
+<li>a shorter report, written for a less technical audience, and a presentation to Dr.&nbsp;Evans</li>
+</ul>
+<p>If you are working individually, you need only submit <em>one</em> of these pieces (you may choose which). If you are working in a group, the group must submit both.</p>
+<section id="extended-research-report" class="level3">
+<h3 class="anchored" data-anchor-id="extended-research-report">Extended research report</h3>
+<p>This report communicates your analysis and results in an extended written document. The formatting will be similar to a submission to the academic journal <em>PLOS One</em>. Please read the <em>PLOS One</em> <a href="https://journals.plos.org/plosone/s/submission-guidelines">submission guidelines</a></p>
+<p>In particular, your manuscript must be organized with the following sections:</p>
+<ul>
+<li>Abstract: an overview of the main objectives and results</li>
+<li>Introduction: Background, motivation, a brief review of related literature, a summary of the research questions, and a summary of the main results</li>
+<li>Methods: Description of the data, an explanation of how the research questions will be addressed, and a summary of the statistical methods used. Enough detail should be provided that a statistician could reproduce your analysis without access to the source code.</li>
+<li>Results: The main results of your analysis, including the fitted regression models, diagnostics and assessments of model performance, and hypothesis tests.</li>
+<li>Discussion: A discussion of the results in context of the research questions, and a conclusion summarizing the main findings of the analysis.</li>
+<li>Supplementary information: – A link to a GitHub repository containing the code you used in your analysis – Any supplementary figures or tables (e.g., additional EDA) not included in the main text</li>
+<li>References: A properly formatted bibliography for all references in the manuscript.</li>
+</ul>
+<p>You will follow the PLOS One guidelines for manuscript style and format, with a few exceptions to make the manuscript easier to read: * Figures and tables should be included in the manuscript * Supplementary figures and tables may be included at the end of the manuscript, in the same file (you do not need to submit separate files)</p>
+<p><strong>Format and style:</strong> The report should be written like an article or research paper: in full sentences and paragraphs, with headings for each section. You should not write your report with question numbers or as a list of bullet points. Scientific articles are generally written in third person, though “we” can also be acceptable (“we can see from Figure 2.1…”).</p>
+<ul>
+<li>No R code or raw R output may be included in your report. Only properly formatted figures and tables may be included.</li>
+<li>Figures should have labeled axes, and should be clear and easy to read. Figures should also be captioned and numbered. Captions should provide enough information to understand what is being plotted, but interpretation can be left to the main text. Refer to figures by their number in the text. Make sure that any figures you include are discussed in the text.</li>
+<li>Tables should be nicely formatted, and have a number and caption. As with figures, refer to tables by their number in the text</li>
+</ul>
+</section>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

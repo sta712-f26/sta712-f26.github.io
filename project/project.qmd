@@ -1,0 +1,208 @@
+---
+title: "Project"
+format: html
+callout-icon: false
+---
+
+# Overview
+
+In this project, you will work on an extended analysis with a challenging dataset, to address a research question of interest. The data and research question are described below.
+
+**Individual vs. group work:** All students will work with the same data and research question. However, you may choose to complete the project individually, or in a group. I will randomly assign all students who choose the "group" option into groups of 2 or 3 (if only 1 student chooses the "group" option, everyone will complete the project independently).
+
+**Email Dr. Evans by October 27 with your choice for individual or group work**.
+
+The expectations for groups will be greater than for individuals (more analysis and more deliverables -- more details below). 
+
+## Timeline and tentative due dates
+
+Here is a rough timeline for the project. Full requirements for each component are described below.
+
+* **October 27:** Email me to tell me whether you will complete the project individually, or wish to work in a group. I will randomly create groups of 2-3 students from all those who elect to work in a group.
+* **November 6:** Statistical analysis plan (15% of grade)
+* **November 13:** Exploratory data analysis (15% of grade)
+* **November 16-20:** Check-in appointment with Dr. Evans (15% of grade)
+* **December 4:** Final submission (55% of grade)
+
+## Extensions
+
+Your individual banks of 5 extensions days may *not* be used for the project.
+Instead, each group (or individual, if you choose not to work in a group) will receive an additional bank of **2 days** to be used exclusively for the project. You may
+apply 1–2 days to any part of the assignment; all group members must agree to use an extension day.
+
+## Group expectations
+
+If you choose to complete the project in a group, you will be expected to positively contribute to your group and do your fair share of the work. 
+
+Groups should begin by setting group meeting times and dividing work between the group members. There are many steps involved in a data analysis. Different possible tasks that could be assigned include background and literature review, different components of exploratory data analysis, different possible models, writing the report, preparing slides, etc.
+
+Part of your statistical analysis plan will involve describing your agreed division of work.
+
+## Grading with groups
+
+* (Generally) All members of the group get the same grade for the project.
+* If all members of a group think that one member isn’t pulling their weight then you can come
+and talk to me about it. I can fire that member and have them do the project on their own.
+* Students should keep a record of all the times that they worked on the project and the work
+that they did. Every time that you spend more than 15 minutes on the project you should
+write down the start and stop time and what they did. Group members should be spending
+roughly the same amount of time on the project (I will ask you to report on time spent on
+the project so far at the check-in appointment).
+* Attendance: you should keep track of who is or isn’t showing up to group project meetings.
+
+## Completing the project individually vs. in a group
+
+If you complete the project in a group, your group is required to:
+
+* use at least *two* different modeling approaches to address the research question. This helps us judge how sensitive the results are to our modeling choices. Linear regression, logistic regression, Poisson/NB regression, and mixed effects models would generally count as different modeling choices. Fitting both a Poisson and Negative Binomial model would *not* count as two different modeling choices, nor would fitting models with slightly different sets of explanatory variables.
+* complete both an extended research paper and a project presentation for your final submission.
+
+On the other hand, if you complete the project individually, you need only use *one* main modeling approach, and you may choose between:
+
+* an extended research paper
+* a short written report and a project presentation
+
+## AI use
+
+The purpose of this project is for you to demonstrate *your* statistics and data analysis skills on a challenging problem. I am not interested in a demonstration of AI's skills at statistics and data analysis. 
+
+Therefore, you may only use AI tools to help you with small, general questions that are not specific to your data or research question; essentially, the equivalent of a google search. Examples include:
+
+* Asking about error messages in R
+* Appropriate functions/packages for fitting a specific type of model
+* How to identify missing values in R
+* How to create a new variable
+* How to calculate summary statistics
+
+You **may not** do any of the following:
+
+* Share the project dataset or its description with AI
+* Ask AI for advice on how to model this specific data
+* Ask AI to describe how other researchers have modeled this (or similar) data
+* Ask AI which type of model you should fit, or which variables to include
+* Ask AI to make any big-picture decisions about the project
+
+**AI statement:** All submissions must cite sources and external resources, including any use of AI. If you used AI, explain which AI tool was used and how it was used (a summary of the prompts you asked). If you did not use AI, state that too.
+
+Failure to abide by this AI policy may result in a points deduction, potentially up to a 0 on the entire project.
+
+# Project components
+
+## Statistical analysis plan (due: November 6)
+
+This portion should be approximately 1–3 pages (single-spaced), and should describe the data you
+will use and the analysis you will perform. Your analysis plan must address the following [(Cressman
+& Sharp, 2022)](https://onlinelibrary.wiley.com/doi/abs/10.1002/sta4.528):
+
+1. What is/are the research question(s) or objectives?
+2. What are the variables that will be measured in the study? For each variable, what will the
+data look like?
+    * This includes the response variable, the explanatory variable of interest, and any other
+variables to include in your analysis
+3. What is the study design, and why is the study set up this way? You aren’t designing the data collection, so here I really want you to describe
+the following:
+    * What is the source of the data, and how were they collected?
+    * What is the size of the data, and what does a row in the data represent?
+    * Is there any dependence (e.g. groups) between observations?
+4. How will data and any patterns/results be summarized? (i.e., how you will do exploratory
+data analysis)
+5. What will be examined statistically? Link directly back to the research questions.
+    * Which models will you fit?
+    * How will you assess the suitability of these models? (diagnostics, etc.)
+    * How will you use the models to address the research question(s)? (hypothesis tests,
+confidence intervals, etc.)
+    * What software will you use?
+6. What alternative strategies should be considered, and when? (i.e., what will you do if as-
+sumptions are violated? How would you modify the model or statistical analysis?)
+7. What are the statistical results that will be presented? (refer back to 4 and 5)
+
+See the [linked article](https://onlinelibrary.wiley.com/doi/abs/10.1002/sta4.528), particularly Table 1, for more guidance on crafting a statistical analysis
+plan. 
+
+**Remember:** If you are working in a group, you must propose at least **two** different modeling strategies to address the research question.
+
+## Exploratory data analysis (due: November 13)
+
+Before you finalize the models that you are fitting, you should carefully explore the data to make sure you understand what is being recorded, and identify any potential issues with the data.
+
+Here are some important questions to consider (this is not an exhaustive list!):
+
+* Are there any missing values? If so, in which variables? Does missingness in one variable correlate with certain values of other explanatory variables?
+* What does a row represent in the data? Which variables can be used to uniquely identify a row? 
+* Is a row the same as one *individual* in the data, or are there multiple rows per individual? If there are multiple rows, what variable(s) can be used to uniquely identify an individual?
+* At what level are the different variables recorded?
+* Which column will you use for your outcome variable? How is this column related to other variables in the data?
+* Are there any errors in the recorded values?
+* Are there any extreme observations or outliers?
+* Are there any categorical variables with many different levels, or levels with only a few observations? How will you handle this situation?
+* Will you be creating any new variables or modifying any of the existing variables?
+* Use a combination of plots and summary statistics to begin addressing the research question -- what does EDA suggest about this question?
+
+**EDA write-up:** This portion should be approximately 2-3 pages, and should contain information on the available variables and their distributions, exploration of the relationships between key variables, and a few carefully chosen figures. 
+
+* Figures should be labeled and numbered, with information captions
+* No code or unformatted code output should be shown in your write-up
+* Writing should be in full sentences and paragraphs; no list responses
+* In the course of performing your EDA, you will undoubtedly make many different plots and tables and summary statistics -- I do *not* want you to submit all of that! Choose the most important and informative results to present.
+
+## Check-in appointment (November 16 - 20)
+
+Sometime during the week of November 16, your group will meet with me to discuss your plan, your progress so far, and the contributions of each group member. During the meeting, I will give feedback and suggestions on next steps.
+
+## Final submission (due: December 4)
+
+If you are working in a group, you will complete the **extended research report** and the **project presentation**. If you are working individually, you will complete either the **extended research report**, OR the **short report** plus the **project presentation**.
+
+### Extended research report
+
+This report communicates your analysis and results in an extended written document. The formatting will be similar to a submission to the academic journal *PLOS One*. Please read the *PLOS One* [submission guidelines](https://journals.plos.org/plosone/s/submission-guidelines)
+
+In particular, your manuscript must be organized with the following sections:
+
+* Abstract: an overview of the main objectives and results
+* Introduction: Background, motivation, a brief review of related literature, a summary of
+the research questions, and a summary of the main results
+* Methods: Description of the data, an explanation of how the research questions will be
+addressed, and a summary of the statistical methods used. Enough detail should be provided
+that a statistician could reproduce your analysis without access to the source code.
+* Results: The main results of your analysis, including the fitted regression models, diagnostics
+and assessments of model performance, and hypothesis tests.
+* Discussion: A discussion of the results in context of the research questions, and a conclusion
+summarizing the main findings of the analysis.
+* Supplementary information:
+    – A link to a GitHub repository containing the code you used in your analysis
+    – Any supplementary figures or tables (e.g., additional EDA) not included in the main
+text
+* References: A properly formatted bibliography for all references in the manuscript.
+
+
+You will follow the PLOS One guidelines for manuscript style and format, with a few exceptions
+to make the manuscript easier to read:
+* Figures and tables should be included in the manuscript
+* Supplementary figures and tables may be included at the end of the manuscript, in the same
+file (you do not need to submit separate files)
+
+
+**Format and style:** The report should be written like an article or research paper: in full sentences and paragraphs, with headings for each section. You should not write your report with question
+numbers or as a list of bullet points. Scientific articles are generally written in third person,
+though “we” can also be acceptable (“we can see from Figure 2.1...”).
+
+* No R code or raw R output may be included in your report. Only properly formatted figures
+and tables may be included.
+* Figures should have labeled axes, and should be clear and easy to read. Figures should also be
+captioned and numbered. Captions should provide enough information to understand what
+is being plotted, but interpretation can be left to the main text. Refer to figures by their
+number in the text. Make sure that any figures you include are discussed in the text.
+* Tables should be nicely formatted, and have a number and caption. As with figures, refer to
+tables by their number in the text
+
+
+### Short report
+
+This report communicates your analysis and results in a shorter, more accessible written document. The length should be around 3-4 pages, and the tone should be more informal than a scientific article.
+
+You will write this report in the format of an article for the magazine [Significance](https://significancemagazine.com/) -- see example stories on their website to get a sense of how this report is written. You will follow their [information for contributors](https://significancemagazine.com/wp-content/uploads/Contributor-guidelines-updated-October-2026.pdf), taking special note of their mission statement and their audience.
+
+### Presentation
+
+
