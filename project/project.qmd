@@ -1,6 +1,9 @@
 ---
 title: "Project"
-format: html
+format: 
+  html:
+    toc: true
+
 callout-icon: false
 ---
 
@@ -62,6 +65,10 @@ On the other hand, if you complete the project individually, you need only use *
 * an extended research paper
 * a short written report and a project presentation
 
+## GitHub
+
+You are required to host your code for this project in a GitHub repository.
+
 ## AI use
 
 The purpose of this project is for you to demonstrate *your* statistics and data analysis skills on a challenging problem. I am not interested in a demonstration of AI's skills at statistics and data analysis. 
@@ -118,6 +125,8 @@ sumptions are violated? How would you modify the model or statistical analysis?)
 
 See the [linked article](https://onlinelibrary.wiley.com/doi/abs/10.1002/sta4.528), particularly Table 1, for more guidance on crafting a statistical analysis
 plan. 
+
+If you are working in a group: when answering each question, you should also describe how the work will be allocated between different groups members.
 
 **Remember:** If you are working in a group, you must propose at least **two** different modeling strategies to address the research question.
 
@@ -178,6 +187,7 @@ text
 
 You will follow the PLOS One guidelines for manuscript style and format, with a few exceptions
 to make the manuscript easier to read:
+
 * Figures and tables should be included in the manuscript
 * Supplementary figures and tables may be included at the end of the manuscript, in the same
 file (you do not need to submit separate files)
@@ -201,8 +211,104 @@ tables by their number in the text
 
 This report communicates your analysis and results in a shorter, more accessible written document. The length should be around 3-4 pages, and the tone should be more informal than a scientific article.
 
-You will write this report in the format of an article for the magazine [Significance](https://significancemagazine.com/) -- see example stories on their website to get a sense of how this report is written. You will follow their [information for contributors](https://significancemagazine.com/wp-content/uploads/Contributor-guidelines-updated-October-2026.pdf), taking special note of their mission statement and their audience.
+You will write this report in the format of an article for the magazine [Significance](https://significancemagazine.com/) -- see example stories on their website to get a sense of how this report is written. You will follow their [information for contributors](https://significancemagazine.com/wp-content/uploads/Contributor-guidelines-updated-October-2026.pdf), taking special note of their mission statement and their audience, and the level of statistical knowledge that can be assumed.
+
+In addition, you should include a link to a GitHub repository containing the code you used in your analysis.
 
 ### Presentation
+
+You will prepare a fairly short (10-15 minute) presentation on your key results, which you will give to Dr. Evans. Your presentation should have slides, and all team members must participate during the presentation.
+
+The presentation should be at the level of a general statistical audience, which is familiar with the basics of regression but may not be familiar with the topics covered in 712. For example, you should not assume knowledge of more advanced topics such as mixed models, Poisson and negative binomial regression, generalized additive models, or zero-inflated models.
+
+After the presentation, Dr. Evans will ask more in-depth follow-up questions on the details of your work.
+
+# Data and research question
+
+## Many Analysts
+
+There is rarely just one way to do a statistical analysis, and it is common that different statisticians will use somewhat different approaches when addressing a research question; for example, fitting different types of models, testing different hypotheses, including different explanatory variables in the model, etc.
+
+Given this variability, different researchers may end up with different -- but still reasonable and defensible -- conclusions. To explore how different researchers can arrive at different conclusions, the [*Many Analysts, One Data Set*](https://journals.sagepub.com/doi/10.1177/2515245917747646) project conducted a study in which 29 different research groups were given the same dataset and research question. The teams used a variety of different methods and often arrived at contradictory results, demonstrating "how variations in analytic choices affect results."
+
+In this project, you will analyze the same dataset provided in the *Many Analysts* project. Needless to say, please don't look at the different approaches taken by the research teams in the original study until *after* you have completed your own projects!
+
+## Motivation: bias in soccer refereeing?
+
+Referee decisions in soccer matches can have significant influence on the outcome of the game, in particular by issuing yellow and red cards for player infractions. Certain offenses (some fouls and rough play, for instance) receive a yellow card, which acts like a warning to the player. More egregious offenses receive a straight red card, which results in the player being ejected from the game and their team forced to play a person down. If a player receives two yellow cards in the match, that is equivalent to a red card and they are likewise ejected.
+
+Sometimes, referee decisions are called into question, and it has been suggested that their decisions may sometimes be the result of conscious or unconscious bias. For example, fans may believe that referees are biased against their team; referees have at times been accused of bias when officiating matches involving a rival country; and controversies over allegations of racial bias by opposing players and referees appear with some regularity.
+
+This dataset compiles information about several thousand players in European soccer leagues, the referees who officiated their matches, and the number of yellow and red cards given by each referee to each player. Player photos were visually rated for skin color by two raters, allowing us to explore whether perceived race may be related to referee decisions.
+
+## Data
+
+The data contains information on all soccer players in the male divisions of the English, German, French, and Spanish soccer leagues in the 2012-13 season. Each row represents a pair: one player and one referee. Players often played multiple matches officiated by the same referee, which would be grouped together into one row.
+
+The data contains about 2,000 players and about 3,000 referees, totaling 146,000 unique pairs with data. Each row contains information about how many games the player played with that referee, how many red cards were given to the player by the referee, and so on; plus metadata about the player and referee.
+
+Two variables measure implicit and explicit racial bias in the referee’s home country. These are based on average scores from people who took bias tests conducted online by [Project Implicit](https://implicit.harvard.edu/implicit/index.jsp); the referees themselves did not take bias tests.
+
+## Downloading the data
+
+The data can be loaded into R with:
+
+```{r eval=F}
+library(tidyverse)
+
+soccer <- read_csv("https://sta712-f26.github.io/project/many-analysts.csv")
+```
+
+
+## Variable descriptions
+
+| Variable | Description |
+|----|-------------|
+| playerShort      | Unique player identifier |
+| player           | Player's full name |
+| club             | Player's club/team |
+| leagueCountry    | Country of the league the player belongs to |
+| birthday         | Player's birth date (DD.MM.YYYY) |
+| height           | Player's height in centimeters |
+| weight           | Player's weight in kilograms |
+| position         | Player's position on the team (e.g. Goalkeeper, Defensive Midfielder, etc.) |
+| games            | Number of games played by this player with this referee |
+| victories        | Of those games, the number won by the player's team |
+| ties             | Of those games, the number tied by the player's team |
+| defeats          | Of those games, the number lost by the player's team |
+| goals            | Number of goals scored by this player |
+| yellowCards      | Number of yellow cards received by this player from this referee |
+| yellowReds       | Number of double yellow cards received by this player from this referee |
+| redCards         | Number of red cards received by this player from this referee |
+| photoID          | ID of the player's photo |
+| rater1           | Rating of player's perceived skin tone by the first rater (1 to 5 scale, where 1 is "very light skin" and 5 is "very dark skin") |
+| rater2           | Rating of player's perceived skin tone by the second rater (1 to 5 scale) |
+| refNum           | Referee's identification number |
+| refCountry       | Referee's country identification number |
+| Alpha_3          | Referee's country three-letter code |
+| meanIAT          | Mean implicit bias score (from the Implicit Association Test) for the referee's country; larger values indicate higher implicit bias |
+| nIAT             | Sample size for the IAT score in the referee's country |
+| seIAT            | Standard error for the IAT score |
+| meanExp          | Mean explicit bias score for the referee's country; higher feelings indicate higher explicit bias |
+| nExp             | Sample size for the explicit bias score in that country |
+| seExp            | Standard error for the explicit bias score |
+
+
+## References
+
+Silberzahn, R., Uhlmann, E. L., Martin, D. P., Anselmi, P., Aust, F., Awtrey,
+E., ... Nosek, B. A. (2018). “Many analysts, one data set: Making transparent
+how variations in analytic choices affect results”. *Advances in Methods and
+Practices in Psychological Science*, 1(3), 337–356.
+<https://doi.org/10.1177/2515245917747646>
+
+## Acknowledgments
+
+This dataset, and portions of the data description, were borrowed from the [CMU S&DS Data Repository](https://cmustatistics.github.io/data-repository/psychology/many-analysts.html). 
+
+Portions of the group work structure were inspired by, and adapted from, a project created by Jo Hardin of Pomona College.
+
+
+
 
 
