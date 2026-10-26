@@ -60,10 +60,10 @@ If you complete the project in a group, your group is required to:
 * use at least *two* different modeling approaches to address the research question. This helps us judge how sensitive the results are to our modeling choices. Linear regression, logistic regression, Poisson/NB regression, and mixed effects models would generally count as different modeling choices. Fitting both a Poisson and Negative Binomial model would *not* count as two different modeling choices, nor would fitting models with slightly different sets of explanatory variables.
 * complete both an extended research paper and a project presentation for your final submission.
 
-On the other hand, if you complete the project individually, you need only use *one* main modeling approach, and you may choose between:
+On the other hand, if you complete the project individually, you need only use *one* main modeling approach, and you may choose between two options for the final submission:
 
-* an extended research paper
-* a short written report and a project presentation
+* Option 1: an extended research paper
+* Option 2: a short written report and a project presentation
 
 ## GitHub
 
@@ -119,8 +119,7 @@ data analysis)
     * How will you use the models to address the research question(s)? (hypothesis tests,
 confidence intervals, etc.)
     * What software will you use?
-6. What alternative strategies should be considered, and when? (i.e., what will you do if as-
-sumptions are violated? How would you modify the model or statistical analysis?)
+6. What alternative strategies should be considered, and when? (i.e., what will you do if assumptions are violated? How would you modify the model or statistical analysis?)
 7. What are the statistical results that will be presented? (refer back to 4 and 5)
 
 See the [linked article](https://onlinelibrary.wiley.com/doi/abs/10.1002/sta4.528), particularly Table 1, for more guidance on crafting a statistical analysis
@@ -147,9 +146,9 @@ Here are some important questions to consider (this is not an exhaustive list!):
 * Will you be creating any new variables or modifying any of the existing variables?
 * Use a combination of plots and summary statistics to begin addressing the research question -- what does EDA suggest about this question?
 
-**EDA write-up:** This portion should be approximately 2-3 pages, and should contain information on the available variables and their distributions, exploration of the relationships between key variables, and a few carefully chosen figures. 
+**EDA write-up:** This portion should be approximately 2-3 pages (single-spaced), and should contain information on the available variables and their distributions, exploration of the relationships between key variables, and a few carefully chosen figures. 
 
-* Figures should be labeled and numbered, with information captions
+* Figures should be labeled and numbered, with informative captions
 * No code or unformatted code output should be shown in your write-up
 * Writing should be in full sentences and paragraphs; no list responses
 * In the course of performing your EDA, you will undoubtedly make many different plots and tables and summary statistics -- I do *not* want you to submit all of that! Choose the most important and informative results to present.
@@ -158,13 +157,15 @@ Here are some important questions to consider (this is not an exhaustive list!):
 
 Sometime during the week of November 16, your group will meet with me to discuss your plan, your progress so far, and the contributions of each group member. During the meeting, I will give feedback and suggestions on next steps.
 
+You do not need to prepare anything extra for this check-in appointment. All group members must attend the check-in.
+
 ## Final submission (due: December 4)
 
 If you are working in a group, you will complete the **extended research report** and the **project presentation**. If you are working individually, you will complete either the **extended research report**, OR the **short report** plus the **project presentation**.
 
 ### Extended research report
 
-This report communicates your analysis and results in an extended written document. The formatting will be similar to a submission to the academic journal *PLOS One*. Please read the *PLOS One* [submission guidelines](https://journals.plos.org/plosone/s/submission-guidelines)
+This report communicates your analysis and results in an extended written document. The formatting will be similar to a submission to the academic journal *PLOS One*. Please read the *PLOS One* [submission guidelines](https://journals.plos.org/plosone/s/submission-guidelines), especially the "Manuscript Organization" and "Parts of a Submission".
 
 In particular, your manuscript must be organized with the following sections:
 
@@ -219,7 +220,7 @@ In addition, you should include a link to a GitHub repository containing the cod
 
 You will prepare a fairly short (10-15 minute) presentation on your key results, which you will give to Dr. Evans. Your presentation should have slides, and all team members must participate during the presentation.
 
-The presentation should be at the level of a general statistical audience, which is familiar with the basics of regression but may not be familiar with the topics covered in 712. For example, you should not assume knowledge of more advanced topics such as mixed models, Poisson and negative binomial regression, generalized additive models, or zero-inflated models.
+The presentation should be at the level of a general statistical audience, which is familiar with the basics of regression but may not be familiar with the topics covered in 712. For example, you should not assume detailed knowledge of more advanced topics such as mixed models, Poisson and negative binomial regression, generalized additive models, or zero-inflated models.
 
 After the presentation, Dr. Evans will ask more in-depth follow-up questions on the details of your work.
 
