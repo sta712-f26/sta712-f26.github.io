@@ -1,0 +1,128 @@
+---
+title: "ZIP models"
+author: "Ciaran Evans"
+output: beamer_presentation
+---
+
+## Last time: weekend drinking
+
+Survey data from 77 college students on a dry campus (i.e., alcohol is prohibited) in the US. Survey asks students "How many alcoholic drinks did you consume last weekend?"
+
+* `drinks`: number of drinks the student reports consuming
+* `sex`: whether the student identifies as male
+* `OffCampus`: whether the student lives off campus
+* `FirstYear`: whether the student is a first-year student
+
+Our goal: model the number of drinks students report consuming.
+
+## EDA: drinks
+
+```{r echo=F, message=F, warning=F, fig.align='center', fig.width=4, fig.height=3}
+library(tidyverse)
+
+wdrinks <- read.csv("../class_activities/weekendDrinks.csv")
+
+FirstYear <- ifelse( wdrinks$dorm %in% c("mohn","kittlesby", "kildahl"), "TRUE", "FALSE")
+OffCampus <- ifelse( wdrinks$dorm == "off campus", "TRUE", "FALSE")
+
+wdrinks <- cbind(wdrinks, FirstYear, OffCampus)
+
+wdrinks %>%
+  ggplot(aes(x = drinks)) +
+  geom_bar() +
+  theme_bw()
+```
+
+## Zero-inflated Poisson (ZIP) model
+
+## In R
+
+```{r message=F, warning=F}
+library(pscl)
+
+m1 <- zeroinfl(drinks ~ sex + FirstYear + OffCampus, 
+               dist = "poisson", data = wdrinks)
+
+m1$coefficients
+```
+
+\vspace{4cm}
+
+## Activity
+
+```{r}
+m1$coefficients
+```
+
+What is the estimated probability that a female first-year student who lives on campus never drinks?
+
+\vspace{4cm}
+
+
+## Activity
+
+```{r}
+m1$coefficients
+```
+
+What is the estimated average number of drinks for a second-year male student who lives off campus and sometimes drinks?
+
+\vspace{4cm}
+
+## Activity
+
+```{r}
+m1$coefficients
+```
+
+What is the estimated probability that a male first-year student who lives off campus had at least one drink last weekend?
+
+\vspace{4cm}
+
+## Activity: fitting ZIP models
+
+Work on the class activity (course website).
+
+\vspace{4cm}
+
+## Activity
+
+Work on the class activity (handout).
+
+\vspace{4cm}
+
+## Activity
+
+* `cigsPerDay`: The number of cigarettes smoked per day during the study period.
+* `education`: 1 = High School, 2 = Some College, 3 = College Degree, 4 = Advanced Degree.
+* `male`: 1 = Male, 0 = Female.
+* `age`: The age of the individual in years.
+* `diabetes`: 1 if the individual has diabetes, 0 otherwise.
+
+Why might a ZIP model be appropriate for this data? What would the latent variable represent?
+
+\vspace{2cm}
+
+## Activity
+
+```
+              Estimate Std. Error z value Pr(>|z|)    
+(Intercept)  2.9585841  0.0350454  84.422   <2e-16 ***
+male         0.4621809  0.0109838  42.078   <2e-16 ***
+age         -0.0067425  0.0006782  -9.941   <2e-16 ***
+education2   0.0131422  0.0125969   1.043    0.297    
+education3   0.0128553  0.0160200   0.802    0.422    
+education4  -0.0187548  0.0171957  -1.091    0.275    
+diabetes    -0.0166835  0.0393369  -0.424    0.671    
+```
+
+How would I interpret the estimated coefficient 0.462?
+
+\vspace{2cm}
+
+
+
+
+
+
+

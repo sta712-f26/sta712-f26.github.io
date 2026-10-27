@@ -1,0 +1,70 @@
+---
+title: "Activity: ZIP models"
+format: 
+  pdf:
+    header-includes:
+      - \usepackage{float}
+      - \floatplacement{table}{H}
+editor: source
+---
+
+\vspace{-3cm}
+
+The data in this class activity comes from a study on residents of Framingham, MA, which was conducted to research variables related to heart health. We will work with a subset of the data, containing
+
+* `cigsPerDay`: The number of cigarettes smoked per day during the study period.
+* `education`: 1 = High School, 2 = Some College, 3 = College Degree, 4 = Advanced Degree.
+* `male`: 1 = Male, 0 = Female.
+* `age`: The age of the individual in years.
+* `diabetes`: 1 if the individual has diabetes, 0 otherwise.
+
+While the data were originally collected to study heart health, in this activity we will try to model the number of cigarettes smoked.
+
+## The model
+
+To account for excess zeros in the data, we fit a *zero-inflated Poisson* (ZIP) model. Here is the probability function for our model:
+
+$$P(Y_i = y | \mathbf{x}_i) = \begin{cases} e^{-\lambda_i}(1 - p_i) + p_i & y = 0 \\ \dfrac{e^{-\lambda_i} \lambda_i^y}{y!}(1 - p_i) & y > 0 \end{cases}$$
+
+where
+
+$$
+\begin{aligned}
+\log \left( \frac{p_i}{1 - p_i} \right) &= \mathbf{x}_i^T \boldsymbol{\gamma} \\
+\log(\lambda_i) &= \mathbf{x}_i^T \boldsymbol{\beta}
+\end{aligned}
+$$
+
+## Model output
+
+```{r include=F}
+library(pscl)
+library(tidyverse)
+
+heart_data <- read.csv("~/Documents/Teaching/applied_glms/sta214-f26.github.io/class_activities/framingham.csv")
+
+heart_data <- heart_data |>
+  drop_na(male, age, education, diabetes, cigsPerDay, BMI) |>
+  mutate(education = as.factor(education))
+```
+
+```{r}
+m1 <- zeroinfl(cigsPerDay ~ male + age + education + diabetes, 
+               dist = "poisson", data = heart_data)
+
+summary(m1)
+```
+
+\newpage
+
+## Questions
+
+1. Why might a ZIP model be appropriate for this data? What would the latent variable represent?
+
+\vspace{4cm}
+
+2. Interpret the coefficient 0.462 in the fitted model.
+
+
+
+

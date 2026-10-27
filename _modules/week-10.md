@@ -11,6 +11,7 @@ October 26
 
 October 28
 : ZIP models
+  : [Slides](https://sta712-f26.github.io/slides/lecture_25.pdf), [Activity](https://sta712-f26.github.io/class_activities/ca_25_2.html)
 
 October 30
 : ZIP models
