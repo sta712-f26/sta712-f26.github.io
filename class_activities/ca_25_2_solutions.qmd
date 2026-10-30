@@ -1,0 +1,196 @@
+---
+title: "Class activity: Fitting ZIP models"
+format: html
+callout-icon: false
+---
+
+## ZIP model
+
+The full specification for a ZIP model is:
+
+$$
+\begin{aligned}
+P(Y_i = y | \mathbf{x}_i) &= \begin{cases} e^{-\lambda_i}(1 - p_i) + p_i & y = 0 \\ \dfrac{e^{-\lambda_i} \lambda_i^y}{y!}(1 - p_i) & y > 0 \end{cases} \\
+\log(\lambda_i) &= \mathbf{x}_i^T \boldsymbol{\beta} \\
+\log \left( \frac{p_i}{1 - p_i} \right) &= \mathbf{x}_i^T \boldsymbol{\gamma}
+\end{aligned}
+$$
+
+## Weekend drinking
+
+Survey data from 77 college students on a dry campus (i.e., alcohol is prohibited) in the US. Survey asks students "How many alcoholic drinks did you consume last weekend?"
+
+* `drinks`: number of drinks the student reports consuming
+* `sex`: whether the student identifies as male
+* `OffCampus`: whether the student lives off campus
+* `FirstYear`: whether the student is a first-year student
+
+Our goal: model the number of drinks students report consuming. We fit a zero-inflated Poisson model:
+
+```{r message=F, warning=F}
+library(tidyverse)
+library(pscl)
+
+wdrinks <- read_csv("https://sta712-f26.github.io/class_activities/wdrinks.csv")
+
+m1 <- zeroinfl(drinks ~ sex + FirstYear + OffCampus, 
+               dist = "poisson", data = wdrinks)
+
+summary(m1)
+```
+
+::: {.callout-tip}
+## Question 1
+
+Using the fitted ZIP model, compute the estimates $\widehat{p}_i$ and $\widehat{\lambda}_i$ for each observation in the data. 
+
+Remember that `m1$coefficients$count` gives estimates $\widehat{\boldsymbol{\beta}}$ for the Poisson component of the model, and `m1$coefficients$zero` gives estimates $\widehat{\boldsymbol{\gamma}}$ for the logistic component of the model.
+:::
+
+
+## Parameter estimation for ZIP models
+
+The unknown parameters in a ZIP model are $\boldsymbol{\beta}$ and $\boldsymbol{\gamma}$. How should we estimate these parameters?
+
+### Maximum likelihood estimation
+
+As usual, we can estimate $\boldsymbol{\beta}$ and $\boldsymbol{\gamma}$ by maximizing a likelihood. Let $\boldsymbol{\theta} = \begin{pmatrix} \boldsymbol{\beta} \\ \boldsymbol{\gamma}\end{pmatrix}$ be the combined vector of parameters. Then, the log-likelihood function is
+
+$$
+\log L(\boldsymbol{\theta} | \mathbf{y}, \mathbf{X}) = \sum \limits_{i=1}^n \log P(Y_i | \mathbf{x}_i, \boldsymbol{\theta})
+$$
+
+where $P(Y_i | \mathbf{x}_i, \boldsymbol{\theta})$ is calculated using the piecewise formula above.
+
+In the questions below, we will write code to compute the log-likelihood for a ZIP model.
+
+
+::: {.callout-tip}
+## Question 2
+
+Write a function in R called `prob_zip` which computes the probability of observed values for a zero-inflated Poisson random variable.
+
+Inputs:
+
+* `y`: a vector of the observed values of the ZIP response ($Y_1, Y_2,...,Y_n$)
+* `p`: a vector of estimated probabilities $p_1,...,p_n$
+* `lambda`: a vector of estimated means $\lambda_1,...,\lambda_n$
+
+Output: A vector containing $P(Y_i | p_i, \lambda_i)$ for each observation.
+
+Fill in the code:
+
+```{r eval=F}
+prob_zip <- function(y, p, lambda){
+  # return the computed probabilities
+}
+```
+
+:::
+
+**Solution:** Here is one possible implementation
+
+```{r}
+prob_zip <- function(y, p, lambda){
+  ifelse(y == 0, 
+         p + (1 - p)*exp(-lambda), 
+         (1 - p)*exp(-lambda)*lambda^y / factorial(y))
+}
+```
+
+```{r}
+prob_zip(y = 0, p = 0.6, lambda = 1)
+# compare to:
+0.6 + (1 - 0.6)*exp(-1)
+```
+
+```{r}
+prob_zip(y = 3, p = 0.3, lambda = 2)
+# compare to:
+(1 - 0.3)*exp(-2)*2^3 / factorial(3)
+```
+
+```{r}
+prob_zip(y = c(0, 3), p = c(0.6, 0.3), lambda = c(1, 2))
+```
+
+
+::: {.callout-tip}
+## Question 3
+
+Using your function from question 2, write a function called `log_lik_zip` which computes the log-likelihood for a ZIP model given $\mathbf{y}$, $\mathbf{X}$, and $\boldsymbol{\theta} = \begin{pmatrix} \boldsymbol{\beta} \\ \boldsymbol{\gamma}\end{pmatrix}$
+
+Inputs:
+
+* `y`: the vector of observed responses $\mathbf{y}$
+* `X`: the design matrix $\mathbf{X}$ for the ZIP model. You may assume that the logistic and Poisson components use the same design matrix.
+* `theta`: a vector containing values for the parameter $\boldsymbol{\theta}$. You may assume that the first half of the vector corresponds to $\boldsymbol{\beta}$ and the second half to $\boldsymbol{\gamma}$
+
+Output: the log likelihood $\log L(\boldsymbol{\theta} | \mathbf{y}, \mathbf{X})$
+
+:::
+
+**Solution:** Here is one possible implementation.
+
+```{r}
+log_lik_zip <- function(y, X, theta){
+  beta <- theta[1:(length(theta)/2)]
+  gamma <- theta[(length(theta)/2 + 1):length(theta)]
+  p <- as.numeric(exp(X %*% gamma) / (1 + exp(X %*% gamma)))
+  lambda <- as.numeric(exp(X %*% beta))
+  sum(log(prob_zip(y, p, lambda)))
+}
+```
+
+```{r}
+log_lik_zip(m1$y, model.matrix(m1), 
+            c(m1$coefficients$count, m1$coefficients$zero))
+```
+
+Notice this agrees with the log-likelihood reported by R!
+
+```{r}
+m1$loglik
+```
+
+### Optimizing
+
+Now we can estimate our parameters by maximizing the log likelihood.
+
+How should this be done? One option would be to use Newton's method: find the gradient and the Hessian of the log-likelihood and solve iteratively, as we usually do. 
+
+However, taking derivatives of the log-likelihood will be quite difficult, because we have the logarithm of a sum in the case that $Y_i = 0$.
+
+An alternative is to use built-in optimization methods in R, with the `optim` function (this is exactly how the `pscl::zeroinfl` function estimates the parameters!). The `optim` function only requires that we specify (a) an initial guess for the coefficients, and (b) a function to minimize. We don't have to specify a gradient or Hessian (`optim` can use a finite-difference approximation for the gradient, and has a variety of ways to handle the Hessian)
+
+In this case, we our initial estimate of $\boldsymbol{\beta}$ will be given by the coefficients of a Poisson regression, and our initial estimate of $\boldsymbol{\gamma}$ will be $\left( \log \left( \dfrac{\overline{Y}}{1 - \overline{Y}} \right), 0, 0,..., 0 \right)$.
+
+By default, `optim` minimizes a function, so we will minimize the negative log likelihood.
+
+The code then looks like:
+
+```{r}
+zero_prop = mean(m1$y == 0)
+gamma0 = c(log(zero_prop/(1 - zero_prop)), 0, 0, 0)
+beta0 = coef(glm(drinks ~ sex + FirstYear + OffCampus, 
+                 family = poisson, data = wdrinks))
+theta0 = c(beta0, gamma0)
+
+optim_est <- optim(theta0, 
+      function(theta) -log_lik_zip(m1$y, model.matrix(m1), theta),
+      method = "BFGS")
+
+optim_est$par
+```
+This is very close to our estimates from `zeroinfl`!
+
+```{r}
+optim_est$par[1:4]
+m1$coefficients$count
+```
+```{r}
+optim_est$par[5:8]
+m1$coefficients$zero
+```
+
+
