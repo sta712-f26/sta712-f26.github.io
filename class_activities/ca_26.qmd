@@ -1,0 +1,81 @@
+---
+title: "Class activity: Fishing"
+format: html
+callout-icon: false
+---
+
+# Planning a fishing trip
+
+You have **5 days** off from work, and you are planning to go on a fishing trip at a nearby state park. Once you pack all your gear, your car and **camper van** have space for **four people total** (you and three others). Now you just need to figure out who to bring!
+
+You have two options:
+
+* You have three college friends who also enjoy fishing, and have been *angling* for an invitation to join your trip
+* You have three young nieces and nephews who will be on spring break during your trip, and who have also asked to join
+
+You can't take everyone, so you'll have to choose between these two options. You would prefer to take your nieces and nephews if possible, but you are worried they will prevent you from doing enough fishing. You decide that you will take your nieces and nephews, *if* you are confident that the probability that your group catches at least one fish over the five days is at least 80%.
+
+## Data
+
+Because you are a statistician, you decide to use data to help make your decision. You have data on 250 groups of park guests who visited the state park. For each group, you have:
+
+* `count`: the number of fish caught by the group
+* `camper`: whether the group brought a camper van (0 = no, 1 = yes)
+* `child`: the number of children in the group
+* `persons`: the total number of people in the group
+* `LOS`: length of stay (in days)
+
+The data can be downloaded into R with the following code:
+
+```{r, message=F, warning=F}
+library(tidyverse)
+fish <- read_csv("https://sta712-f26.github.io/class_activities/fish2.csv")
+```
+
+To model the number of fish caught, we fit a ZIP model:
+
+```{r, message=F, warning=F}
+library(pscl)
+
+m_zip <- zeroinfl(count ~ camper + child + persons,
+               offset = log(LOS),
+               data = fish)
+
+summary(m_zip)
+```
+
+
+::: {.callout-tip}
+## Question 1
+
+Explain why the offset term is included here, and how it changes the interpretation of the coefficients.
+:::
+
+
+::: {.callout-tip}
+## Question 2
+
+Why might there be excess zeroes in the data? Explain what the two different groups of park visitors would be for this example. (In the college drinking dataset, e.g., the groups were the drinkers and the non-drinkers).
+
+:::
+
+
+::: {.callout-tip}
+## Question 3
+
+Calculate the predicted probability that your group catches 0 fish, if you bring your nieces and nephews. (You *will* go fishing, but you might not catch anything).
+
+Don't forget to include length of stay when making your predictions!
+:::
+
+
+::: {.callout-tip}
+## Question 4
+
+Remember that you decide that you will take your nieces and nephews, *if* you are confident that the true probability that your group catches at least one fish over the five days is at least 80%.
+
+Who will you decide to take on the fishing trip?
+
+Address this question using the data and model provided (the estimated probability from question 3 is not sufficient). 
+:::
+
