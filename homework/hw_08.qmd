@@ -1,0 +1,105 @@
+---
+title: "Homework 8"
+format: html
+callout-icon: false
+---
+
+**Due:** Friday, November 6, 11:59pm on Canvas
+
+**Homework grading and resubmissions:** Homework will be graded on completeness, correctness, and effort. If you make an honest, good-faith effort attempt at a question, but your submitted work has some important errors or is missing a component I think is necessary, I may ask you to *resubmit* your work after receiving feedback. Your grade for that question would then be based on your resubmission.
+
+
+**Collaborators and AI statement:** At the top of your assignment, list any collaborators (Dr. Evans does not count -- he is a resource, not a collaborator), and provide an AI statement describing your use of AI to complete the questions. If you did not use AI in any way, let me know that too. If you did use AI, provide: the model used, the HW questions on which you used AI, and a summary of the ways in which AI provided assistance. As described in the syllabus, AI use is permitted on homework assignments, but submissions without a complete AI statement may not receive full credit.
+
+# January 6, 2021
+
+In the 2020 US presidential election, Donald Trump (the incumbent) lost to the Democrat candidate Joe Biden. After the election, belief spread among some of Trump's supporters that the election had been stolen, and Trump himself insisted that he had won. 
+
+On January 6, 2021, a large group of Trump supporters attempted to prevent Congress from certifying the election results, and thereby keep Trump in power. Thousands of people stormed the Capitol building, and there were clashes with police officers and damage done to the building and offices of members of Congress. Several deaths and many injuries resulted.
+
+In the aftermath, 1424 individuals were charged with federal crimes. The data in this assignment comes from a [research study](https://www.cambridge.org/core/journals/ps-political-science-and-politics/article/political-geography-of-the-january-6-insurrectionists/3C59F4E94F90B63F0E80A86DFB487D01) investigating what "local political, economic, and social conditions of the communities" might explain participation in January 6.
+
+## Data 
+
+Each row in the dataset represents one county in the US, and the main variable of interest is the number of individuals in each county criminally charged for participation in January 6. The other variables record social, political, and economic information about the counties.
+
+The data can be loaded into R with:
+
+```{r eval=F}
+library(tidyverse)
+
+jan_6 <- read_csv("https://sta712-f26.github.io/homework/jan_6.csv")
+```
+
+
+The following variables are available from the original study, but not all variables are documented. 
+
+| Variable | Description |
+|----|-------------|
+| `fips` | County FIPS code (a unique numeric identifier for each county in the United States) |
+| `State2` | Two-letter abbreviation for the state |
+| `county` | County name (note this may not be unique, as some county names appear in multiple states) |
+| `rural_code_2013` | How urban or rural the county is, according to the 2013 [NCHS Urban-Rural Classification Scheme](https://www.cdc.gov/nchs/data-analysis-tools/urban-rural.html) (1 = most urban, 6 = most rural) |
+| `insurrectcount` | Number of people from this county criminally charged for their role (as of April 2023) |
+| `distx_dc` | Distance from the county center to Washington, DC (kilometers) |
+| `_ID` | Unknown |
+| `_CX` | Unknown |
+| `_CY` | Unknown |
+| `insurrectbinary` | Whether at least 1 person was charged (binary version of `insurrectcount`) |
+| `urban` | Whether the county is a medium or larger metropolitan area, according to the NCHS Urban-Rural Classification Scheme |
+| `distdc` | Distance from county center to Washington, DC (1,000s of kilometers) |
+| `ym1` through `ym28` | Unknown |
+| `county_name` | County name formatted with the state name, e.g., "Apache County, Arizona" |
+| `pop_white_nh_2020` | Non-Hispanic White population, 2020 Census |
+| `pop_tot_2020` | Total population, 2020 Census |
+| `pop_white_nh_2010` | Non-Hispanic White population, 2010 Census |
+| `pop_tot_2010` | Total population, 2010 Census |
+| `pct_white_nh_2010` | Percent of population that is non-Hispanic White, 2010 |
+| `pctnhwhite2020` | Percent of population that is non-Hispanic White, 2020 |
+| `wpdecline` | Percentage decline in White population, 2010 to 2020 |
+| `countypop` | County population, 100,000s |
+| `votes_trump_2020` | Trump votes in the county in the 2020 election |
+| `pcttrump2020` | Percent votes for Trump in the 2020 election |
+| `pct_biden2020` | Percent votes for Biden in the 2020 election |
+| `trump2020vromney` | Percent votes for Trump in 2020 minus the percent votes for Romney in 2012 |
+| `state` | Full name of state |
+| `cntydem` | County votes for the Democratic candidate for the House of Representatives |
+| `cntyrep` | County votes for the Republican candidate for the House of Representatives |
+| `cntyoth` | County votes for other candidates for the House of Representatives |
+| `cntytot` | Total votes cast for the House of Representatives |
+| `pctrcdd` | [Unclear] % County REP Vote Share in DEM District |
+| `pctobjected2020` | [Unclear] % of County Voters Represented by Objector |
+| `pctrcrd` | [Unclear] % County REP Vote Share in REP District |
+| `objected` | Indicator of whether the county's Congressional representative objected to the 2020 vote results |
+| `unemp_15_20` | Average county unemployment from 2015-2020 |
+| `mfgempdecline2` | Decline in share of jobs in manufacturing, 1970-2020, with missing values preserved |
+| `mfg_loss_state` | Average decline in share of jobs in manufacturing for this state, 1970-2020 |
+| `mfgempdecline` | Decline in share of jobs in manufacturing, 1970-2020, with missing values imputed "using the data for other counties in the same state" |
+| `TrumpAdvantage` | 2020 vote margin for Trump, percentage points |
+| `BidenAdvantage` | 2020 vote margin for Biden, percentage points |
+| `competitive` | Binary indicator of whether "the margin of victory in the 2020 House congressional vote was within 5%" |
+| `BidenWonBy20` | Binary indicator of whether Biden won this county in the 2020 election by a 20% margin or more |
+
+# Your task
+
+The original researchers want to test whether manufacturing decline or changes in population demographics are associated with increased participation in January 6.
+
+Build a model that will allow you to investigate this question, and use it to address the research question.
+
+Your submission should be a short report that justifies your chosen model and assesses model fit (making any adjustments as needed), uses the model to address the research question, and discusses your conclusions in context.
+
+No specific format is required, but your report must be written in full sentences and paragraphs, and include relevant figures and model results.
+
+# References and acknowledgments
+
+- Pape RA, Larson KD, Ruby KG (2024). "The Political Geography of the January 6
+  Insurrectionists". *PS: Political Science & Politics* 57 (3), 329-339.
+  <https://doi.org/10.1017/S1049096524000040>
+- Pape, Robert A.; Larson, Kyle D.; Ruby, Keven G., 2024, "Replication Data for:
+  The Political Geography of the January 6 Insurrectionists", Harvard Dataverse.
+  <https://doi.org/10.7910/DVN/KOOIRH>
+
+This dataset was borrowed from the [CMU S&DS Data Repository](https://cmustatistics.github.io/data-repository/politics/jan-6-insurrectionists.html). I have copied their variable descriptions and much of the data background.
+
+
+
