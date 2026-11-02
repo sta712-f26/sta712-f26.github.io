@@ -15,7 +15,7 @@ October 28
 
 October 30
 : ZIP models
-  : [Activity](https://sta712-f26.github.io/class_activities/ca_26.html)
+  : [Activity](https://sta712-f26.github.io/class_activities/ca_26.html), [Activity solutions](https://sta712-f26.github.io/class_activities/ca_26_solutions.html)
 
 : **HW 8 released**{: .label .label-yellow }
   : [HW 8](https://sta712-f26.github.io/homework/hw_08.html)

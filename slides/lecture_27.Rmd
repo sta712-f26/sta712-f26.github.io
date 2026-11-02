@@ -1,0 +1,165 @@
+---
+title: "Zero-inflated models"
+author: "Ciaran Evans"
+output: beamer_presentation
+---
+
+## Physician visits
+
+Data on 4406 individuals, age 66 and over, who are covered by Medicare. Variables include:
+
+* `visits`: Number of physician office visits
+* `hospital`: Number of hospital stays
+* `health`: Factor indicating self-perceived health status, levels are "poor", "average", "excellent"
+* `chronic`: Number of chronic conditions
+* `gender`: Factor indicating gender
+* `school`: Number of years of education
+* `insurance`: Factor. Is the individual covered by private insurance?
+
+**Goal:** Model the number of physician visits.
+
+## Activity 1
+
+Work on the class activity (course website).
+
+\vspace{4cm}
+
+## ZIP diagnostics
+
+```{r, include=F}
+library(tidyverse)
+library(AER)
+
+data("NMES1988")
+nmes <- NMES1988 |>
+  select(visits, hospital, health, chronic, 
+         gender, school, insurance)
+
+m1 <- pscl::zeroinfl(visits ~ ., dist = "poisson", data = nmes)
+```
+
+```{r echo=F, message=F, warning=F, fig.width=4, fig.height=3}
+# rootogram
+topmodels::rootogram(m1)
+```
+
+## ZIP diagnostics
+
+```{r echo=F, message=F, warning=F, fig.width=6, fig.height=3}
+# rootogram
+qresid_zeroinfl <- function(zi_m){
+  y <- zi_m$y
+  pred_probs <- predict(zi_m, type="prob")
+  resids <- rep(NA, length(y))
+  for(i in seq_along(y)){
+    cdf_b <- sum(pred_probs[i,1:(y[i]+1)])
+    if(y[i] == 0){
+      cdf_a <- 0
+    } else {
+      cdf_a <- sum(pred_probs[i,1:y[i]])
+    }
+    
+    resids[i] <- qnorm(runif(1, cdf_a, cdf_b))
+  }
+  return(resids)
+}
+
+p1 <- nmes |>
+  mutate(resids = qresid_zeroinfl(m1)) |>
+  ggplot(aes(x = health, y = resids)) +
+  geom_boxplot() +
+  theme_bw()
+
+p2 <- nmes |>
+  mutate(resids = qresid_zeroinfl(m1)) |>
+  ggplot(aes(x = school, y = resids)) +
+  geom_point() +
+  geom_smooth() +
+  theme_bw()
+
+library(patchwork)
+p1 + p2
+```
+
+How would you modify the model?
+
+## "What can I do differently?"
+
+A guiding principle for the course.
+
+* Linear regression is a poor choice for some response variables
+    * Modification: GLMs!
+* Not all count variables are Poisson
+    * Modifications: sandwich variance, quasi-Poisson, negative binomial
+* There are more 0s than a Poisson distribution accounts for
+    * Modification: ZIP
+* There are still excess 0s, but variance is still too high for a Poisson
+    * Modification: zero-inflated negative binomial (ZINB)
+    
+## Zero-inflated count regression  
+
+
+## Activity 2
+
+Work on the class activity (course website).
+
+\vspace{4cm}
+
+## ZINB diagnostics
+
+```{r include=F}
+m2 <- pscl::zeroinfl(visits ~ ., dist = "negbin", data = nmes)
+```
+
+
+```{r echo=F, message=F, warning=F, fig.width=4, fig.height=3}
+# rootogram
+topmodels::rootogram(m2)
+```
+
+## ZINB diagnostics
+
+```{r echo=F, message=F, warning=F, fig.width=6, fig.height=3}
+
+p1 <- nmes |>
+  mutate(resids = qresid_zeroinfl(m2)) |>
+  ggplot(aes(x = health, y = resids)) +
+  geom_boxplot() +
+  theme_bw()
+
+p2 <- nmes |>
+  mutate(resids = qresid_zeroinfl(m2)) |>
+  ggplot(aes(x = school, y = resids)) +
+  geom_point() +
+  geom_smooth() +
+  theme_bw()
+
+p1 + p2
+```
+
+## Inference
+
+We are interested in whether there is any relationship between an individual's self-perceived health status (`health`) and their number of physician visits (`visits`), after accounting for other explanatory variables. 
+
+\bigskip
+
+**Question:** How would I carry out a hypothesis test to address this question?
+
+\vspace{2cm}
+
+## Inference
+
+```{r}
+m2 <- pscl::zeroinfl(visits ~ ., 
+                     dist = "negbin", data = nmes)
+m3 <- pscl::zeroinfl(visits ~ . - health, 
+                     dist = "negbin", data = nmes)
+
+2*(m2$loglik - m3$loglik)
+pchisq(2*(m2$loglik - m3$loglik), df=4, lower.tail=F)
+```
+
+
+
+
+

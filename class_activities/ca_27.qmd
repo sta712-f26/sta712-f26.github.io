@@ -1,0 +1,108 @@
+---
+title: "Class activity: zero-inflated model diagnostics"
+format: html
+callout-icon: false
+---
+
+# Physician visits
+
+In this activity, we will work with data on physician visits for individuals age 66 and over, all of whom are covered by Medicare. This data comes from the US National Medical Expenditure Survey (NMES) conducted in 1987 and 1988. 
+
+The data contains information on 4406 individuals, and includes the following variables:
+
+* `visits`: Number of physician office visits
+* `hospital`: Number of hospital stays
+* `health`: Factor indicating self-perceived health status, levels are "poor", "average", "excellent"
+* `chronic`: Number of chronic conditions
+* `gender`: Factor indicating gender
+* `school`: Number of years of education
+* `insurance`: Factor. Is the individual covered by private insurance?
+
+This data is contained in the `AER` package, and can be loaded in R with:
+
+```{r, message=F, warning=F}
+library(tidyverse)
+library(AER)
+
+data("NMES1988")
+nmes <- NMES1988 |>
+  select(visits, hospital, health, chronic, 
+         gender, school, insurance)
+```
+
+We wish to model the number of physician office visits using the other variables. As there are excess 0s in this variable, we consider a zero-inflated Poisson model:
+
+```{r, message=F, warning=F}
+m1 <- pscl::zeroinfl(visits ~ ., dist = "poisson", data = nmes)
+```
+
+# Model diagnostics
+
+Now the question is, how well does our model fit the data? As with other count models, we can use diagnostic tools such as rootograms, quantile residual plots, and QQ plots of the quantile residuals.
+
+Here is code to make some of these diagnostic plots. The `statmod::qresid` function does not support zero-inflated models, so I have written my own function (`qresid_zeroinfl`) to create randomized quantile residuals from models fit with `pscl::zeroinfl`.
+
+```{r eval=F}
+# rootogram
+topmodels::rootogram(m1)
+```
+
+```{r eval=F}
+# function to create randomized quantile residuals 
+# for a zero-inflated model
+# zi_m is output from pscl::zeroinfl
+qresid_zeroinfl <- function(zi_m){
+  y <- zi_m$y
+  pred_probs <- predict(zi_m, type="prob")
+  resids <- rep(NA, length(y))
+  for(i in seq_along(y)){
+    cdf_b <- sum(pred_probs[i,1:(y[i]+1)])
+    if(y[i] == 0){
+      cdf_a <- 0
+    } else {
+      cdf_a <- sum(pred_probs[i,1:y[i]])
+    }
+    
+    resids[i] <- qnorm(runif(1, cdf_a, cdf_b))
+  }
+  return(resids)
+}
+
+nmes |>
+  mutate(resids = qresid_zeroinfl(m1)) |>
+  ggplot(aes(x = health, y = resids)) +
+  geom_boxplot() +
+  theme_bw()
+
+nmes |>
+  mutate(resids = qresid_zeroinfl(m1)) |>
+  ggplot(aes(x = school, y = resids)) +
+  geom_point() +
+  geom_smooth() +
+  theme_bw()
+```
+
+```{r eval=F}
+# QQ plot
+data.frame(resids = qresid_zeroinfl(m1)) |>
+  ggplot(aes(sample = resids)) +
+  geom_qq() +
+  geom_abline(slope = 1, intercept = 0, 
+              color = "orange") +
+  theme_bw()
+```
+
+
+
+# Questions
+
+
+::: {.callout-tip}
+## Question 1
+
+Create the diagnostic plots, and use them to discuss model fit.
+
+If the model does not appear to be a good fit to the data, which piece of the model do you think is the culprit? How would you modify the model?
+:::
+
+
