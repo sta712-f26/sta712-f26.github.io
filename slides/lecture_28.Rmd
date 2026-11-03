@@ -1,0 +1,323 @@
+---
+title: "Zero-inflated models, dependent data"
+author: "Ciaran Evans"
+output: beamer_presentation
+---
+
+## Physician visits
+
+Data on 4406 individuals, age 66 and over, who are covered by Medicare. Variables include:
+
+* `visits`: Number of physician office visits
+* `hospital`: Number of hospital stays
+* `health`: Factor indicating self-perceived health status, levels are "poor", "average", "excellent"
+* `chronic`: Number of chronic conditions
+* `gender`: Factor indicating gender
+* `school`: Number of years of education
+* `insurance`: Factor. Is the individual covered by private insurance?
+
+**Goal:** Model the number of physician visits.
+
+## ZIP diagnostics
+
+```{r, include=F}
+library(tidyverse)
+library(AER)
+
+data("NMES1988")
+nmes <- NMES1988 |>
+  select(visits, hospital, health, chronic, 
+         gender, school, insurance)
+
+m1 <- pscl::zeroinfl(visits ~ ., dist = "poisson", data = nmes)
+```
+
+```{r echo=F, message=F, warning=F, fig.width=4, fig.height=3}
+# rootogram
+topmodels::rootogram(m1)
+```
+
+## ZIP diagnostics
+
+```{r echo=F, message=F, warning=F, fig.width=6, fig.height=3}
+# rootogram
+qresid_zeroinfl <- function(zi_m){
+  y <- zi_m$y
+  pred_probs <- predict(zi_m, type="prob")
+  resids <- rep(NA, length(y))
+  for(i in seq_along(y)){
+    cdf_b <- sum(pred_probs[i,1:(y[i]+1)])
+    if(y[i] == 0){
+      cdf_a <- 0
+    } else {
+      cdf_a <- sum(pred_probs[i,1:y[i]])
+    }
+    
+    resids[i] <- qnorm(runif(1, cdf_a, cdf_b))
+  }
+  return(resids)
+}
+
+p1 <- nmes |>
+  mutate(resids = qresid_zeroinfl(m1)) |>
+  ggplot(aes(x = health, y = resids)) +
+  geom_boxplot() +
+  theme_bw()
+
+p2 <- nmes |>
+  mutate(resids = qresid_zeroinfl(m1)) |>
+  ggplot(aes(x = school, y = resids)) +
+  geom_point() +
+  geom_smooth() +
+  theme_bw()
+
+library(patchwork)
+p1 + p2
+```
+
+## ZINB diagnostics
+
+```{r include=F}
+m2 <- pscl::zeroinfl(visits ~ ., dist = "negbin", data = nmes)
+```
+
+
+```{r echo=F, message=F, warning=F, fig.width=4, fig.height=3}
+# rootogram
+topmodels::rootogram(m2)
+```
+
+## ZINB diagnostics
+
+```{r echo=F, message=F, warning=F, fig.width=6, fig.height=3}
+
+p1 <- nmes |>
+  mutate(resids = qresid_zeroinfl(m2)) |>
+  ggplot(aes(x = health, y = resids)) +
+  geom_boxplot() +
+  theme_bw()
+
+p2 <- nmes |>
+  mutate(resids = qresid_zeroinfl(m2)) |>
+  ggplot(aes(x = school, y = resids)) +
+  geom_point() +
+  geom_smooth() +
+  theme_bw()
+
+p1 + p2
+```
+
+## Inference
+
+We are interested in whether there is any relationship between an individual's self-perceived health status (`health`) and their number of physician visits (`visits`), after accounting for other explanatory variables. 
+
+\bigskip
+
+**Question:** How would I carry out a hypothesis test to address this question?
+
+\vspace{2cm}
+
+## Inference
+
+```{r}
+m2 <- pscl::zeroinfl(visits ~ ., 
+                     dist = "negbin", data = nmes)
+m3 <- pscl::zeroinfl(visits ~ . - health, 
+                     dist = "negbin", data = nmes)
+
+2*(m2$loglik - m3$loglik)
+pchisq(2*(m2$loglik - m3$loglik), df=4, lower.tail=F)
+```
+
+## Another dataset
+
+Data on 387 different bird species, with information from each species that includes:
+
+-   `Species`: the name of the species
+-   `Family`: the family of birds to which the species belongs (remember
+    that in taxonomy, "family" is more general than "species" -- each
+    family consists of a set of related species)
+-   `Heterozygosity`: a measure of species genetic diversity. Each bird
+    has two copies of each chromosome, and heterozygosity measures the
+    probability that the two chromosomes will have different versions
+    (alleles) for a genomic marker
+-   `breeding_range`: the breeding range of the species (in 10000 sq.
+    km)
+-   `body_mass`: species average body mass (g)
+-   `Latitude`: mid-point latitude of species breeding range
+
+**Goal:** Model relationship between breeding range and species diversity.
+
+## EDA
+
+```{r fig.width=6, fig.height=4}
+#| echo: FALSE
+#| message: FALSE
+#| warning: FALSE
+#| 
+library(tidyverse)
+library(patchwork)
+bird_diversity <- read_csv("bird-diversity.csv")
+
+p1 <- bird_diversity |>
+  ggplot(aes(x = breeding_range, y = Heterozygosity)) +
+  geom_point(size=0.5) +
+  theme_bw() +
+  labs(x = "Breeding range (sq km)")
+
+p2 <- bird_diversity |>
+  ggplot(aes(x = body_mass, y = Heterozygosity)) +
+  geom_point(size=0.5) +
+  theme_bw() +
+  labs(x = "Body mass (g)")
+
+p3 <- bird_diversity |>
+  ggplot(aes(x = Latitude, y = Heterozygosity)) +
+  geom_point(size=0.5) +
+  theme_bw() +
+  labs(x = "Midpoint latitude of breeding range")
+
+p4 <- bird_diversity |>
+  ggplot(aes(x = log(breeding_range), y = Heterozygosity)) +
+  geom_point(size=0.5) +
+  theme_bw() +
+  labs(x = "log(Breeding range)")
+
+p5 <- bird_diversity |>
+  ggplot(aes(x = log(body_mass), y = Heterozygosity)) +
+  geom_point(size=0.5) +
+  theme_bw() +
+  labs(x = "log(Body mass)")
+
+(p1 + p2 + p3)/(p4 + p5 + plot_spacer())
+```
+
+## Linear regression
+
+```{r}
+bird_lm <- lm(Heterozygosity ~ log(breeding_range) + 
+                log(body_mass) + Latitude, 
+              data = bird_diversity)
+```
+
+```{r fig.width=6, fig.height=3.5}
+#| echo: FALSE
+#| message: FALSE
+#| 
+p1 <- bird_diversity |>
+  mutate(resids = residuals(bird_lm)) |>
+  ggplot(aes(x = log(breeding_range), y = resids)) +
+  geom_point(size = 0.5) +
+  geom_smooth(color = "blue", lwd=0.75) +
+  theme_bw() +
+  labs(x = "log(Breeding range)", y = "Residuals")
+
+p2 <- bird_diversity |>
+  mutate(resids = residuals(bird_lm)) |>
+  ggplot(aes(x = log(body_mass), y = resids)) +
+  geom_point(size = 0.5) +
+  geom_smooth(color = "blue", lwd=0.75) +
+  theme_bw() +
+  labs(x = "log(Body mass)", y = "Residuals")
+
+p3 <- bird_diversity |>
+  mutate(resids = residuals(bird_lm)) |>
+  ggplot(aes(x = Latitude, y = resids)) +
+  geom_point(size = 0.5) +
+  geom_smooth(color = "blue", lwd=0.75) +
+  theme_bw() +
+  labs(x = "Latitude", y = "Residuals")
+
+p4 <- bird_diversity |>
+  mutate(resids = residuals(bird_lm)) |>
+  ggplot(aes(sample = resids)) +
+  geom_qq(size = 0.5) +
+  geom_qq_line() +
+  theme_bw() +
+  labs(x = "Theoretical normal quantiles", 
+       y = "Observed residual quantiles")
+
+(p1 + p2)/(p3 + p4)
+```
+
+## Family?
+
+Residuals for the 10 largest families:
+
+```{r fig.width = 4, fig.height = 3}
+#| echo: FALSE
+#| message: FALSE
+#| 
+bird_diversity |>
+  count(Family) |>
+  filter(n >= 10) |>
+  inner_join(bird_diversity |>
+               mutate(Residuals = residuals(bird_lm)), 
+             join_by(Family)) |>
+  select(-n) |>
+  ggplot(aes(x = Family, y = Residuals)) +
+  geom_boxplot() +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1))
+```
+
+## Family?
+
+Current model:
+
+$$
+\begin{aligned}
+\text{Heterozygosity}_i &= \beta_0 + \beta_1 \log(\text{breeding range}_i) + \beta_2 \log(\text{mass}_i) + \\
+& \hspace{1cm} \beta_3 \text{latitude}_i + \varepsilon_i
+\end{aligned}
+$$
+
+**Question:** How many parameters would be added to the model if I want to include Family as an explanatory variable?
+
+\vspace{2cm}
+
+## Family
+
+Current model:
+
+$$
+\begin{aligned}
+\text{Heterozygosity}_i &= \beta_0 + \beta_1 \log(\text{breeding range}_i) + \beta_2 \log(\text{mass}_i) + \\
+& \hspace{1cm} \beta_3 \text{latitude}_i + \varepsilon_i
+\end{aligned}
+$$
+
+Adding Family:
+
+$$
+\begin{aligned}
+\text{Heterozygosity} &= \beta_0 + \sum_{i=1}^{19} \beta_i \mathbb{I}\{\text{Family} = i\} +\\
+& \hspace{1cm} \beta_{20} \log(\text{breeding range}) + \cdots + \varepsilon
+\end{aligned}
+$$
+
+## Challenges
+
+1.  There are 20 different families, so including Family as a variable
+    would require 19 additional $\beta$ coefficients (or more, if any
+    interactions are included!).
+    
+\bigskip
+    
+2.  There are three families with only a single species in the dataset,
+    and one family with only two species. Estimating a coefficient using
+    only one or two points is not a good idea.
+    
+\bigskip
+
+3.  While we want to capture differences between families in the model,
+    we probably don't care about the actual coefficient estimates,
+    because our main variable of interest is breeding range. Rather, we
+    just want our model to capture variability from family to family.
+
+## Alternative: linear mixed model
+
+
+
+
+

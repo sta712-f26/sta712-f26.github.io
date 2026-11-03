@@ -1,0 +1,160 @@
+---
+title: "Class activity: linear mixed models"
+format: html
+callout-icon: false
+---
+
+# Linear mixed model for grouped data
+
+Suppose we have data $(X_{ij}, Y_{ij})$ where subscript $i$ denotes
+**group** and subscript $j$ denotes **observation within group**. There
+are $m$ different groups ($i = 1,...,m$), and each group has $n_i$
+observations. For example, in the bird diversity data, $Y_{ij}$ would
+denote the heterozygosity of species $j$ within Family $i$; there are
+$m = 20$ different families; and the number of observations $n_i$ within
+each group ranges from 1 to 181.
+
+Furthermore, suppose $X_{ij}$ and $Y_{ij}$ are related according to the
+following model:
+
+$$
+Y_{ij} = \beta_0 + u_i + \beta_1 X_{ij} + \varepsilon_{ij}
+$$
+
+For each group (e.g. family) $i$, there is a linear relationship with
+slope $\beta_1$ between $X$ and $Y$. However, the intercept
+($\beta_0 + u_i$) differs from group to group (e.g. between families).
+The presence of $u_i$ in the intercept leads to dependence: since
+observations within a group share the same intercept, they are more
+similar to each other than to observations from a different group.
+
+# Simulating data
+
+In this activity, you will simulate data from this model to see how the
+dependence affects the usual linear regression fit. To simulate some
+data, we need to choose distributions for $u_i$, $\varepsilon_{ij}$, and
+$X_{ij}$. Let's use normal distributions for simplicity, and suppose
+that we generate data from the following model:
+
+$$
+\begin{aligned}
+u_i &\overset{iid}{\sim} N(0, \sigma_u^2) \hspace{1cm} i = 1,...,m \\
+\varepsilon_{ij} &\overset{iid}{\sim} N(0, \sigma_{\varepsilon}^2) \hspace{1cm} j = 1,...,n_i \\
+X_{ij} &\sim N(\theta_i, \sigma_x^2) \\
+Y_{ij} &= \beta_0 + u_i + \beta_1 X_{ij} + \varepsilon_{ij}
+\end{aligned}
+$$
+
+The code below simulates data for specific values of the parameters:
+
+```{r}
+set.seed(9284)
+
+# simulation parameters
+ni <- 50 # observations per group
+m <- 6 # number of groups
+var_x <- 1 
+var_e <- 1
+var_u <- 2
+beta0 <- 1 # overall intercept
+beta1 <- 0 # overall slope
+
+# generate group ids and X
+group_id <- rep(1:m, each=ni)
+x_means <- rnorm(m, sd=sqrt(var_x))[group_id]
+x <- x_means + rnorm(ni*m)
+
+# generate u, e, and Y
+u <- rnorm(m, sd=sqrt(var_u))[group_id]
+y <- beta0 + u + beta1*x + rnorm(m*ni, sd=sqrt(var_e))
+```
+
+The figure below shows a plot of $Y$ vs. $X$ for
+this simulated data, colored by group, with a best-fit line for each
+group. We can see that each group has a similar slope (close to 0), but
+the intercepts are very different.
+
+```{r}
+#| echo: FALSE
+#| message: FALSE
+#| warning: FALSE
+
+library(tidyverse)
+
+sim_data <- data.frame(x, y, group_id)
+
+sim_data |>
+  ggplot(aes(x = x, y = y, color = as.factor(group_id))) +
+  geom_point(size=0.5) +
+  geom_smooth(method = "lm", se=F) +
+  theme_bw() +
+  labs(color = "Group")
+```
+
+::: {.callout-tip}
+## Question 1
+
+Using the simulated data, fit a simple linear regression of $Y$ on $X$, and report the estimated coefficients. 
+
+How do the estimates of $\beta_0$ and $\beta_1$ compare to the true values? Why?
+
+What is the p-value for the test $H_0: \beta_1 = 0$?
+:::
+
+Instead of fitting a simple linear regression, we can fit a **linear mixed model** which includes a random effect for each group. In R, we will use the `lme4` package:
+
+```{r}
+m1 <- lme4::lmer(y ~ x + (1|group_id))
+```
+
+The `(1|group_id)` means that we include a random intercept for each group.
+
+::: {.callout-tip}
+## Question 2
+
+Run the code to fit the mixed model, and examine the output (`summary(m1)`). How do the estimates from the fitted model compare to the true simulation parameters?
+:::
+
+
+::: {.callout-tip}
+## Question 3
+
+Experiment with different values for the simulation parameters $\sigma_u^2$ (`var_u`), $\sigma_\varepsilon^2$ (`var_e`), and $\sigma_x^2$ (`var_x`). What changes in the plot as you change these different parameters?
+:::
+
+# Why do we need to account for dependence?
+
+Suppose we ignore the dependence structure of the data, and instead just fit the simple linear regression model from question 1 (`lm(y ~ x)`). What will be the impact of the dependence on our parameter estimates?
+
+::: {.callout-tip}
+## Question 4
+
+Repeat the simulation many times, fitting the simple linear regression model and storing the estimated slope $\widehat{\beta}_1$ and the p-value for the test of $H_0: \beta_1 = 0$ for each repetition.
+:::
+
+::: {.callout-tip}
+## Question 5
+
+ Using the simulation output, estimate the type I error rate for the test of $H_0: \beta_1 = 0$ at significance level $0.05$.
+:::
+
+::: {.callout-tip}
+## Question 6
+
+The inflated type I error rate observed in this simulation is due to
+    the dependence not accounted for by the model. The degree of
+    dependence in the data is, in part, a function of the two variances
+    $\sigma_u^2$ (`var_u`) and $\sigma_\varepsilon^2$ (`var_e`). Keeping
+    $\sigma_\varepsilon^2 = 1$ fixed, repeat the simulation with
+    different values of $\sigma_u^2$. How does the type I error change?
+:::
+
+::: {.callout-tip}
+## Question 7
+
+The slope within each group is still $\beta_1 = 0$. How is it
+    possible that the overall slope is so frequently estimated to be
+    significantly non-zero? (*Hint*: consider the distribution of
+    $X_{ij}$).
+:::
+

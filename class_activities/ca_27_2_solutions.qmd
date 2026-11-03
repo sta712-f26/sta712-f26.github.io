@@ -1,0 +1,165 @@
+---
+title: "Class activity: fitting ZINB models"
+format: html
+callout-icon: false
+---
+
+# Zero-inflated count model
+
+In general, a zero-inflated count model is:
+
+$$
+\begin{aligned}
+P(Y_i = y | \mathbf{x}_i) &= \begin{cases} f(0; \boldsymbol{\xi}_i)(1 - p_i) + p_i & y = 0 \\ f(y;\boldsymbol{\xi}_i)(1 - p_i) & y > 0 \end{cases} \\
+\log(\mu_i) &= \mathbf{x}_i^T \boldsymbol{\beta} \\
+\log \left( \frac{p_i}{1 - p_i} \right) &= \mathbf{x}_i^T \boldsymbol{\gamma}
+\end{aligned}
+$$
+
+Here $f(y; \boldsymbol{\xi}_i)$ represents a count distribution with mean $\mu_i$. The vector $\boldsymbol{\xi}_i$ captures the parameters needed to specify that distribution. 
+
+For a zero-inflated Poisson (ZIP) model, for example, $\boldsymbol{\xi}_i = \mu_i$ and $f(y; \boldsymbol{\xi}_i) = \dfrac{e^{-\mu_i} \mu_i^y}{y!}$. 
+
+For a zero-inflated negative binomial (ZINB), $\boldsymbol{\xi}_i = (\mu_i, r)$ and $f(y; \boldsymbol{\xi}_i)$ is the pmf for a negative binomial with mean $\mu_i$ and size parameter $r$.
+
+## Parameter estimation
+
+Like a ZIP model, parameters can be estimated for a ZINB model by the method of maximum likelihood.
+
+[Previously](https://sta712-f26.github.io/class_activities/ca_25_2.html), we wrote code to compute the log likelihood for a ZIP model. We then used R's `optim` function to maximize the likelihood (by minimizing the negative log likelihood).
+
+::: {.callout-tip}
+## Question 1
+
+Modify the code from the previous class activity to write a function called `prob_zinb` which computes the probability of observed values for a zero-inflated negative binomial random variable.
+
+Inputs:
+
+* `y`: a vector of the observed values of the response ($Y_1, Y_2,...,Y_n$)
+* `p`: a vector of estimated probabilities $p_1,...,p_n$
+* `mu`: a vector of estimated means $\mu_1,...,\mu_n$
+* `r`: the estimated size parameter $r$ (a single value)
+
+Output: A vector containing estimated probabilities for each observation.
+
+You may find the `dnbinom` function and the [solutions](https://sta712-f26.github.io/class_activities/ca_25_2_solutions.html) to the previous activity helpful.
+:::
+
+**Solution:**
+
+```{r}
+prob_zinb <- function(y, p, mu, r){
+  ifelse(y == 0, 
+         p + (1 - p)*dnbinom(0, size=r, mu = mu), 
+         (1 - p)*dnbinom(y, size=r, mu = mu))
+}
+```
+
+
+
+::: {.callout-tip}
+## Question 2
+
+Modify the code from the previous class activity to write a function called `log_lik_zinb` which computes the log-likelihood for a ZINB model.
+
+Inputs:
+
+* `y`: the vector of observed responses $\mathbf{y}$
+* `X`: the design matrix $\mathbf{X}$ for the ZINB model. You may assume that the logistic and Poisson components use the same design matrix.
+* `params`: a vector containing values for the parameters. You may assume that the first portion of the vector corresponds to $\boldsymbol{\beta}$, the second portion to $\boldsymbol{\gamma}$, and the final entry corresponds to $r$.
+
+Output: the log likelihood $\log L(\boldsymbol{\beta}, \boldsymbol{\gamma}, r | \mathbf{y}, \mathbf{X})$
+
+You may find the  [solutions](https://sta712-f26.github.io/class_activities/ca_25_2_solutions.html) to the previous activity helpful.
+:::
+
+**Solution:**
+
+```{r}
+log_lik_zinb <- function(y, X, theta){
+  k <- length(theta) - 1
+  beta <- theta[1:(k/2)]
+  gamma <- theta[(k/2 + 1):k]
+  r <- theta[k+1]
+  p <- as.numeric(exp(X %*% gamma) / (1 + exp(X %*% gamma)))
+  mu <- as.numeric(exp(X %*% beta))
+  sum(log(prob_zinb(y, p, mu, r)))
+}
+```
+
+
+## Optimizing
+
+We can now use the `optim` function to estimate $\boldsymbol{\beta}, \boldsymbol{\gamma}, r$. 
+
+```{r, include=F}
+prob_zinb <- function(y, p, mu, r){
+  ifelse(y == 0, 
+         p + (1 - p)*dnbinom(0, size=r, mu = mu), 
+         (1 - p)*dnbinom(y, size=r, mu = mu))
+}
+
+log_lik_zinb <- function(y, X, theta){
+  k <- length(theta) - 1
+  beta <- theta[1:(k/2)]
+  gamma <- theta[(k/2 + 1):k]
+  r <- theta[k+1]
+  p <- as.numeric(exp(X %*% gamma) / (1 + exp(X %*% gamma)))
+  mu <- as.numeric(exp(X %*% beta))
+  sum(log(prob_zinb(y, p, mu, r)))
+}
+```
+
+For example, here are estimates for ZINB coefficients with the NMES physician visit data. We initialize estimates of $\boldsymbol{\beta}$ and $r$ for a negative binomial fit (without zero-inflation) on the data.
+
+```{r message=F, warning=F}
+library(tidyverse)
+library(AER)
+
+data("NMES1988")
+nmes <- NMES1988 |>
+  select(visits, hospital, health, chronic, 
+         gender, school, insurance)
+
+nb_fit <- MASS::glm.nb(visits ~ ., data = nmes)
+
+zero_prop = mean(nmes$visits == 0)
+beta0 = coef(nb_fit)
+gamma0 = c(log(zero_prop/(1 - zero_prop)),
+           rep(0, length(beta0) - 1))
+params0 = c(beta0, gamma0, nb_fit$theta)
+
+optim_est <- optim(params0, 
+                   function(par) -log_lik_zinb(nmes$visits, model.matrix(nb_fit), par),
+                   method = "BFGS")
+
+optim_est$par
+```
+
+In practice, we can use `pscl::zeroinfl` again, which supports ZINB models as well as ZIP models:
+
+```{r}
+m2 <- pscl::zeroinfl(visits ~ ., dist = "negbin", data = nmes)
+```
+
+We can compare our output with the output from `pscl::zeroinfl`, and see that the estiamted parameters are very close!
+
+```{r}
+# estimated count coefficients
+optim_est$par[1:8]
+m2$coefficients$count
+```
+
+```{r}
+# estimated zero-inflation coefficients
+optim_est$par[9:16]
+m2$coefficients$zero
+```
+
+```{r}
+# estimated size parameter
+optim_est$par[17]
+m2$theta
+```
+
+
