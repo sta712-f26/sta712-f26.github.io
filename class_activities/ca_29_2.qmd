@@ -1,0 +1,53 @@
+---
+title: "Activity: linear mixed models"
+format: pdf
+editor: source
+---
+
+\vspace{-2.5cm}
+
+Observe data
+$(\mathbf{x}_{ij}, Y_{ij}) \in \mathbb{R}^{k+1} \times \mathbb{R}$ from
+$m$ groups ($i=1,...,m$) with $n_i$ observations ($j = 1,...,n_i$) in
+the $i$th group, and $n = \sum_{i=1}^m n_i$ observations total. Let
+$u_i$ and $\varepsilon_{ij}$ be random variables with mean 0. A linear
+mixed model with a **random intercept** is
+
+$$
+Y_{ij} = u_i + \mathbf{x}_{ij}^T\boldsymbol{\beta} + \varepsilon_{ij}
+$$ {#eq-mm_random_intercept}
+
+It can help to write this model in matrix form:
+
+$$
+\begin{bmatrix} Y_{11} \\ Y_{12} \\ \vdots \\ Y_{1n_1} \\ Y_{21} \\ \vdots \\ Y_{m n_m} \end{bmatrix} = \begin{bmatrix} \mathbf{x}_{11}^T \\ \mathbf{x}_{12}^T \\ \vdots \\ \mathbf{x}_{1n_1}^T \\ \mathbf{x}_{21}^T \\ \vdots \\ \mathbf{x}_{mn_m}^T \end{bmatrix} \begin{bmatrix} \beta_0 \\ \beta_1 \\ \vdots \\ \beta_k \end{bmatrix} + \begin{bmatrix} 1 & 0 & 0 & \cdots & 0 \\ 1 & 0 & 0 & \cdots & 0 \\ \vdots & \vdots & \vdots & \ddots & \vdots \\ 1 & 0 & 0 & \cdots & 0 \\ 0 & 1 & 0 & \cdots & 0 \\ \vdots & \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & 0 & \cdots & 1\end{bmatrix} \begin{bmatrix} u_1 \\ u_2 \\ u_3 \\\\ \vdots \\ u_m \end{bmatrix} + \begin{bmatrix}\varepsilon_{11} \\ \varepsilon_{12} \\ \vdots \\ \varepsilon_{1n_1} \\ \varepsilon_{21} \\ \vdots \\ \varepsilon_{m n_m} \end{bmatrix}
+$$
+
+Or, written more concisely:
+
+$$
+\begin{aligned}
+&\mathbf{y} = \mathbf{X} \boldsymbol{\beta} + \mathbf{Z}\boldsymbol{u} + \boldsymbol{\varepsilon} \\ &\boldsymbol{u} \sim N(\mathbf{0}, \sigma_u^2 \mathbf{I}_m), \hspace{0.5cm} \boldsymbol{\varepsilon} \sim N(\mathbf{0}, \sigma_{\varepsilon}^2 \mathbf{I}_n), \hspace{0.5cm} \boldsymbol{u}, \boldsymbol{\varepsilon}, \mathbf{X} \text{ independent}
+\end{aligned}
+$$ {#eq-mm_random_intercept_matrix_form}
+
+1. Show that 
+
+$$
+\mathbf{y} | \mathbf{X} \sim N(\mathbf{X} \boldsymbol{\beta}, \boldsymbol{\Sigma} )
+$$
+
+where
+
+$$
+\boldsymbol{\Sigma} = \begin{bmatrix} \boldsymbol{\Sigma}_1 & \mathbf 0 & \mathbf{0} & \cdots & \mathbf{0} \\ 
+\mathbf{0} & \boldsymbol{\Sigma}_2 & \mathbf{0} & \cdots & \mathbf{0} \\ \mathbf{0} & \mathbf{0} & \boldsymbol{\Sigma}_3 & \cdots & \mathbf{0} \\ \vdots & \vdots & \vdots & \ddots & \vdots \\ \mathbf{0} & \mathbf{0} & \mathbf{0} & \cdots & \boldsymbol{\Sigma}_m\end{bmatrix}
+$$
+
+where each $\boldsymbol{\Sigma}_i \in \mathbb{R}^{n_i \times n_i}$ is
+the variance-covariance matrix for group $i$, and
+
+$$
+\boldsymbol{\Sigma}_i = \begin{bmatrix} \sigma_u^2 + \sigma_{\varepsilon}^2 & \sigma_u^2 & \cdots & \sigma_u^2 \\ \sigma_u^2 & \sigma_u^2 + \sigma_{\varepsilon}^2 & \cdots & \sigma_u^2 \\ \vdots & \vdots & \ddots & \vdots \\ \sigma_u^2 & \sigma_u^2 & \cdots & \sigma_u^2 + \sigma_{\varepsilon}^2 \end{bmatrix}
+$$
+

@@ -1,0 +1,145 @@
+---
+title: "Linear Mixed Models"
+author: "Ciaran Evans"
+output: beamer_presentation
+---
+
+## Warmup
+
+Work on the warmup activity (handout).
+
+\vspace{4cm}
+
+## Warmup
+
+Data on prices and other information for 1561 Airbnb rentals in Chicago. Our goal is to model the relationship between price and overall satisfaction score.
+
+* `price`: The price in US dollars of a one night rental
+* `overallSatisfaction`: an average satisfaction score, given as numbers between 2.5 and 5
+* `neighborhood`: the neighborhood in which the rental is located. There are 43 neighborhoods, and 25 - 50 rentals per neighborhood
+
+**Question:** What would an appropriate linear mixed model for this data and research question look like?
+
+\vspace{2cm}
+
+## Warmup
+
+```
+Random effects:
+ Groups       Name        Variance Std.Dev.
+ neighborhood (Intercept) 1048     32.37   
+ Residual                 6762     82.23   
+Number of obs: 1561, groups:  neighborhood, 43
+
+Fixed effects:
+                     Estimate Std. Error t value
+(Intercept)            27.275     30.547   0.893
+overall_satisfaction   14.809      6.303   2.350
+```
+
+\vspace{3cm}
+
+## Last time: class activity
+
+```{r include=F}
+set.seed(9284)
+
+# simulation parameters
+ni <- 50 # observations per group
+m <- 6 # number of groups
+var_x <- 1 
+var_e <- 1
+var_u <- 2
+beta0 <- 1 # overall intercept
+beta1 <- 0 # overall slope
+
+# generate group ids and X
+group_id <- rep(1:m, each=ni)
+x_means <- rnorm(m, sd=sqrt(var_x))[group_id]
+x <- x_means + rnorm(ni*m)
+
+# generate u, e, and Y
+u <- rnorm(m, sd=sqrt(var_u))[group_id]
+y <- beta0 + u + beta1*x + rnorm(m*ni, sd=sqrt(var_e))
+```
+
+```{r fig.width=6, fig.height=2.5}
+#| echo: FALSE
+#| message: FALSE
+#| warning: FALSE
+
+library(tidyverse)
+library(patchwork)
+
+sim_data <- data.frame(x, y, group_id)
+
+p1 <- sim_data |>
+  ggplot(aes(x = x, y = y, color = as.factor(group_id))) +
+  geom_point(size=0.5) +
+  geom_smooth(method = "lm", se=F) +
+  theme_bw() +
+  labs(color = "Group")
+p2 <- sim_data |>
+  ggplot(aes(x = x, y = y)) +
+  geom_point(size=0.5) +
+  geom_smooth(method = "lm", se=F) +
+  theme_bw()
+p1 + p2
+```
+
+**Linear regression:** $\widehat{\beta}_1 = 0.5806, \ \widehat{SE}(\widehat{\beta}_1) = 0.066$
+
+**LMM:** $\widehat{\beta}_1 = 0.00207, \ \widehat{SE}(\widehat{\beta}_1) = 0.0546$
+
+## Issues with ignoring group structure
+
+* Estimating the wrong coefficients
+
+\bigskip
+
+* Standard errors are too small
+
+\bigskip
+
+* Inflated type I error rates for hypothesis tests
+
+## Models with a random intercept
+
+
+
+## Class activity
+
+Work on the class activity (handout).
+
+\vspace{4cm}
+
+## Models with a random intercept
+
+## Intra-class correlation
+
+$$
+Y_{ij} = u_i + \mathbf{x}_{ij}^T\boldsymbol{\beta} + \varepsilon_{ij}
+$$
+
+The **intra-class correlation coefficient**
+(ICC) is the correlation between two observations within the same group
+$i$:
+
+$$
+\rho_{\text{group}} := Cor(Y_{ij}, Y_{ik} | \mathbf{x}_{ij}, \mathbf{x}_{ik}) = \dfrac{\sigma_u^2}{\sigma_u^2 + \sigma_{\varepsilon}^2} \hspace{0.5cm} (j \neq k)
+$$ 
+
+```
+Random effects:
+ Groups       Name        Variance Std.Dev.
+ neighborhood (Intercept) 1048     32.37   
+ Residual                 6762     82.23   
+Number of obs: 1561, groups:  neighborhood, 43
+```
+
+\vspace{3cm}
+
+## Parameter estimation
+
+
+
