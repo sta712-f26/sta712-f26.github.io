@@ -13,3 +13,4 @@ November 4
 
 November 6
 : Mixed models
+  : [Slides](https://sta712-f26.github.io/slides/lecture_29.pdf), [Activity 1](https://sta712-f26.github.io/class_activities/ca_29_1.pdf), [Activity 2](https://sta712-f26.github.io/class_activities/ca_29_2.pdf)
