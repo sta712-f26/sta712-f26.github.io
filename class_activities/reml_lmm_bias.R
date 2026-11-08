@@ -5,7 +5,7 @@ v1 <- rep(NA, nsim)
 v2 <- rep(NA, nsim)
 
 ni <- 10 # observations per group
-m <- 20 # number of groups
+m <- 5 # number of groups
 var_x <- 1 
 var_e <- 1
 var_u <- 2

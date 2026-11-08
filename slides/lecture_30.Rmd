@@ -1,0 +1,76 @@
+---
+title: "Linear Mixed Models"
+author: "Ciaran Evans"
+output: beamer_presentation
+---
+
+## Warmup
+
+Work on the warmup activity (handout).
+
+\vspace{4cm}
+
+## Warmup
+
+Data on 37 undergraduate music majors. Each row represents a performance, and each musician has between 2 and 15 performances in the data.
+
+* `id`: a unique identifier for the musician
+* `na`: negative affect score (a measure of anxiety)
+* `large`: whether the musician was performing as part of a large ensemble (large = 1), or as part of a small ensemble or solo (large = 0)
+
+**Question:** What are the groups in the data, and what are the observations within each group?
+
+\vspace{3cm}
+
+## Warmup
+
+Data on 37 undergraduate music majors. Each row represents a performance, and each musician has between 2 and 15 performances in the data.
+
+* `id`: a unique identifier for the musician
+* `na`: negative affect score (a measure of anxiety)
+* `large`: whether the musician was performing as part of a large ensemble (large = 1), or as part of a small ensemble or solo (large = 0)
+
+**Question:** What mixed effects model should the researchers use to investigate their hypothesis?
+
+\vspace{3cm}
+
+## Models with a random intercept
+
+## Intra-class correlation
+
+$$
+Y_{ij} = u_i + \mathbf{x}_{ij}^T\boldsymbol{\beta} + \varepsilon_{ij}
+$$
+
+The **intra-class correlation coefficient**
+(ICC) is the correlation between two observations within the same group
+$i$:
+
+$$
+\rho_{\text{group}} := Cor(Y_{ij}, Y_{ik} | \mathbf{x}_{ij}, \mathbf{x}_{ik}) = \dfrac{\sigma_u^2}{\sigma_u^2 + \sigma_{\varepsilon}^2} \hspace{0.5cm} (j \neq k)
+$$ 
+
+```
+Random effects:
+ Groups       Name        Variance Std.Dev.
+ neighborhood (Intercept) 1048     32.37   
+ Residual                 6762     82.23   
+Number of obs: 1561, groups:  neighborhood, 43
+```
+
+\vspace{3cm}
+
+## Parameter estimation
+
+## Estimating variance components
+
+## Restricted maximum likelihood (REML)
+
+**Problem:** ML estimates of variance components are biased, because we also have to estimate $\boldsymbol{\beta}$
+
+**REML solution:** Write down a new likelihood function for a transformation of $\mathbf{y}$ that does *not* depend on $\boldsymbol{\beta}$
+
+\vspace{6cm}
+
+## REML
+
