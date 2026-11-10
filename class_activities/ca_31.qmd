@@ -1,0 +1,270 @@
+---
+title: "Class activity: LMM residual analysis"
+format: html
+callout-icon: false
+---
+
+
+## Types of residuals
+
+For a linear mixed model, we have three distributional results:
+
+* $\mathbf{y}|\mathbf{X}, \boldsymbol{u} \sim N(\mathbf{X} \boldsymbol{\beta} + \mathbf{Z} \boldsymbol{u}, Var(\boldsymbol{\varepsilon}))$
+* $\boldsymbol{u} \sim N(\boldsymbol{0}, Var(\boldsymbol{u}))$
+* $\mathbf{y} | \mathbf{X} \sim N(\mathbf{X} \boldsymbol{\beta}, \boldsymbol{\Sigma})$
+
+This suggests three different types of residuals we could use to assess our LMM assumptions:
+
+* **Conditional residuals:** $\widehat{\boldsymbol{\varepsilon}} = \mathbf{y} - \mathbf{X}\widehat{\boldsymbol{\beta}} - \mathbf{Z} \widehat{\boldsymbol{u}}$
+* **Random effects:** $\widehat{\boldsymbol{u}}$
+* **Marginal residuals:** $\widehat{\boldsymbol{\zeta}} = \mathbf{y} - \mathbf{X} \widehat{\boldsymbol{\beta}}$
+
+However, residual analysis is complicated by the fact that the estimates $\widehat{\boldsymbol{\beta}}$ and predicted random effects $\widehat{\boldsymbol{u}}$ depend on each other. This means that mis-specification of *one* piece of the model (the fixed effects or the random effects) can appear in the diagnostic plots for *both* components. That is, the different residuals are **confounded**.
+
+### Example
+
+To demonstrate that the residuals are confounded, consider a simulation in which the true (generating) model includes both a random slope and random intercept, but the assumed (fitted) model includes only a random intercept:
+
+$$
+\begin{aligned}
+\text{True model:} \hspace{0.5cm} Y_{ij} &= \beta_0 + a_i + (\beta_1 + b_i)X_{ij} + \varepsilon_{ij} \\
+\text{Assumed model:} \hspace{0.5cm} Y_{ij} &= \beta_0 + u_i + \beta_1 X_{ij} + \varepsilon_{ij}
+\end{aligned}
+$$
+
+Notice that we have specified the fixed effects correctly, but the random effects are mis-specified. We will simulate data in this setting. Then, using the `HLMdiag::hlm_resid` function, we can extract the conditional residuals and random effects:
+
+```{r, message=F, warning=F}
+library(HLMdiag)
+
+set.seed(29234)
+
+# simulation parameters
+ni <- 100 # observations per group
+m <- 30 # number of groups
+var_x <- 1 
+var_e <- 1
+var_u <- 2
+beta0 <- 1 # overall intercept
+beta1 <- 3 # overall slope
+
+# generate group ids and X
+group_id <- rep(1:m, each=ni)
+x_means <- rnorm(m, sd=sqrt(var_x))[group_id]
+x <- x_means + rnorm(ni*m)
+
+# generate u, e, and Y
+a <- rnorm(m, sd = sqrt(var_u))[group_id]
+b <- rnorm(m, sd = 4)[group_id]
+y <- beta0 + a + beta1*x + b*x + rnorm(m*ni, sd=sqrt(var_e))
+
+# fit the (mis-specified) LMM
+m_sim <- lme4::lmer(y ~ x + (1|group_id))
+
+# extract residuals
+sim_conditional_resids <- hlm_resid(m_sim)
+sim_ran_ef <- hlm_resid(m_sim, 
+                        level = "group_id")$.ranef.intercept
+```
+
+```{r fig.width=9, fig.height=3}
+#| message: FALSE
+#| warning: FALSE
+
+library(tidyverse)
+library(patchwork)
+
+p1 <- sim_conditional_resids |>
+  ggplot(aes(x = x, y = .resid)) +
+  geom_point(size=0.5) +
+  geom_smooth() +
+  theme_bw() +
+  labs(y = "Conditional residuals")
+
+p2 <- sim_conditional_resids |>
+  ggplot(aes(sample = .resid)) +
+  geom_qq(size=0.5) +
+  geom_qq_line() +
+  theme_bw() +
+  labs(x= "Theoretical normal quantiles",
+       y = "Observed residual quantiles",
+       title = "Conditional residuals, \n normal QQ plot")
+
+p3 <- data.frame(sim_ran_ef) |>
+  ggplot(aes(sample = sim_ran_ef)) +
+  geom_qq(size=0.5) +
+  geom_qq_line() +
+  theme_bw() +
+  labs(x= "Theoretical normal quantiles",
+       y = "Observed residual quantiles",
+       title = "Predicted random effects, \n normal QQ plot")
+
+p1 + p2 + p3
+```
+
+::: {.callout-tip}
+## Question 1
+
+Examine the diagnostic plots. Can you tell that the fixed effects are correctly specified but the random effects are mis-specified? Why does the plot on the left look so strange?
+:::
+
+::: {.callout-tip}
+## Question 2
+
+Our model is mis-specified because we have included only a random intercept, when in fact there is also a random slope $b_i$. Re-run the code, but this time change the standard deviation of `b` (currently `sd = 4`). How do the diagnostic plots change as you decrease the standard deviation of the random slope? Why?
+:::
+
+Now re-set `sd = 4` in your simulation code. Let's verify that the diagnostics look good when the *correct* model is used. To fit the correct model:
+
+```{r}
+m_sim <- lme4::lmer(y ~ x + (x|group_id))
+```
+
+Here `(x|group_id)` allows both the intercept and the slope to depend on `group_id`.
+
+Then, we can use `HLMdiag` to extract the conditional residuals $\widehat{\varepsilon}_{ij}$, and the random effects $\widehat{a}_i$ and $\widehat{b}_i$:
+
+```{r}
+# extract residuals
+sim_conditional_resids <- hlm_resid(m_sim)
+
+# random intercept
+sim_ran_intercept <- hlm_resid(m_sim, 
+                               level = "group_id")$.ranef.intercept
+
+# random slope
+sim_ran_slope <- hlm_resid(m_sim, 
+                           level = "group_id")$.ranef.x
+```
+
+
+::: {.callout-tip}
+## Question 3
+
+Re-make the diagnostic plots for the correct model, and verify that the diagnostics look good.
+:::
+
+### Upward residual analysis
+
+Since the conditional residuals $\widehat{\boldsymbol{\varepsilon}}$ are confounded with the random effects $\widehat{\boldsymbol{u}}$, it can be difficult to disentangle the source of model mis-specification when we see problems in a residual plot.
+
+*If there are a sufficient number of observations $n_i$ in each group*, then another way to estimate the conditional residuals is to fit a separate linear regression model for each group, and take the residuals from each group's fitted linear model. These are referred to as the **least squares** conditional residuals by the `HLMdiag` package.
+
+The least squares conditional residuals are **not** confounded because their calculation does not depend on the random effects in the model (we avoid random effects entirely by fitting a separate model to each group). We can then conduct an **upward** residual analysis to detect any issues with the model assumptions:
+
+1. Use the (unconfounded) least squares conditional residuals to check shape for the fixed effects, and assess constant variance and normality for $\varepsilon_{ij}$
+2. Use the predicted random effects $\widehat{\boldsymbol{u}}_i$ to assess normality for the random effects
+
+
+### Example
+
+Let's re-fit the incorrect model from question 1, and perform an upward residual analysis:
+
+```{r fig.width=9, fig.height=3}
+#| message: FALSE
+#| warning: FALSE
+
+m_sim <- lme4::lmer(y ~ x + (1|group_id))
+
+sim_conditional_resids <- hlm_resid(m_sim)
+sim_ran_ef <- hlm_resid(m_sim, 
+                        level = "group_id")$.ranef.intercept
+
+p1 <- sim_conditional_resids |>
+  ggplot(aes(x = x, y = .ls.resid)) +
+  geom_point(size=0.5) +
+  geom_smooth() +
+  theme_bw() +
+  labs(y = "Least squares conditional residuals")
+
+p2 <- sim_conditional_resids |>
+  ggplot(aes(sample = .ls.resid)) +
+  geom_qq(size=0.5) +
+  geom_qq_line() +
+  theme_bw() +
+  labs(x= "Theoretical normal quantiles",
+       y = "Observed residual quantiles",
+       title = "Least squares conditional residuals, \n normal QQ plot")
+
+p3 <- data.frame(sim_ran_ef) |>
+  ggplot(aes(sample = sim_ran_ef)) +
+  geom_qq(size=0.5) +
+  geom_qq_line() +
+  theme_bw() +
+  labs(x= "Theoretical normal quantiles",
+       y = "Observed residual quantiles",
+       title = "Predicted random effects, \n normal QQ plot")
+
+p1 + p2 + p3
+
+```
+
+::: {.callout-tip}
+## Question 4
+
+Using the residual plots, can you now determine which part of the model is mis-specified?
+:::
+
+
+## Music data
+
+Anxiety can affect musicians before performances, and can negatively affect their ability to play and their emotional state. In a [2010 study](https://journals.sagepub.com/doi/10.1177/1948550610370492), researchers examined anxiety in 37 undergraduate music majors. For each musician, data was collected on anxiety levels before different performances (between 2 and 15 performances were measured for each musician). Each row in the data represents one performance; in this activity, we will work with the following variables:
+
+* `id`: a unique identifier for the musician
+* `na`: negative affect score (a measure of anxiety)
+* `large`: whether the musician was performing as part of a large ensemble (large = 1), or as part of a small ensemble or solo (large = 0)
+* `audience`: who attended (Instructor, Public, Students, or Juried)
+
+The researchers hypothesize that, after accounting for audience type, students will be less anxious when performing in large ensembles. Furthermore, the researchers suspect that overall anxiety varies between individuals, but that the effects of ensemble size (large vs. small) and audience type are the *same* for each individual. They therefore write down the following mixed effects model:
+
+$$
+\begin{aligned}
+Anxiety_{ij} = \beta_0 + \beta_1 \ JuriedPerformance_{ij} + \beta_2 \ PublicPerformance_{ij} \\ \hspace{1cm} + \ \beta_3 \ StudentPerformance_{ij}  + \beta_4 \ LargeEnsemble_{ij} + u_i + \varepsilon_{ij}
+\end{aligned}
+$$
+
+$u_i \overset{iid}{\sim} N(0, \sigma_u^2)$, $\varepsilon_{ij} \overset{iid}{\sim} N(0, \sigma_\varepsilon^2)$
+
+### Downloading the data
+
+The following code imports the data and saves it as a data frame called `music`:
+
+```{r, message=F, warning=F}
+library(tidyverse)
+library(lme4)
+
+music <- read_csv("https://sta214-f26.github.io/class_activities/music.csv")
+```
+
+### Questions
+
+::: {.callout-tip}
+## Question 5
+
+Fit the mixed effects model described above:
+
+```{r, eval=F}
+m1 <- lme4::lmer(..., data = music)
+```
+
+:::
+
+::: {.callout-tip}
+## Question 6
+
+Look at the number of performances for each student. Does it seem reasonable to calculate least squares conditional residuals and perform and upward residual analysis?
+:::
+
+To check the constant variance assumption, we will want our residuals to be standardized:
+
+```{r, eval=F}
+m1_resids <- HLMdiag::hlm_resid(m1, standardize = T)
+```
+
+::: {.callout-tip}
+## Question 7
+
+Conduct an upward residual analysis for the mixed model on the `music` data. Assess the constant variance assumption by making boxplots of the standardized least squares conditional residuals against the categorical explanatory variables. Assess normality of the least squares conditional residuals and of the random effect with QQ plots.
+:::
+
+

@@ -1,0 +1,38 @@
+---
+title: "Linear Mixed Models"
+author: "Ciaran Evans"
+output: beamer_presentation
+---
+
+## Restricted maximum likelihood (REML)
+
+**Problem:** ML estimates of variance components are biased, because we also have to estimate $\boldsymbol{\beta}$
+
+**REML solution:** Write down a new likelihood function for a transformation of $\mathbf{y}$ that does *not* depend on $\boldsymbol{\beta}$
+
+\vspace{6cm}
+
+## REML
+
+## Model assumptions
+
+$$
+\begin{aligned}
+\text{Heterozygosity}_{ij} &= \beta_0 + u_i + \beta_1 \log(\text{breeding range}_{ij}) \\ &\hspace{0.5cm} + \beta_2 \log(\text{mass}_{ij}) + \beta_3 \text{latitude}_{ij} + \varepsilon_{ij}
+\end{aligned}
+$$
+$$u_i \overset{iid}{\sim} N(0, \sigma_u^2) \hspace{1cm} \varepsilon_{ij} \overset{iid}{\sim} N(0, \sigma_{\varepsilon}^2)$$
+
+**Question:** What assumptions is this model making?
+
+\vspace{5cm}
+
+## Types of residuals
+
+## Upwards residual analysis
+
+
+
+
+
+
