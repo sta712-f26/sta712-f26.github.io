@@ -8,6 +8,7 @@ November 9
 
 November 11
 : LMM Diagnostics
+  : [Slides](https://sta712-f26.github.io/slides/lecture_31.pdf), [Activity](https://sta712-f26.github.io/class_activities/ca_31.html)
 
 November 13
 : LMM Inference
