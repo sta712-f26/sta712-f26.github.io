@@ -12,3 +12,5 @@ November 11
 
 November 13
 : LMM Inference
+
+: **HW 9 released**{: .label .label-yellow }
