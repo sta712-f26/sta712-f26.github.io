@@ -1,0 +1,40 @@
+---
+title: "Activity: measuring AI speedup"
+format: pdf
+editor: source
+---
+
+\vspace{-2.5cm}
+
+**Group members:**
+
+\vspace{-0.5cm}
+
+## AI speedup?
+
+To investigate the effect of AI on user productivity, researchers conducted a randomized experiment with 16 experienced software developers. The authors specified 246 different software development tasks, and randomly assigned each task to be completed with or without AI. The tasks were then divided between the different developers, and the researchers recorded the time it took to complete each task.
+
+Each row in the data represents one task. We will work with the following variables:
+
+* `dev_id`: unique ID for each developer
+* `predicted_time_no_ai`: How long the developer estimated the issue would take *without* AI (minutes)
+* `ai_treatment`: 0 if AI use was not allowed, 1 if AI use was allowed
+* `initial_implementation_time`: Time taken by the developer to solve the issue and create an initial pull request (an initial solution) (minutes)
+
+## Modeling
+
+The provided packet contains output and diagnostic plots for two mixed models fit to this data. 
+
+## Questions
+
+1. Based on the diagnostic plots, which model would you choose? Why?
+
+\vspace{4cm}
+
+2. For your chosen model, interpret the estimated coefficient relevant to the researchers' question: "Does AI use make developers more productive?"
+
+\vspace{4cm}
+
+3. Question 2 only interprets a point estimate. To get an *interval* estimate, we could use parametric bootstrapping from the fitted model. Explain how you would use parametric bootstrapping to create a confidence interval. You do not have to write code, but you should explain how you are simulating new data, and what you are doing with each parametric bootstrap sample.
+
+

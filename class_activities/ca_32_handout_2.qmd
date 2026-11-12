@@ -1,0 +1,107 @@
+---
+title: "Activity: measuring AI speedup"
+format: 
+  pdf:
+    header-includes:
+      - \usepackage{float}
+      - \floatplacement{table}{H}
+editor: source
+---
+
+\vspace{-2.5cm}
+
+**Group members:**
+
+\vspace{-0.5cm}
+
+## AI speedup?
+
+To investigate the effect of AI on user productivity, researchers conducted a randomized experiment with 16 experienced software developers. The authors specified 246 different software development tasks, and randomly assigned each task to be completed with or without AI. The tasks were then divided between the different developers, and the researchers recorded the time it took to complete each task.
+
+Each row in the data represents one task. We will work with the following variables:
+
+* `dev_id`: unique ID for each developer
+* `predicted_time_no_ai`: How long the developer estimated the issue would take *without* AI (minutes)
+* `ai_treatment`: 0 if AI use was not allowed, 1 if AI use was allowed
+* `initial_implementation_time`: Time taken by the developer to solve the issue and create an initial pull request (an initial solution) (minutes)
+
+## Questions
+
+1. Attached is exploratory data analysis for this data and research question. Based on the EDA, write down a regression model that will allow you to address the research question.
+
+\newpage
+
+## Summary of variables
+
+```{r, include=F}
+library(tidyverse)
+library(lme4)
+library(HLMdiag)
+library(patchwork)
+
+metr_ai <- read_csv("https://cmustatistics.github.io/data-repository/data/metr-ai.csv")
+```
+
+```{r echo=F, message=F}
+metr_ai |>
+  select(dev_id, predicted_time_no_ai,
+         ai_treatment, initial_implementation_time) |>
+  mutate(dev_id = as.factor(dev_id),
+         ai_treatment = as.factor(ai_treatment)) |>
+  gtsummary::tbl_summary()
+```
+
+\newpage
+
+## Plots
+
+```{r echo=F, message=F, warning=F, fig.width=10, fig.height=6}
+p1 <- metr_ai |>
+  ggplot(aes(x = as.factor(dev_id),
+             y = initial_implementation_time)) +
+  geom_boxplot() +
+  theme_bw() +
+  labs(x = "Developer ID", 
+       y = "Initial completion time (minutes)")
+
+p2 <- metr_ai |>
+  ggplot(aes(x = as.factor(dev_id),
+             color = ifelse(ai_treatment == 0, "No", "Yes"),
+             y = initial_implementation_time)) +
+  geom_boxplot() +
+  theme_bw() +
+  labs(x = "Developer ID", 
+       y = "Initial completion time (minutes)",
+       color = "AI use?")
+
+p3 <- metr_ai |>
+  mutate(ai = ifelse(ai_treatment == 0, "No AI use", "AI use")) |>
+  ggplot(aes(x = predicted_time_no_ai,
+             y = initial_implementation_time)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  facet_wrap(~ai) +
+  theme_bw() +
+  labs(x = "Estimated time without AI (minutes)",
+       y = "Initial completion time (minutes)")
+
+#(p1 + p2)/(p3 + plot_spacer())
+
+layout <- "
+AAABBB
+CCCC##
+"
+p1 + p2 + p3 +
+  plot_layout(design = layout)
+```
+
+
+
+
+
+
+
+
+
+
+

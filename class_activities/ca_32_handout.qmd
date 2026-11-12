@@ -1,0 +1,20 @@
+---
+title: "Activity: measuring AI speedup"
+format: pdf
+editor: source
+---
+
+\vspace{-2.5cm}
+
+**Group members:**
+
+\vspace{-0.5cm}
+
+## AI speedup?
+
+Does AI assistance increase productivity and speed up the time it takes workers to complete their tasks?
+
+AI models are often used to help generate code, and one area which has seen widespread AI adoption is software development. While many software developers feel that AI makes them more efficient, efficiency and productivity are hard to quantify, especially if users are only self-reporting their "gut feelings" about working patterns (rather than measuring productivity empirically).
+
+1. Imagine that you have the opportunity to conduct a randomized experiment with a group of 16 experienced software developers, with the goal of assessing whether AI use decreases the time it takes the developers to complete tasks. How would you design this study? What would you measure?
+

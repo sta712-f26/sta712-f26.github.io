@@ -1,0 +1,157 @@
+---
+title: "Case Study: AI speedup?"
+author: "Ciaran Evans"
+output: beamer_presentation
+---
+
+## Warmup
+
+Work on the warmup activity (handout).
+
+\vspace{4cm}
+
+## Warmup: designing a study
+
+You have the opportunity to conduct a randomized experiment with a group of 16 experienced software developers, with the goal of assessing whether AI use decreases the time it takes the developers to complete tasks. How would you design this study? What would you measure?
+
+\vspace{5cm}
+
+## Warmup: designing a study
+
+A real 2025 study tried to answer this question.
+
+**Study participants:** 16 experienced software developers, with moderate AI experience
+
+**Study design:**
+
+* authors identified 246 tasks in large, well-known projects on which the developers had an average of 5 years experience
+* each task was randomly assigned to allow or disallow AI usage
+* each task was assigned to one of the developers (each developer completed between 2 and 28 tasks)
+* before being assigned the tasks, developers estimated how long each task would take with and without AI usage
+* researchers then measured the time to complete each task
+
+## Activity part 2
+
+Work on the next part of the activity (handout).
+
+\vspace{4cm}
+
+## Proposed model
+
+Researchers propose the following model:
+
+$$\text{T}_i = \beta_0 + \beta_1 \text{AI}_i + \beta_2 \text{EstTimeNoAI}_i + \varepsilon_i$$
+
+\vspace{2cm}
+
+**Question:** Are there any potential issues with this model? How would you propose modifying the model?
+
+\vspace{2cm}
+
+## Adding a random intercept
+
+$$\text{T}_{ij} = \beta_0 + \beta_1 \text{AI}_{ij} + \beta_2 \text{EstTimeNoAI}_{ij} + u_i + \varepsilon_{ij}$$
+
+\vspace{2cm}
+
+
+**Question:** This model assumes that the effect of AI usage ($\beta_1$) is the *same* for all developers. How would I allow the effect of AI usage to *differ* between developers?
+
+\vspace{2cm}
+
+## Adding a random slope
+
+$$\text{T}_{ij} = (\beta_0 + a_i) + (\beta_1 + b_i) \text{AI}_{ij} + \beta_2 \text{EstTimeNoAI}_{ij} + \varepsilon_{ij}$$
+
+\vspace{6cm}
+
+## Adding a random slope
+
+$$\text{T}_{ij} = (\beta_0 + a_i) + (\beta_1 + b_i) \text{AI}_{ij} + \beta_2 \text{EstTimeNoAI}_{ij} + \varepsilon_{ij}$$
+
+$$\varepsilon_{ij} \sim N(0, \sigma_{\varepsilon}^2) \hspace{0.5cm} \begin{bmatrix} a_i \\ b_i \end{bmatrix} \sim N\left( \begin{bmatrix} 0 \\ 0 \end{bmatrix}, \begin{bmatrix} \sigma_a^2 & \rho_{ab} \sigma_a \sigma_b \\ \rho_{ab} \sigma_a \sigma_b & \sigma_b^2 \end{bmatrix} \right)$$
+
+\vspace{5cm}
+
+## Fitting the model in R
+
+```{r include=F}
+library(tidyverse)
+library(lme4)
+
+metr_ai <- read_csv("https://cmustatistics.github.io/data-repository/data/metr-ai.csv")
+```
+
+```{r, eval=F}
+m1 <- lmer(initial_implementation_time ~ 
+             ai_treatment + predicted_time_no_ai +
+             (ai_treatment|dev_id), data = metr_ai)
+```
+
+```
+Random effects:
+ Groups   Name         Variance Std.Dev. Corr 
+ dev_id   (Intercept)  1205.2   34.72         
+          ai_treatment  352.9   18.79    -0.19
+ Residual              5692.8   75.45         
+Number of obs: 246, groups:  dev_id, 16
+
+Fixed effects:
+                      Estimate Std. Error t value
+(Intercept)          -18.57734   13.96529  -1.330
+ai_treatment          17.36730   11.13830   1.559
+predicted_time_no_ai   1.05437    0.07498  14.062
+```
+
+## Activity part 3
+
+Work on the next part of the class activity (handout).
+
+\vspace{4cm}
+
+## Activity
+
+Based on the diagnostics, which model would you choose?
+
+\vspace{6cm}
+
+## If we chose model 1...
+
+```
+Fixed effects:
+                      Estimate Std. Error t value
+(Intercept)          -18.57734   13.96529  -1.330
+ai_treatment          17.36730   11.13830   1.559
+predicted_time_no_ai   1.05437    0.07498  14.062
+```
+
+How would you interpret a coefficient relevant to the research question?
+
+\vspace{4cm}
+
+## If we chose model 2...
+
+```
+Fixed effects:
+                     Estimate Std. Error t value
+(Intercept)          -0.17707    0.28860  -0.614
+ai_treatment          0.15577    0.09261   1.682
+log(predicted_no_ai)  0.97549    0.06155  15.849
+```
+
+How would you interpret a coefficient relevant to the research question?
+
+\vspace{4cm}
+
+## Inference
+
+Explain how you would use parametric bootstrapping to further address the research question.
+
+\vspace{5cm}
+
+
+
+
+
+
+

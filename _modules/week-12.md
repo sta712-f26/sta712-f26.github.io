@@ -11,6 +11,7 @@ November 11
   : [Slides](https://sta712-f26.github.io/slides/lecture_31.pdf), [Activity](https://sta712-f26.github.io/class_activities/ca_31.html)
 
 November 13
-: LMM Inference
+: Extended example
+  : [Slides](https://sta712-f26.github.io/slides/lecture_32.pdf), [Activity 1](https://sta712-f26.github.io/class_activities/ca_32_handout.pdf), [Activity 2](https://sta712-f26.github.io/class_activities/ca_32_handout_2.pdf), [Activity 3](https://sta712-f26.github.io/class_activities/ca_32_handout_3.pdf), [Activity 4](https://sta712-f26.github.io/class_activities/ca_32_handout_4.pdf)
 
 : **HW 9 released**{: .label .label-yellow }

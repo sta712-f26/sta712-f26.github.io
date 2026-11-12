@@ -1,0 +1,329 @@
+---
+title: "Activity: measuring AI speedup"
+format: pdf
+editor: source
+---
+
+\vspace{-2.5cm}
+
+**Group members:**
+
+\vspace{-0.5cm}
+
+## AI speedup?
+
+To investigate the effect of AI on user productivity, researchers conducted a randomized experiment with 16 experienced software developers. The authors specified 246 different software development tasks, and randomly assigned each task to be completed with or without AI. The tasks were then divided between the different developers, and the researchers recorded the time it took to complete each task.
+
+Each row in the data represents one task. We will work with the following variables:
+
+* `dev_id`: unique ID for each developer
+* `predicted_time_no_ai`: How long the developer estimated the issue would take *without* AI (minutes)
+* `ai_treatment`: 0 if AI use was not allowed, 1 if AI use was allowed
+* `initial_implementation_time`: Time taken by the developer to solve the issue and create an initial pull request (an initial solution) (minutes)
+
+```{r, include=F}
+library(tidyverse)
+library(lme4)
+library(HLMdiag)
+library(patchwork)
+
+metr_ai <- read_csv("https://cmustatistics.github.io/data-repository/data/metr-ai.csv")
+```
+
+## Models and diagnostics
+
+The following pages show two models, their output, and accompanying diagnostics. For all the diagnostics, "residuals" is the standardized least squares conditional residuals. (Using least squares conditional residuals because of confounding with the random effects, and standardizing so we can check for constant variance).
+
+\newpage
+
+
+# Model 1
+
+$$\text{T}_{ij} = (\beta_0 + a_i) + (\beta_1 + b_i) \text{AI}_{ij} + \beta_2 \text{EstTimeNoAI}_{ij} + \varepsilon_{ij}$$
+
+$$\varepsilon_{ij} \sim N(0, \sigma_{\varepsilon}^2) \hspace{0.5cm} \begin{bmatrix} a_i \\ b_i \end{bmatrix} \sim N\left( \begin{bmatrix} 0 \\ 0 \end{bmatrix}, \begin{bmatrix} \sigma_a^2 & \rho_{ab} \sigma_a \sigma_b \\ \rho_{ab} \sigma_a \sigma_b & \sigma_b^2 \end{bmatrix} \right)$$
+
+where $\text{T}_{ij}$ is the initial completion time for developer $i$ on task $j$, $\text{AI}_{ij}$ is 1 if AI use was allowed on the task, and $\text{EstTimeNoAI}_{ij}$ is the developer's guess for the time it would take to complete the task without AI (the guesses were made before being assigned the tasks).
+
+```{r, include=F}
+m1 <- lmer(initial_implementation_time ~ 
+             ai_treatment + predicted_time_no_ai +
+             (ai_treatment|dev_id), data = metr_ai)
+```
+
+
+```{r, eval=F}
+m1 <- lmer(initial_implementation_time ~ 
+             ai_treatment + predicted_time_no_ai +
+             (ai_treatment|dev_id), data = metr_ai)
+
+summary(m1)
+```
+
+```
+Random effects:
+ Groups   Name         Variance Std.Dev. Corr 
+ dev_id   (Intercept)  1205.2   34.72         
+          ai_treatment  352.9   18.79    -0.19
+ Residual              5692.8   75.45         
+Number of obs: 246, groups:  dev_id, 16
+
+Fixed effects:
+                      Estimate Std. Error t value
+(Intercept)          -18.57734   13.96529  -1.330
+ai_treatment          17.36730   11.13830   1.559
+predicted_time_no_ai   1.05437    0.07498  14.062
+```
+
+```{r echo=F, message=F, warning=F, fig.width=10, fig.height = 6}
+set.seed(3)
+
+m1_resids <- hlm_resid(m1, standardize = T)
+m1_ranef <- hlm_resid(m1, level = "dev_id")
+
+
+p1 <- m1_resids |>
+  ggplot(aes(x = as.factor(dev_id),
+             y = .std.ls.resid)) +
+  geom_boxplot() +
+  theme_bw() +
+  labs(x = "Developer ID", y = "residuals")
+
+p2 <- m1_resids |>
+  ggplot(aes(x = ifelse(ai_treatment == 0, "No", "Yes"),
+             y = .std.ls.resid)) +
+  geom_boxplot() +
+  theme_bw() +
+  labs(x = "AI use?", y = "residuals")
+
+p3 <- m1_resids |>
+  ggplot(aes(x = predicted_time_no_ai,
+             y = .std.ls.resid)) +
+  geom_point(size = 0.5) +
+  geom_smooth() +
+  theme_bw() +
+  labs(x = "Estimated time without AI (minutes)", y = "residuals")
+
+p4 <- m1_resids |>
+  ggplot(aes(sample = .std.ls.resid)) +
+  geom_qq(size = 0.5) +
+  geom_qq_line() +
+  theme_bw() +
+  labs(x = "Theoretical normal quantiles",
+       y = "Observed residual quantiles",
+       title = "QQ plot of the residuals")
+
+p5 <- m1_ranef |>
+  ggplot(aes(sample = .ranef.intercept)) +
+  geom_qq(size = 0.5) +
+  geom_qq_line() +
+  theme_bw() +
+  labs(x = "Theoretical normal quantiles",
+       y = "Observed random effect quantiles",
+       title = "QQ plot of the random intercepts")
+
+p6 <- m1_ranef |>
+  ggplot(aes(sample = .ranef.ai_treatment)) +
+  geom_qq(size = 0.5) +
+  geom_qq_line() +
+  theme_bw() +
+  labs(x = "Theoretical normal quantiles",
+       y = "Observed random effect quantiles",
+       title = "QQ plot of the random slopes")
+
+(p1 + p2 + p3)/(p4 + p5 + p6)
+```
+
+```{r, echo=F, message=F, warning=F, fig.width=10, fig.height =7}
+lmm_resids <- function(f){
+  data.frame(resid = hlm_resid(f, standardize=T)$.std.ls.resid,
+             dev_id = as.factor(model.frame(f)$dev_id))
+}
+
+regressinator::model_lineup(m1, lmm_resids, 20) |>
+  ggplot(aes(x = dev_id, y = resid)) +
+  geom_boxplot(outlier.size=0.5) +
+  facet_wrap(vars(.sample)) +
+  labs(x = "Developer ID", 
+       y = "residuals",
+       title = "Lineup plot") +
+  theme_bw() +
+  theme(axis.text.x=element_blank()) +
+  theme(
+  strip.background = element_blank(),
+  strip.text.x = element_blank()
+)
+```
+
+\newpage
+
+```{r, echo=F, message=F, warning=F, fig.width=10, fig.height =7}
+lmm_resids <- function(f){
+  data.frame(resid = hlm_resid(f, standardize=T)$.std.ls.resid,
+             dev_id = as.factor(model.frame(f)$dev_id))
+}
+
+regressinator::model_lineup(m1, lmm_resids, 20) |>
+  ggplot(aes(sample = resid)) +
+  geom_qq(size = 0.5) +
+  geom_qq_line() +
+  facet_wrap(vars(.sample)) +
+  labs(x = "Theoretical normal quantiles",
+       y = "Observed residual quantiles",
+       title = "Lineup plot") +
+  theme_bw() +
+  theme(axis.text.x=element_blank()) +
+  theme(
+  strip.background = element_blank(),
+  strip.text.x = element_blank()
+)
+```
+
+\newpage
+
+
+# Model 2
+
+$$\log(\text{T}_{ij}) = (\beta_0 + a_i) + (\beta_1 + b_i) \text{AI}_{ij} + \beta_2 \log(\text{EstTimeNoAI}_{ij}) + \varepsilon_{ij}$$
+
+$$\varepsilon_{ij} \sim N(0, \sigma_{\varepsilon}^2) \hspace{0.5cm} \begin{bmatrix} a_i \\ b_i \end{bmatrix} \sim N\left( \begin{bmatrix} 0 \\ 0 \end{bmatrix}, \begin{bmatrix} \sigma_a^2 & \rho_{ab} \sigma_a \sigma_b \\ \rho_{ab} \sigma_a \sigma_b & \sigma_b^2 \end{bmatrix} \right)$$
+
+where $\text{T}_{ij}$ is the initial completion time for developer $i$ on task $j$, $\text{AI}_{ij}$ is 1 if AI use was allowed on the task, and $\text{EstTimeNoAI}_{ij}$ is the developer's guess for the time it would take to complete the task without AI (the guesses were made before being assigned the tasks).
+
+```{r, include=F}
+metr_ai <- metr_ai |>
+  mutate(log_implementation = log(initial_implementation_time),
+         log_predicted_no_ai = log(predicted_time_no_ai))
+
+m1 <- lmer(log_implementation ~ 
+             ai_treatment + log_predicted_no_ai +
+             (ai_treatment|dev_id), data = metr_ai)
+```
+
+
+```{r, eval=F}
+m2 <- lmer(log(initial_implementation_time) ~ 
+             ai_treatment + log(predicted_time_no_ai) +
+             (ai_treatment|dev_id), data = metr_ai)
+
+summary(m2)
+```
+
+```
+Random effects:
+ Groups   Name         Variance Std.Dev. Corr 
+ dev_id   (Intercept)  0.07439  0.2727        
+          ai_treatment 0.03426  0.1851   -0.57
+ Residual              0.35623  0.5969        
+Number of obs: 246, groups:  dev_id, 16
+
+Fixed effects:
+                     Estimate Std. Error t value
+(Intercept)          -0.17707    0.28860  -0.614
+ai_treatment          0.15577    0.09261   1.682
+log(predicted_no_ai)  0.97549    0.06155  15.849
+```
+
+```{r echo=F, message=F, warning=F, fig.width=10, fig.height = 6}
+set.seed(3)
+
+m1_resids <- hlm_resid(m1, standardize = T)
+m1_ranef <- hlm_resid(m1, level = "dev_id")
+
+
+p1 <- m1_resids |>
+  ggplot(aes(x = as.factor(dev_id),
+             y = .std.ls.resid)) +
+  geom_boxplot() +
+  theme_bw() +
+  labs(x = "Developer ID", y = "residuals")
+
+p2 <- m1_resids |>
+  ggplot(aes(x = ifelse(ai_treatment == 0, "No", "Yes"),
+             y = .std.ls.resid)) +
+  geom_boxplot() +
+  theme_bw() +
+  labs(x = "AI use?", y = "residuals")
+
+p3 <- m1_resids |>
+  ggplot(aes(x = log_predicted_no_ai,
+             y = .std.ls.resid)) +
+  geom_point(size = 0.5) +
+  geom_smooth() +
+  theme_bw() +
+  labs(x = "log(Estimated time without AI)", y = "residuals")
+
+p4 <- m1_resids |>
+  ggplot(aes(sample = .std.ls.resid)) +
+  geom_qq(size = 0.5) +
+  geom_qq_line() +
+  theme_bw() +
+  labs(x = "Theoretical normal quantiles",
+       y = "Observed residual quantiles",
+       title = "QQ plot of the residuals")
+
+p5 <- m1_ranef |>
+  ggplot(aes(sample = .ranef.intercept)) +
+  geom_qq(size = 0.5) +
+  geom_qq_line() +
+  theme_bw() +
+  labs(x = "Theoretical normal quantiles",
+       y = "Observed random effect quantiles",
+       title = "QQ plot of the random intercepts")
+
+p6 <- m1_ranef |>
+  ggplot(aes(sample = .ranef.ai_treatment)) +
+  geom_qq(size = 0.5) +
+  geom_qq_line() +
+  theme_bw() +
+  labs(x = "Theoretical normal quantiles",
+       y = "Observed random effect quantiles",
+       title = "QQ plot of the random slopes")
+
+(p1 + p2 + p3)/(p4 + p5 + p6)
+```
+
+```{r, echo=F, message=F, warning=F, fig.width=10, fig.height =7}
+lmm_resids <- function(f){
+  data.frame(resid = hlm_resid(f, standardize=T)$.std.ls.resid,
+             dev_id = as.factor(model.frame(f)$dev_id))
+}
+
+regressinator::model_lineup(m1, lmm_resids, 20) |>
+  ggplot(aes(x = dev_id, y = resid)) +
+  geom_boxplot(outlier.size=0.5) +
+  facet_wrap(vars(.sample)) +
+  labs(x = "Developer ID", 
+       y = "residuals",
+       title = "Lineup plot") +
+  theme_bw() +
+  theme(axis.text.x=element_blank()) +
+  theme(
+  strip.background = element_blank(),
+  strip.text.x = element_blank()
+)
+```
+
+\newpage
+
+```{r, echo=F, message=F, warning=F, fig.width=10, fig.height =7}
+lmm_resids <- function(f){
+  data.frame(resid = hlm_resid(f, standardize=T)$.std.ls.resid,
+             dev_id = as.factor(model.frame(f)$dev_id))
+}
+
+regressinator::model_lineup(m1, lmm_resids, 20) |>
+  ggplot(aes(sample = resid)) +
+  geom_qq(size = 0.5) +
+  geom_qq_line() +
+  facet_wrap(vars(.sample)) +
+  labs(x = "Theoretical normal quantiles",
+       y = "Observed residual quantiles",
+       title = "Lineup plot") +
+  theme_bw() +
+  theme(axis.text.x=element_blank()) +
+  theme(
+  strip.background = element_blank(),
+  strip.text.x = element_blank()
+)
+```
