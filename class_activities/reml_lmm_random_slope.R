@@ -7,7 +7,8 @@ ni <- 40 # observations per group
 m <- 15 # number of groups
 var_x <- 1 
 var_e <- 1
-var_u <- 2
+var_a <- 2
+var_b <- 1
 beta0 <- 1 # overall intercept
 beta1 <- 3 # overall slope
 
@@ -17,11 +18,11 @@ x_means <- rnorm(m, sd=sqrt(var_x))[group_id]
 x <- x_means + rnorm(ni*m)
 
 # generate u, e, and Y
-a <- rnorm(m, sd = sqrt(var_u))[group_id]
-b <- rnorm(m, sd = 1)[group_id]
+a <- rnorm(m, sd = sqrt(var_a))[group_id]
+b <- rnorm(m, sd = sqrt(var_b))[group_id]
 y <- beta0 + a + beta1*x + b*x + rnorm(m*ni, sd=sqrt(var_e))
 
-# fit the (mis-specified) LMM
+# fit the LMM
 m1 <- lme4::lmer(y ~ x + (x|group_id))
 m2 <- lme4::lmer(y ~ x + (x|group_id), REML = F)
 

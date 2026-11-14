@@ -1,0 +1,177 @@
+---
+title: "Homework 9 (optional)"
+format: html
+callout-icon: false
+---
+
+**Due:** Monday, November 23, 11:59pm on Canvas
+
+**Optional:** This homework assignment is optional. I will take your highest 8 homework grades when computing your overall grade.
+
+**Homework grading and resubmissions:** Homework will be graded on completeness, correctness, and effort. If you make an honest, good-faith effort attempt at a question, but your submitted work has some important errors or is missing a component I think is necessary, I may ask you to *resubmit* your work after receiving feedback. Your grade for that question would then be based on your resubmission.
+
+
+**Collaborators and AI statement:** At the top of your assignment, list any collaborators (Dr. Evans does not count -- he is a resource, not a collaborator), and provide an AI statement describing your use of AI to complete the questions. If you did not use AI in any way, let me know that too. If you did use AI, provide: the model used, the HW questions on which you used AI, and a summary of the ways in which AI provided assistance. As described in the syllabus, AI use is permitted on homework assignments, but submissions without a complete AI statement may not receive full credit.
+
+## Bias of MLE for estimated variance components
+
+We motivated REML as an alternative to the usual maximum likelihood estimator by saying that the MLE is biased, and REML is trying to help correct that bias. The purpose of this portion of the assignment is to see this in action.
+
+Let's simulate a small dataset from a linear mixed model, and compute the ML and REML estimates of the variance components $\boldsymbol{\theta}$:
+
+```{r}
+set.seed(5163)
+
+ni <- 10 # observations per group
+m <- 5 # number of groups
+var_x <- 1 
+var_e <- 1
+var_u <- 2
+beta0 <- 1 # overall intercept
+beta1 <- 0 # overall slope
+
+# generate group ids and X
+group_id <- rep(1:m, each=ni)
+x_means <- rnorm(m, sd=sqrt(var_x))[group_id]
+x <- x_means + rnorm(ni*m)
+
+# generate u, e, and Y
+u <- rnorm(m, sd=sqrt(var_u))[group_id]
+y <- beta0 + u + beta1*x + rnorm(m*ni, sd=sqrt(var_e))
+
+# REML estimate
+m_sim <- lme4::lmer(y ~ x + (1|group_id))
+data.frame(lme4::VarCorr(m_sim))$vcov
+
+# MLE
+m_sim2 <- lme4::lmer(y ~ x + (1|group_id), REML = F)
+data.frame(lme4::VarCorr(m_sim2))$vcov
+```
+
+::: {.callout-tip}
+## Question 1
+
+Based on this example code, conduct a simulation study comparing the REML and ML estimates of $\sigma_u^2$. Use bias as your performance measure for the two methods, and make a plot of bias for different values of $m$ (the number of groups). Discuss your results.
+:::
+
+## REML estimates
+
+Examples [9.9](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/mixed_models.html#exm-variance_component_ests) and [9.10](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/mixed_models.html#exm-variance_component_ests_reml) in the supplementary notes give examples of estimating variance components for a mixed model with a random intercept, using both ML and REML.
+
+In this portion of the assignment, you will use a similar process to estimate variance components using REML for a mixed model with a random intercept and a random slope.
+
+The code below simulates data from the mixed model 
+
+$$
+Y_{ij} = (\beta_0 + a_i) + (\beta_1 + b_i)X_{ij} + \varepsilon_{ij}
+$$
+
+with $m = 15$ groups and $n_i = 40$ observations in each group $i$. The true variance parameters are $\sigma_a^2 = 2$, $\sigma_b^2 = 1$, $\rho_{ab} = 0$, $\sigma_\varepsilon^2 = 1$.
+
+```{r}
+set.seed(29234)
+
+# simulation parameters
+ni <- 40 # observations per group
+m <- 15 # number of groups
+var_x <- 1 
+var_e <- 1
+var_a <- 2
+var_b <- 1
+beta0 <- 1 # overall intercept
+beta1 <- 3 # overall slope
+
+# generate group ids and X
+group_id <- rep(1:m, each=ni)
+x_means <- rnorm(m, sd=sqrt(var_x))[group_id]
+x <- x_means + rnorm(ni*m)
+
+# generate u, e, and Y
+a <- rnorm(m, sd = sqrt(var_a))[group_id]
+b <- rnorm(m, sd = sqrt(var_b))[group_id]
+y <- beta0 + a + beta1*x + b*x + rnorm(m*ni, sd=sqrt(var_e))
+```
+
+We can then fit the LMM with `lme4` (using REML by default) and examine the estimated variance components:
+
+```{r}
+# fit the LMM
+m1 <- lme4::lmer(y ~ x + (x|group_id))
+data.frame(lme4::VarCorr(m1))$vcov
+```
+
+From left to right, these are: $\widehat{\sigma}_a^2$, $\widehat{\sigma}_b^2$, $\widehat{\rho}_{ab} \widehat{\sigma}_a \widehat{\sigma}_b$, and $\widehat{\sigma}_{\varepsilon}^2$.
+
+
+::: {.callout-tip}
+## Question 2
+
+Write your own function, `reml_log_lik`, which computes the restricted log likelihood for this model. See [Example 9.7](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/mixed_models.html#exm-mm_fixed_effect_estimation) for examples of extracting $\mathbf{X}$ and $\mathbf{Z}$ for the model. You will likely find it helpful to modify the example `reml_log_lik` function in [Example 9.10](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/mixed_models.html#exm-variance_component_ests_reml).
+
+Your function should take a vector input $\boldsymbol{\theta}$, which contains values (in order) for $\sigma_a^2$, $\sigma_b^2$, $\rho_{ab} \sigma_a \sigma_b$, and $\sigma_{\varepsilon}^2$.
+:::
+
+::: {.callout-tip}
+## Question 3
+
+Use your `reml_log_lik` function and R's built-in `optim` function to compute the REML estimate of the variance parameters $\boldsymbol{\theta}$ for this simulated data. See [Example 9.10](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/mixed_models.html#exm-variance_component_ests_reml) for a similar example.
+
+The `optim` function requires initial values. In general we would want a more principled way of choosing these initial values, but for this problem use initial values of 1, 1, 0, and 1 for $\sigma_a^2$, $\sigma_b^2$, $\rho_{ab} \sigma_a \sigma_b$, and $\sigma_{\varepsilon}^2$ respectively.
+
+Your output from `optim` should be fairly similar to the output from the `lmer` fit, but they won't match exactly.
+:::
+
+## Predicting random effects
+
+In addition to estimating the fixed effect coefficients
+$\boldsymbol{\beta}$, we also need to predict the random effects
+$\boldsymbol{u}$ in order to make predictions for the observed responses
+$\mathbf{y}$. Note that I say *predict* the random effects (rather than
+"estimate"), because the random effects are random variables rather than
+fixed parameters.
+
+Since $\boldsymbol{u}$ is random, it has a distribution. Our initial
+distribution is
+$\boldsymbol{u} \sim N(\mathbf{0}, \mathbf{G}_{\boldsymbol{\theta}})$.
+Once we have observed the data, we can write down a distribution for
+$\mathbf{u}|\mathbf{y}, \mathbf{X}, \mathbf{Z}$.
+
+It turns out that
+
+$$
+\mathbb{E}[\mathbf{u}|\mathbf{y}, \mathbf{X}, \mathbf{Z}] =\mathbf{G}_{\boldsymbol{\theta}} \mathbf{Z}^T \boldsymbol{\Sigma}_{\boldsymbol{\theta}}^{-1}(\mathbf{y} - \mathbf{X}\boldsymbol{\beta})
+$$ {#eq-linear_mixed_model_u_conditional_expectation}
+
+Under the principle that we should predict a random variable with its
+conditional mean (just like we do in regression), then the predicted
+random effects for a linear mixed model are given by
+
+$$
+\widehat{\boldsymbol{u}} = \mathbf{G}_{\widehat{\boldsymbol{\theta}}} \mathbf{Z}^T \boldsymbol{\Sigma}_{\widehat{\boldsymbol{\theta}}}^{-1}(\mathbf{y} - \mathbf{X}\widehat{\boldsymbol{\beta}})
+$$
+
+### Derivation
+
+The purpose of this exercise is to verify @eq-linear_mixed_model_u_conditional_expectation. To do so, we will use the fact that we can write the joint vector $\begin{bmatrix} \mathbf{y} \\ \boldsymbol{u} \end{bmatrix}$ as
+
+$$
+\begin{bmatrix} \mathbf{y} \\ \boldsymbol{u} \end{bmatrix} = \begin{bmatrix} \mathbf{X} \boldsymbol{\beta} \\ \mathbf{0} \end{bmatrix} + \begin{bmatrix} \mathbf{Z} & \mathbf{I} \\ \mathbf{I} & \mathbf{0} \end{bmatrix} \begin{bmatrix} \boldsymbol{u} \\ \boldsymbol{\varepsilon} \end{bmatrix}
+$${#eq-joint_vector_u_y_lmm}
+
+::: {.callout-tip}
+## Question 4
+
+a. Using [Definition 9.3](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/mixed_models.html#def-linear_mixed_model), @eq-joint_vector_u_y_lmm, and properties of multivariate normal random variables, show that
+
+$$
+\begin{bmatrix} \mathbf{y} \\ \boldsymbol{u} \end{bmatrix} \Big|(\mathbf{X}, \mathbf{Z}) \sim N\left(\begin{bmatrix} \mathbf{X} \boldsymbol{\beta} \\ \mathbf{0} \end{bmatrix}, \begin{bmatrix} \boldsymbol{\Sigma}_{\boldsymbol{\theta}} & \mathbf{Z} \mathbf{G}_{\boldsymbol{\theta}} \\ \mathbf{G}_{\boldsymbol{\theta}} \mathbf{Z}^T & \mathbf{G}_{\boldsymbol{\theta}} \end{bmatrix} \right)
+$$
+
+b. Using part (a) and the result in [Proposition F.11](https://ciaran-evans-sta-712-notes.share.connect.posit.cloud/multivariate_normal.html#prp-mv_norm_conditional), show that
+
+$$
+\mathbf{u}|(\mathbf{y}, \mathbf{X}, \mathbf{Z}) \sim N\left( \mathbf{G}_{\boldsymbol{\theta}} \mathbf{Z}^T \boldsymbol{\Sigma}_{\boldsymbol{\theta}}^{-1}(\mathbf{y} - \mathbf{X}\boldsymbol{\beta}), \  \mathbf{G}_{\boldsymbol{\theta}} - \mathbf{G}_{\boldsymbol{\theta}} \mathbf{Z}^T \boldsymbol{\Sigma}_{\boldsymbol{\theta}}^{-1} \mathbf{Z}\mathbf{G}_{\boldsymbol{\theta}}\right)
+$$
+:::
+
+
