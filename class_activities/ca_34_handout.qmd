@@ -1,0 +1,50 @@
+---
+title: "Activity: choosing a potential model"
+format: pdf
+editor: source
+---
+
+\vspace{-2.5cm}
+
+**Group members:**
+
+\vspace{-0.5cm}
+
+## Sleep deprivation and performance
+
+A 2003 paper by Belenky *et al.* investigates the impact of sleep deprivation on reaction time.  18 volunteers in the study were restricted to 3 hours of time in bed each night, and were monitored over the course of 10 nights. After each night, they were asked to perform a task in which they reacted to a visual stimulus (pressing a button as quickly as possible after the visual stimulus appeared).
+
+The data consist of 180 observations (10 nights for each of the 18 participants), with the following variables:
+
+* `Reaction`: reaction time in the task (ms)
+* `Days`: day of the study (number of days of sleep deprivation)
+* `Subject`: the subject ID
+
+\bigskip
+
+**Question:** Propose a model that the researchers could use to investigate the effect of sleep deprivation on reaction time.
+
+\newpage
+
+## Chemistry A-level scores
+
+In Britain, A-levels are exams taken by students before attending university. Unlike in the US, British students specialize in a subset of subjects in the last few years of their high school studies, and A-levels are national exams assessing their mastery of their chosen subjects. Good scores on A-levels are necessary to pursue the corresponding degrees at university level.
+
+We have data on scores for 31022 students taking the A-level chemistry exam in Britain, from 2280 different schools. Additionally, each school belongs to a Local Education Authority: there are 131 such authorities in the data. 
+
+The data contain 31022 rows, and the following columns:
+
+* `lea`: Local Education Authority identifier
+* `school`: School identifier
+* `student`: Student identifier
+* `score`: score on the A-level Chemistry exam
+* `gcse`: score on the GCSE exam (this is an earlier exam that students take halfway through high school, before beginning their A-level studies)
+
+\bigskip
+
+**Question:** Propose a model that the researchers could use to model student scores on the A-level chemistry exam.
+
+
+
+
+

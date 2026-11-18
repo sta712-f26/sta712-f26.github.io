@@ -1,0 +1,46 @@
+---
+title: "Activity: predicting random effects"
+format: pdf
+editor: source
+---
+
+\vspace{-2.5cm}
+
+**Group members:**
+
+\vspace{-0.5cm}
+
+## Predicting random effects
+
+Suppose we have the model
+
+$$Y_{ij} = u_i + \varepsilon_{ij}$$
+
+(a single random effect for each group, with no fixed effects). Or, in matrix form:
+
+$$
+\mathbf{y} = \mathbf{Z} \boldsymbol{u} + \boldsymbol{\varepsilon} \hspace{1cm} \boldsymbol{u} \sim N(\boldsymbol{0}, \sigma_u^2\mathbf{I}), \ \ \boldsymbol{\varepsilon} \sim N(\mathbf{0}, \sigma_{\varepsilon}^2 \mathbf{I})
+$$
+
+It can be shown that the predicted value for the $i$th group effect $u_i$ is given by
+
+$$\widehat{u}_i = \sigma_u^2 \mathbf{1}^T \boldsymbol{\Sigma}_i^{-1} \mathbf{y}_i$$
+
+where $\mathbf{1}$ is the vector of all 1s, $\mathbf{y}_i = (Y_{i1},...,Y_{i n_i})^T$, and 
+
+$$\boldsymbol{\Sigma}_i^{-1} = \frac{1}{\sigma_{\varepsilon}^4 + n_i \sigma_u^2 \sigma_{\varepsilon}^2} \begin{bmatrix} \sigma_{\varepsilon}^2 + (n_i - 1)\sigma_u^2 & -\sigma_u^2 & -\sigma_u^2 & \cdots & -\sigma_u^2 \\
+-\sigma_u^2 & \sigma_{\varepsilon}^2 + (n_i - 1)\sigma_u^2 & -\sigma_u^2 & \cdots & -\sigma_u^2 \\
+-\sigma_u^2 & -\sigma_u^2 & \sigma_{\varepsilon}^2 + (n_i - 1)\sigma_u^2  & \cdots & -\sigma_u^2 \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+-\sigma_u^2 & -\sigma_u^2 & -\sigma_u^2 & \cdots & \sigma_{\varepsilon}^2 + (n_i - 1)\sigma_u^2\end{bmatrix}$$
+
+
+## Question
+
+Show that
+
+$$\widehat{u}_i = \frac{1}{n_i + \sigma_{\varepsilon}^2/\sigma_u^2} \sum \limits_{j=1}^{n_i} Y_{ij}$$
+
+How does this compare to the group mean $\dfrac{1}{n_i} \sum \limits_{j=1}^{n_i} Y_{ij}$ ?
+
+

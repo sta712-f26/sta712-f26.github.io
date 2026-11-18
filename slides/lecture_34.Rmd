@@ -1,0 +1,133 @@
+---
+title: "Linear mixed models"
+author: "Ciaran Evans"
+output: beamer_presentation
+---
+
+
+## Warmup
+
+Work on the warmup activity (handout).
+
+\vspace{4cm}
+
+## Warmup
+
+* `Reaction`: reaction time in the task (ms)
+* `Days`: day of the study (number of days of sleep deprivation)
+* `Subject`: the subject ID
+
+**Question:** Propose a model that the researchers could use to investigate the effect of sleep deprivation on reaction time.
+
+\vspace{5cm}
+
+## Warmup
+
+* `lea`: Local Education Authority identifier
+* `school`: School identifier
+* `student`: Student identifier
+* `score`: score on the A-level Chemistry exam
+* `gcse`: score on the GCSE exam
+
+**Question:** Propose a model that the researchers could use to model student scores on the A-level chemistry exam.
+
+\vspace{5cm}
+
+## Linear mixed models, in general
+
+
+## Example correlation structure
+
+$$\text{Reaction}_{ij} = (\beta_0 + a_i) + (\beta_1 + b_i)\text{Days}_{ij} + \varepsilon_{ij}$$
+
+\vspace{6cm}
+
+## Example: sleep study
+
+```{r, include=F}
+library(lme4)
+library(tidyverse)
+
+sleep_study <- sleepstudy |>
+  filter(Days >= 2) |>
+  mutate(Days = Days - 2)
+
+m1 <- lmer(Reaction ~ Days + (Days|Subject), sleep_study)
+
+Gi <- Matrix::bdiag(VarCorr(m1))
+```
+
+```{r, eval = F}
+m1 <- lmer(Reaction ~ Days + (Days|Subject), sleep_study)
+
+Gi <- Matrix::bdiag(VarCorr(m1))
+Gi
+```
+
+```
+            (Intercept)     Days
+(Intercept)    958.3517 37.20460
+Days            37.2046 45.77766
+```
+
+```{r, eval = F}
+Zi <- cbind(1, 1:8)
+Si <- Zi %*% Gi %*% t(Zi) + 651.60*diag(8)
+cov2cor(Si)
+```
+
+```
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
+[1,] 1.00 0.63 0.63 0.62 0.61 0.59 0.57 0.56
+[2,] 0.63 1.00 0.68 0.68 0.68 0.67 0.66 0.65
+[3,] 0.63 0.68 1.00 0.73 0.73 0.73 0.73 0.73
+[4,] 0.62 0.68 0.73 1.00 0.77 0.78 0.78 0.78
+[5,] 0.61 0.68 0.73 0.77 1.00 0.81 0.81 0.82
+[6,] 0.59 0.67 0.73 0.78 0.81 1.00 0.84 0.84
+[7,] 0.57 0.66 0.73 0.78 0.81 0.84 1.00 0.86
+[8,] 0.56 0.65 0.73 0.78 0.82 0.84 0.86 1.00
+```
+
+## What if we just fit separate linear models?
+
+```{r echo=F, message=F, warning=F, fig.width=4, fig.height=3.5}
+lmm_ests <- coef(m1)$Subject
+colnames(lmm_ests) <- c("b0", "b1")
+lmm_ests <- lmm_ests |>
+  mutate(Subject = sort(unique(sleep_study$Subject))) |>
+  select(Subject, b0, b1) |>
+  mutate(method = "LMM")
+
+ls_coefs <- matrix(nrow=18, ncol=2)
+for(i in seq_along(unique(sleep_study$Subject))){
+  sub_data <- sleep_study |>
+    filter(Subject == unique(sleep_study$Subject)[i])
+  m_sub <- lm(Reaction ~ Days, data = sub_data)
+  ls_coefs[i,] <- coef(m_sub)
+}
+
+data.frame(Subject = unique(sleep_study$Subject),
+           b0 = ls_coefs[,1],
+           b1 = ls_coefs[,2],
+           method = "Least squares within groups") |>
+  rbind(lmm_ests) |>
+  ggplot(aes(x = b0, y = b1)) +
+  geom_point(aes(color = method, shape = method)) +
+  theme_classic() +
+  geom_point(aes(x=268, y=11.44), size=2) +
+  theme(legend.position = "bottom")
+```
+
+## Shrinkage
+
+* LMMs put a Normal distribution on the random effects
+
+\bigskip
+
+* For a Normal, events closer to the mean are more likely
+
+\bigskip
+
+* The result is that LMM estimates for each group ($\widehat{\boldsymbol{\beta}} + \widehat{\boldsymbol{u}}_i$) are shrunk towards $\widehat{\boldsymbol{\beta}}$ (compared to fitting a separate linear model in each group)
+
+
