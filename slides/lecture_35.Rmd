@@ -1,0 +1,70 @@
+---
+title: "Linear mixed models"
+author: "Ciaran Evans"
+output: beamer_presentation
+---
+
+
+
+
+```{r, include=F}
+library(lme4)
+library(tidyverse)
+
+sleep_study <- sleepstudy |>
+  filter(Days >= 2) |>
+  mutate(Days = Days - 2)
+
+m1 <- lmer(Reaction ~ Days + (Days|Subject), sleep_study)
+
+Gi <- Matrix::bdiag(VarCorr(m1))
+```
+
+## Last time: shrinkage
+
+```{r echo=F, message=F, warning=F, fig.width=4, fig.height=3.5}
+lmm_ests <- coef(m1)$Subject
+colnames(lmm_ests) <- c("b0", "b1")
+lmm_ests <- lmm_ests |>
+  mutate(Subject = sort(unique(sleep_study$Subject))) |>
+  select(Subject, b0, b1) |>
+  mutate(method = "LMM")
+
+ls_coefs <- matrix(nrow=18, ncol=2)
+for(i in seq_along(unique(sleep_study$Subject))){
+  sub_data <- sleep_study |>
+    filter(Subject == unique(sleep_study$Subject)[i])
+  m_sub <- lm(Reaction ~ Days, data = sub_data)
+  ls_coefs[i,] <- coef(m_sub)
+}
+
+data.frame(Subject = unique(sleep_study$Subject),
+           b0 = ls_coefs[,1],
+           b1 = ls_coefs[,2],
+           method = "Least squares within groups") |>
+  rbind(lmm_ests) |>
+  ggplot(aes(x = b0, y = b1)) +
+  geom_point(aes(color = method, shape = method)) +
+  theme_classic() +
+  geom_point(aes(x=268, y=11.44), size=2) +
+  theme(legend.position = "bottom")
+```
+
+## Predicting random effects
+
+## Class activity
+
+Work on the activity (handout)
+
+\vspace{4cm}
+
+## Intuition for shrinkage
+
+## A more general case
+
+## Other considerations: sample size
+
+
+
+
+

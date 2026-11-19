@@ -34,6 +34,8 @@ $$\boldsymbol{\Sigma}_i^{-1} = \frac{1}{\sigma_{\varepsilon}^4 + n_i \sigma_u^2 
 \vdots & \vdots & \vdots & \ddots & \vdots \\
 -\sigma_u^2 & -\sigma_u^2 & -\sigma_u^2 & \cdots & \sigma_{\varepsilon}^2 + (n_i - 1)\sigma_u^2\end{bmatrix}$$
 
+\newpage
+
 
 ## Question
 
